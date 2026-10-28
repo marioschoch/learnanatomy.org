@@ -1,0 +1,22 @@
+{
+  "$comment": "Human-reviewed corrections of upstream data errors. Only entries listed here may be corrected by the pipeline; anything else that fails validation fails the build. status: 'proposed' (not applied, structure is reported) | 'approved' (applied).",
+  "sideSwaps": [
+    {
+      "source": ["Eyelashes.l", "Eyelashes.r"],
+      "reason": "Object named .l sits at x = -0.032 (patient's right) and .r at +0.032, opposite to 99.85 % of .l/.r objects. Geometry decides the side.",
+      "status": "proposed"
+    },
+    {
+      "source": ["Lateral temporomandibular ligament.l", "Lateral temporomandibular ligament.r"],
+      "reason": "Object named .l sits at x = -0.053 (patient's right) and .r at +0.053.",
+      "status": "proposed"
+    }
+  ],
+  "toReview": [
+    {
+      "source": "Vagus nerve (X).r",
+      "reason": "bbox centre at x = +0.020 (patient's left). The right vagus has branches crossing the midline; check the vertex centroid before deciding.",
+      "status": "open"
+    }
+  ]
+}

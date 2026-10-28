@@ -1,0 +1,24 @@
+Open Anatomy Atlas — licence for assets and anatomical data
+
+Scope: the processed 3D models (public/models/*.glb), the extracted metadata
+(public/models/*.json: names, hierarchy, regions, label positions) and the definitions
+shipped with this application. The application source code is licensed separately (LICENSE, MIT).
+
+These assets are a modified version of Z-Anatomy and are licensed under the
+Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0):
+https://creativecommons.org/licenses/by-sa/4.0/
+Legal code: https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+Upstream sources and their licences (full list with modification notes in ATTRIBUTION.md):
+  - Z-Anatomy — The libre 3D atlas of anatomy — CC BY-SA 4.0
+    https://github.com/Z-Anatomy/Models-of-human-anatomy
+  - BodyParts3D, © The Database Center for Life Science, licensed under CC Attribution-Share Alike 2.1 Japan
+    https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html
+  - Definitions: Wikipedia — CC BY-SA 3.0 (the source article is linked with every definition)
+
+Exceptions — NON-COMMERCIAL components (marked `nonCommercial: true` in the metadata):
+  - "Anatomy of the Inner Ear" — University of Dundee School of Medicine — CC BY-NC-SA 4.0
+  - "Kidney" — Lissie Cowley — CC BY-NC 4.0
+These may not be used commercially. They can be removed with a single metadata filter.
+
+This project is non-profit and for education only. It is not intended for diagnosis or treatment.

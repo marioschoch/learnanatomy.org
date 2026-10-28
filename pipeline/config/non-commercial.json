@@ -1,0 +1,25 @@
+{
+  "$comment": "Structures from upstream components under non-commercial licences (Z-Anatomy README). Matched against the English base name of the source object (without .l/.r). Status 'proposed' until confirmed by the project owner. Phase 0 proposal from data/inventory/INVENTORY.md.",
+  "status": "proposed",
+  "sources": {
+    "dundee-inner-ear": {
+      "text": "Anatomy of the Inner Ear - by University of Dundee School of Medicine - CC-BY-NC-SA 4.0",
+      "license": "CC-BY-NC-SA-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "structures": ["Cochlea", "Vestibule"]
+    },
+    "cowley-kidney": {
+      "text": "Kidney - by Lissie Cowley - CC-BY-NC 4.0",
+      "license": "CC-BY-NC-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "structures": [
+        "Kidney",
+        "Renal pelvis",
+        "Intrarenal arteries of left kidney",
+        "Intrarenal arteries of right kidney",
+        "Intrarenal veins of left kidney",
+        "Intrarenal veins of right kidney"
+      ]
+    }
+  }
+}

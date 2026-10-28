@@ -1,0 +1,26 @@
+# dependencies / build
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
+coverage/
+
+# test output
+test-results/
+playwright-report/
+blob-report/
+tests/e2e/__screenshots__/*.actual.png
+
+# raw input data and generated assets (reproducible with `npm run assets:build`)
+data/raw/
+data/export/
+data/inventory/full/
+public/models/
+
+# env / local
+.env
+.env.*
+!.env.example
+.DS_Store
+.wrangler/
+.claude/settings.local.json
