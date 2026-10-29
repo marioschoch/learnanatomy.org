@@ -405,7 +405,8 @@ port and build folder: `PW_PORT=4181` (B), `4182` (C), `4183` (lead/QA) — e.g.
 - [x] Phase 1 — Agents A, B, C reviewed and merged (pipeline 8/9 systems validated; viewer on real data; UI/quiz on
   mocks). Accepted: SideSource 'override', store camera fix, explode/transparency doc changes. Deferred:
   `RegionInfo.definitionKey` (region texts), `kind` in search entries (needed once insertions are published).
-- [ ] Phase 2 — integration on real assets, screenshots (default, X-ray, sagittal head cut, exploded thorax,
-  isolate-with-context heart, mobile), budgets
+- [x] Phase 2 — all 9 systems on real assets; insertions published after owner review; origin/insertion kind in all
+  name displays; fasciae hidden by default; overlay positions; screenshots checked (default, full X-ray, sagittal
+  head cut, exploded thorax, isolate-with-context heart, muscles, phone); budgets measured (§9); 22/22 e2e
 - [ ] Phase 3 — independent QA (Agent D) → QA_REPORT.md, fixes, re-runs
 - [ ] Phase 4 — README (DE/EN), CONTRIBUTING (definition review workflow), deploy commands for the owner
