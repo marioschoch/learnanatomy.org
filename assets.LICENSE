@@ -1,4 +1,4 @@
-Open Anatomy Atlas — licence for assets and anatomical data
+learnanatomy.org — licence for assets and anatomical data
 
 Scope: the processed 3D models (public/models/*.glb), the extracted metadata
 (public/models/*.json: names, hierarchy, regions, label positions) and the definitions

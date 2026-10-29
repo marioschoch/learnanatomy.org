@@ -343,7 +343,7 @@ export function attributionMarkdown({
   L.push('## Modifications');
   L.push('');
   L.push(
-    'The Z-Anatomy Blender file (`Startup.blend`) was converted by the Open Anatomy Atlas asset pipeline (`pipeline/`):',
+    'The Z-Anatomy Blender file (`Startup.blend`) was converted by the learnanatomy.org asset pipeline (`pipeline/`):',
   );
   L.push('');
   L.push(

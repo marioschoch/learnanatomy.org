@@ -1,6 +1,6 @@
 # Issues to report to Z-Anatomy
 
-Data problems found while building the Open Anatomy Atlas from `Startup.blend` of
+Data problems found while building learnanatomy.org from `Startup.blend` of
 [Z-Anatomy/Models-of-human-anatomy](https://github.com/Z-Anatomy/Models-of-human-anatomy). Each section can be filed
 as its own issue there. Object names are the names in the Blender file.
 

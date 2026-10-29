@@ -1,4 +1,4 @@
-# Open Anatomy Atlas
+# learnanatomy.org
 
 **DE** — Ein freier, gemeinnütziger 3D-Anatomieatlas im Browser für Medizinstudierende. Knochen, Muskeln, Organe,
 Gefäße und Nerven lassen sich ein- und ausblenden, durchsuchen, schneiden, auseinanderziehen und im Quiz lernen.

@@ -549,7 +549,7 @@ class GlbWriter:
         while len(self.bin) % 4:
             self.bin.append(0)
         gltf = {
-            "asset": {"version": "2.0", "generator": "Open Anatomy Atlas pipeline/blender/export.py"},
+            "asset": {"version": "2.0", "generator": "learnanatomy.org pipeline/blender/export.py"},
             "scene": 0,
             "scenes": [{"nodes": list(range(len(self.nodes)))}],
             "nodes": self.nodes,

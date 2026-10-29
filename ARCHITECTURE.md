@@ -1,4 +1,4 @@
-# Architecture — Open Anatomy Atlas
+# Architecture — learnanatomy.org
 
 Static single-page app (Vite + React 19 + TypeScript strict + three.js/R3F). No backend, no accounts, no
 tracking. Data: Z-Anatomy (CC BY-SA 4.0), converted by an offline pipeline into compressed GLB chunks + JSON.

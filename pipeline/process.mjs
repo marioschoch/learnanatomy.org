@@ -70,7 +70,7 @@ function log(msg) {
 // glTF asset.copyright, so a downloaded GLB names its source and licence.
 const ASSET_COPYRIGHT =
   'Derived from Z-Anatomy (CC BY-SA 4.0) and BodyParts3D (CC BY-SA 2.1 JP); some structures are CC BY-NC(-SA) 4.0. ' +
-  'Full attribution: ATTRIBUTION.md / licenses/ATTRIBUTION.txt of the Open Anatomy Atlas.';
+  'Full attribution: ATTRIBUTION.md / licenses/ATTRIBUTION.txt of learnanatomy.org.';
 
 async function encode(io, doc, settings) {
   doc.getRoot().getAsset().copyright = ASSET_COPYRIGHT;

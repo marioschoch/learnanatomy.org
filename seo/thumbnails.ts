@@ -14,6 +14,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 import { createServer } from 'vite';
+import { APP_NAME } from '../src/appName.ts';
 import type { BBox, Names } from '../src/contract/anatomy.ts';
 import type { CameraPose, ViewerCommand, ViewerCommandResult } from '../src/contract/viewerApi.ts';
 import {
@@ -86,7 +87,7 @@ export function poseFor(bbox: BBox, view: RenderSpec['view'], zoomOut = 1): Came
 }
 
 /** Installed in the page once (serialised by Playwright, so self-contained). */
-function installHelpers(size: { thumb: number; card: { width: number; height: number } }) {
+function installHelpers(cfg: { thumb: number; card: { width: number; height: number }; name: string }) {
   const store = () =>
     (window as unknown as { __atlas: { store: { getState(): Store } } }).__atlas.store.getState();
   const frames = (ms: number) =>
@@ -166,23 +167,23 @@ function installHelpers(size: { thumb: number; card: { width: number; height: nu
       const sx = Math.max(0, Math.min(src.width - side, (x0 + x1 - side) / 2));
       const sy = Math.max(0, Math.min(src.height - side, (y0 + y1 - side) / 2));
       const out = document.createElement('canvas');
-      out.width = out.height = size.thumb;
-      out.getContext('2d')!.drawImage(src, sx, sy, side, side, 0, 0, size.thumb, size.thumb);
+      out.width = out.height = cfg.thumb;
+      out.getContext('2d')!.drawImage(src, sx, sy, side, side, 0, 0, cfg.thumb, cfg.thumb);
       return out.toDataURL('image/png');
     },
 
     async thumb(shot) {
       const canvas = document.createElement('canvas');
-      canvas.width = canvas.height = size.thumb;
+      canvas.width = canvas.height = cfg.thumb;
       const ctx = canvas.getContext('2d')!;
-      stage(ctx, 0, 0, size.thumb, size.thumb);
-      ctx.drawImage(await image(shot), 0, 0, size.thumb, size.thumb);
+      stage(ctx, 0, 0, cfg.thumb, cfg.thumb);
+      ctx.drawImage(await image(shot), 0, 0, cfg.thumb, cfg.thumb);
       return canvas.toDataURL('image/webp', 0.82);
     },
 
     async card(shot, text) {
       await document.fonts.load('700 52px "Inter Variable"');
-      const { width: W, height: H } = size.card;
+      const { width: W, height: H } = cfg.card;
       const canvas = document.createElement('canvas');
       canvas.width = W;
       canvas.height = H;
@@ -213,7 +214,7 @@ function installHelpers(size: { thumb: number; card: { width: number; height: nu
       ctx.fillStyle = '#18181b';
       ctx.textBaseline = 'middle';
       ctx.font = '600 26px "Inter Variable", sans-serif';
-      ctx.fillText('Open Anatomy Atlas', x + 58, 79);
+      ctx.fillText(cfg.name, x + 58, 79);
 
       // names, shrunk until they fit
       ctx.textBaseline = 'alphabetic';
@@ -274,7 +275,7 @@ function cardText(page: Page, kicker?: string): CardText {
     kicker: kicker ?? SYSTEM_LABELS[page.system] ?? page.system,
     title: page.names.en,
     ...(sub ? { sub } : {}),
-    footer: 'Interactive 3D anatomy · learnanatomy.org',
+    footer: 'Interactive 3D anatomy',
   };
 }
 
@@ -331,7 +332,7 @@ async function main() {
       null,
       { timeout: 120_000 },
     );
-    await page.evaluate(installHelpers, { thumb: THUMB_SIZE, card: CARD_SIZE });
+    await page.evaluate(installHelpers, { thumb: THUMB_SIZE, card: CARD_SIZE, name: APP_NAME });
     await page.evaluate(() => {
       (window as unknown as { __atlas: { store: { getState(): Store } } }).__atlas.store
         .getState()
@@ -408,7 +409,7 @@ async function main() {
           kicker: 'Free · open source',
           title: 'Free interactive 3D anatomy atlas',
           sub: 'Bones, muscles, organs, vessels and nerves with Latin and English names',
-          footer: 'learnanatomy.org',
+          footer: 'No sign-up · runs in the browser',
         },
       ] as const);
       writeFileSync(SITE_CARD, decode(card));

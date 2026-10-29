@@ -48,7 +48,7 @@ Please be aware of potential errors due to automatic translation from the Englis
 
 ## Modifications
 
-The Z-Anatomy Blender file (`Startup.blend`) was converted by the Open Anatomy Atlas asset pipeline (`pipeline/`):
+The Z-Anatomy Blender file (`Startup.blend`) was converted by the learnanatomy.org asset pipeline (`pipeline/`):
 
 - geometry evaluated with all modifiers and curve bevels; subdivision surface capped at level 1, curve resolution capped at 6 and round-bevel resolution at 2
 - world transforms baked per object; mirrored left/right instances baked with flipped triangle winding

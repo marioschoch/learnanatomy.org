@@ -50,7 +50,7 @@ describe('description text', () => {
 describe('renderPage', () => {
   it('writes title, canonical, hreflang, breadcrumbs and the 3D link', () => {
     const html = renderPage(femur, 'en', ctx());
-    expect(html).toContain('<title>Femur (Os femoris) – 3D anatomy | Open Anatomy Atlas</title>');
+    expect(html).toContain('<title>Femur (Os femoris) – 3D anatomy | learnanatomy.org</title>');
     expect(html).toContain('<link rel="canonical" href="https://learnanatomy.org/en/femur">');
     expect(html).toContain('<link rel="alternate" hreflang="de" href="https://learnanatomy.org/de/femur">');
     expect(html).toContain('href="/?s=femur-l"');

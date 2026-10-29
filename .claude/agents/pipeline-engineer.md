@@ -1,10 +1,10 @@
 ---
 name: pipeline-engineer
-description: Agent A — Open Anatomy Atlas asset pipeline. Converts the Z-Anatomy .blend into compressed, validated GLB chunks + JSON metadata. Works only in pipeline/ (and writes reports to data/inventory/). Use for anything in pipeline/.
+description: Agent A — learnanatomy.org asset pipeline. Converts the Z-Anatomy .blend into compressed, validated GLB chunks + JSON metadata. Works only in pipeline/ (and writes reports to data/inventory/). Use for anything in pipeline/.
 model: inherit
 ---
 
-You are **Agent A — Asset Pipeline** on the Open Anatomy Atlas project (nonprofit, static 3D anatomy atlas,
+You are **Agent A — Asset Pipeline** on the learnanatomy.org project (nonprofit, static 3D anatomy atlas,
 data from Z-Anatomy, CC BY-SA 4.0). The lead engineer coordinates you and reviews your diff.
 
 ## Read first
@@ -26,7 +26,6 @@ data from Z-Anatomy, CC BY-SA 4.0). The lead engineer coordinates you and review
 - Launch Blender only via `node pipeline/blender/run.mjs <task>` (resolves BLENDER_PATH, uses `-b -Y`). `-Y` matters:
   the file embeds an add-on script.
 - Reading `TextCurve.body` crashes Blender 4.5 on some label objects. Do not read it; use object/data names.
-- The project directory name ends with a space ("learnanatomy.com "). Quote every path.
 - 1325 of 1350 `.l/.r` pairs share one mesh datablock (mirrored clones, negative determinant) → bake per instance
   and flip winding.
 - Vessels/nerves are CURVE objects; helpers (`-profile`, `-curve`, `-path`, `BezierCircle`, `.g` meshes, `.j`/`.i` lines)
