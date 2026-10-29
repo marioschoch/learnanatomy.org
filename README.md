@@ -13,6 +13,8 @@ for diagnosis.
 ![Muscles and skeleton, anterior view](docs/screenshot-muscles.png)
 ![Sagittal section through the head](docs/screenshot-sagittal.png)
 
+**Live: <https://open-anatomy-atlas.pages.dev>**
+
 Data: [Z-Anatomy](https://github.com/Z-Anatomy/Models-of-human-anatomy) (CC BY-SA 4.0), derived from BodyParts3D.
 Full attribution in [ATTRIBUTION.md](ATTRIBUTION.md).
 
@@ -82,13 +84,18 @@ Useful URL flags: `?data=mock` (small mock scene), `?testHooks=1` (exposes `wind
 
 ### 5. Deploy (Cloudflare Pages)
 
+Live: <https://open-anatomy-atlas.pages.dev>
+
 ```bash
 npm run assets:build          # public/models/ must exist; it is copied into dist/
 npm run build
-npx wrangler login            # once
-npx wrangler pages project create open-anatomy-atlas --production-branch main   # once
-npx wrangler pages deploy dist --project-name open-anatomy-atlas
+npx wrangler login            # once per machine
+npx wrangler pages deploy dist --project-name open-anatomy-atlas --branch main
 ```
+
+The Pages project already exists. Creating it anew with wrangler ≥ 4.15x needs `--force`, because newer wrangler
+otherwise routes `pages` commands to Workers:
+`npx wrangler pages project create open-anatomy-atlas --production-branch main --force`.
 
 `public/_headers` sets cache headers. The site is fully static (no functions, no cookies). The build also ships
 `ATTRIBUTION.md`, `LICENSE` and `assets.LICENSE` as `/licenses/*.txt`; the credits page links them.
