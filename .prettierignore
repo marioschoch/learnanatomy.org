@@ -4,5 +4,6 @@ data
 public/models
 playwright-report
 test-results
+.e2e
 package-lock.json
 *.md

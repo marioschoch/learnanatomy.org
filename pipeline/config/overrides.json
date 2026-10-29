@@ -4,12 +4,12 @@
     {
       "source": ["Eyelashes.l", "Eyelashes.r"],
       "reason": "Object named .l sits at x = -0.032 (patient's right) and .r at +0.032, opposite to 99.85 % of .l/.r objects. Geometry decides the side.",
-      "status": "proposed"
+      "status": "approved"
     },
     {
       "source": ["Lateral temporomandibular ligament.l", "Lateral temporomandibular ligament.r"],
       "reason": "Object named .l sits at x = -0.053 (patient's right) and .r at +0.053.",
-      "status": "proposed"
+      "status": "approved"
     }
   ],
   "toReview": [

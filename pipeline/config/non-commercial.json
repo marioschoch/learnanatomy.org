@@ -1,6 +1,6 @@
 {
-  "$comment": "Structures from upstream components under non-commercial licences (Z-Anatomy README). Matched against the English base name of the source object (without .l/.r). Status 'proposed' until confirmed by the project owner. Phase 0 proposal from data/inventory/INVENTORY.md.",
-  "status": "proposed",
+  "$comment": "Structures from upstream components under non-commercial licences (Z-Anatomy README). Matched against the English base name of the source object (without .l/.r). Confirmed by the project owner after Phase 0 (2026-10-29).",
+  "status": "approved",
   "sources": {
     "dundee-inner-ear": {
       "text": "Anatomy of the Inner Ear - by University of Dundee School of Medicine - CC-BY-NC-SA 4.0",

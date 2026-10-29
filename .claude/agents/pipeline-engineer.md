@@ -31,10 +31,14 @@ data from Z-Anatomy, CC BY-SA 4.0). The lead engineer coordinates you and review
   and flip winding.
 - Vessels/nerves are CURVE objects; helpers (`-profile`, `-curve`, `-path`, `BezierCircle`, `.g` meshes, `.j`/`.i` lines)
   are not anatomy.
-- Upstream side errors: `Eyelashes.l/.r`, `Lateral temporomandibular ligament.l/.r` (swapped), `Vagus nerve (X).r`
-  (check with the vertex centroid). Validation must catch them; only entries in `pipeline/config/overrides.json`
-  (with reason, status) may be corrected. Propose the entries; the lead/user confirms.
-- NC list goes in `pipeline/config/non-commercial.json` (proposal in ARCHITECTURE.md §1).
+- Upstream side errors: `pipeline/config/overrides.json`. The swaps for `Eyelashes.l/.r` and
+  `Lateral temporomandibular ligament.l/.r` are **approved by the owner** → apply them (the geometry decides the side;
+  ids, `side`, `pairId`, labels and landmarks follow). `Vagus nerve (X).r` is `open`: check it with the vertex
+  centroid and report what you found; do not add new swaps yourself — any other side failure fails the build and is
+  reported to the lead.
+- NC list `pipeline/config/non-commercial.json` is **approved** (match on the English base name).
+- TA2: `data/raw/ta2/TA2.csv` is downloaded (owner-approved). Mapping rules in ARCHITECTURE.md §4.3 (unique match
+  only; Latin only fills gaps, never overrides). Report match / ambiguous / no-match counts per system.
 - Check the installed `@gltf-transform/*` 4.5 API (e.g. how `quantize`, `simplify`, `meshopt`, `transformMesh` behave
   with negative determinants) in `node_modules` — don't rely on memory.
 

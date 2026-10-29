@@ -24,3 +24,4 @@ public/models/
 .DS_Store
 .wrangler/
 .claude/settings.local.json
+.e2e/

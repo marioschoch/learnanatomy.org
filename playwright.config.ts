@@ -1,15 +1,17 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 4173;
+// PW_PORT lets parallel runs (one per agent) use their own preview server and build folder.
+const PORT = Number(process.env.PW_PORT ?? 4173);
+const OUT = `.e2e/${PORT}`;
 
 export default defineConfig({
   testDir: './tests/e2e',
-  outputDir: './test-results',
+  outputDir: `./test-results/${PORT}`,
   timeout: 60_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
   retries: process.env.CI ? 1 : 0,
-  reporter: [['list'], ['html', { open: 'never' }]],
+  reporter: [['list'], ['html', { open: 'never', outputFolder: `playwright-report/${PORT}` }]],
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: 'retain-on-failure',
@@ -34,7 +36,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
+    // Type errors are caught by `npm run typecheck`; e2e only needs a bundle.
+    command: `npx vite build --outDir ${OUT} --emptyOutDir && npx vite preview --outDir ${OUT} --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

@@ -14,6 +14,7 @@ export default tseslint.config(
       'public/models',
       'playwright-report',
       'test-results',
+      '.e2e',
       'coverage',
     ],
   },
