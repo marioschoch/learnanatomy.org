@@ -53,8 +53,9 @@ Copy `.env.example` to `.env.local` and set `BLENDER_PATH`, e.g.
 ### 3. Build the assets
 
 ```bash
-npm run assets:build   # inventory → export (Blender, ~15 min) → process → manifest → validate
+npm run assets:build     # inventory → export (Blender, ~15 min) → process → manifest → validate
 npm run assets:validate
+npm run assets:manifest  # data files only (after a config change or a definition review; no Blender)
 ```
 
 Output goes to `public/models/` (gitignored, ~38 MB, no file over 20 MB). The build fails on any orientation or
@@ -70,6 +71,12 @@ npm run test:e2e       # Playwright, desktop 1440×900 and phone 390×844 (softw
 npm run build          # → dist/
 ```
 
+QA specs on the real assets need a GPU and are opt-in (macOS/Linux shell syntax):
+
+```bash
+QA_GPU=1 npx playwright test tests/e2e/qa-functional.spec.ts tests/e2e/qa-anatomy.spec.ts --workers=2
+```
+
 Useful URL flags: `?data=mock` (small mock scene), `?testHooks=1` (exposes `window.__atlas` for tests),
 `?stats=1` (fps / draw calls overlay).
 
@@ -83,13 +90,15 @@ npx wrangler pages project create open-anatomy-atlas --production-branch main   
 npx wrangler pages deploy dist --project-name open-anatomy-atlas
 ```
 
-`public/_headers` sets cache headers. The site is fully static (no functions, no cookies).
+`public/_headers` sets cache headers. The site is fully static (no functions, no cookies). The build also ships
+`ATTRIBUTION.md`, `LICENSE` and `assets.LICENSE` as `/licenses/*.txt`; the credits page links them.
 
 ## Project structure
 
 ```
 pipeline/          asset pipeline: blender/ (inventory.py, export.py, run.mjs), process.mjs, manifest.mjs,
-                   validate.mjs, lib/, config/ (systems, overrides, non-commercial list)
+                   validate.mjs, review-definition.mjs, lib/, config/ (systems, overrides, definition reviews,
+                   non-commercial list)
 src/contract/      shared types: data files, store, viewer commands
 src/state/         zustand store, visibility rules, data sources
 src/viewer/        three.js / react-three-fiber viewer (BatchedMesh per chunk, picking, clipping, labels)
@@ -105,8 +114,9 @@ ARCHITECTURE.md    design, data model, decisions and deviations
 ## Contributing
 
 Anatomy reviewers are especially welcome: definitions come from Wikipedia and are shown as "unreviewed" until a
-person has checked them. See [CONTRIBUTING.md](CONTRIBUTING.md). Left/right or naming errors in the source data are
-fixed only through reviewed entries in `pipeline/config/overrides.json`.
+person has checked them (`npm run review:definition`). See [CONTRIBUTING.md](CONTRIBUTING.md). Left/right or naming
+errors in the source data are fixed only through reviewed entries in `pipeline/config/overrides.json`. Problems found
+in the upstream data are collected in [docs/UPSTREAM_ISSUES.md](docs/UPSTREAM_ISSUES.md).
 
 ## Licenses
 

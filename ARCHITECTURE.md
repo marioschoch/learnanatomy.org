@@ -204,10 +204,23 @@ root) is generated from the upstream README attributions + modification note + N
 bone z > occipital z (faces +Z); every `side: 'left'` structure has centroid x > 0 and `'right'` x < 0
 (vertex centroid, small tolerance), left/right pairs mirror each other (|x_l + x_r| small).
 The side check is strict for every published side (suffix, override, name); only `toReview` items with status
-`open` are reported as warnings. Two extra checks: triangle winding agrees with the normals (≥ 95 % area), and every
+`open` are reported as warnings. Two extra checks: triangle winding agrees with the normals (error below 50 % of the area, warning below 80 %;
+the current build has a minimum of 95 %), and every
 object belongs to exactly one numbered collection.
 Known upstream errors are listed in `pipeline/config/overrides.json` with a reason and reviewer; only listed
-entries may be corrected (e.g. swap side), anything else fails the build.
+entries may be corrected, anything else fails the build: `sideSwaps` (wrong `.l`/`.r`), `nameFixes` (spelling of one
+name, applied only while the upstream text still equals `from`; stale entries are listed in the report) and
+`toReview` (published as named, validator warning). Upstream reports: `docs/UPSTREAM_ISSUES.md`.
+
+**Definition reviews** (`pipeline/config/definition-reviews.json`, CONTRIBUTING.md): keyed by
+`<system>/<definitionKey>`, each with reviewer, date and the sha256 of the reviewed text (`pipeline/lib/reviews.mjs`,
+all languages, sorted). The manifest step publishes `reviewed: true` only when the hash matches; a changed text falls
+back to "not reviewed" and is listed as a stale review. The validator fails on `reviewed: true` without a matching
+review. `npm run review:definition` records reviews; `npm run assets:manifest` republishes without Blender.
+
+**Default-hidden structures** (`Manifest.defaultHiddenIds`, `systems.json`): `defaultHiddenCollections` (the
+`Fascia` collection) and `defaultHiddenChildrenOf` (children of the source object `Liver`: the 8 Couinaud
+segments, which repeat the liver's volume). The quiz never asks them.
 
 ---
 
@@ -265,6 +278,11 @@ implementation `src/state/store.ts` (lead). Pure helpers: `src/state/visibility.
   (`mode`, `ids`, `cameraBefore`), `highlights` (quiz colours).
   Isolate never mutates layers/hiddenIds → exit restores the previous state exactly; the camera is restored too.
 - **Tools:** `clipping`, `explode`, `labelsVisible`.
+- **View insets:** `viewInsets` (CSS px of the canvas covered by UI). The phone layout reports its header, bottom bar
+  and open sheet (`useReportViewInsets`, elements marked `data-view-cover`). The viewer gives the camera a view
+  offset (`ViewInsets.tsx`), so `focus`, `resetCamera` and the standard views fit and centre in the uncovered
+  area. Picking and labels read the projection matrix and are unaffected. The selection peek and the first-visit
+  hint are not covers. Desktop reports none: its panels sit at the edges.
 - **Viewer bridge:** `requestViewer(cmd) → Promise<ViewerCommandResult>`; the viewer drains `viewerQueue` and calls
   `completeViewerCommand`. Commands: `focus`, `setView`, `setCameraPose`, `resetCamera`, `zoom`, `screenshot`
   (`src/contract/viewerApi.ts`). No React refs across modules.
@@ -308,7 +326,7 @@ self-hosted Inter (`@fontsource-variable/inter`), Radix primitives from `radix-u
 
 | budget | target |
 |---|---|
-| startup download (manifest + search index + skeletal) | ≤ 5 MB |
+| startup download (manifest, search index, default systems; JS) | ≤ 5 MB |
 | first interactive view | ≤ 3 s; skeleton visible ≤ 4 s |
 | orbit, all systems visible | ≥ 50 fps laptop; ≥ 30 fps mid-range phone (default layers) |
 | draw calls, default view | ≤ 30 |
@@ -331,6 +349,13 @@ localhost, so network time is not included):
 | main JS | 285 kB gzip initial (canvas 187 kB, quiz 7.5 kB, credits 1 kB lazy) | met |
 | memory | no growth over repeated layer toggles (viewer e2e) | met |
 
+Phase-3 QA measurement (independent, same machine; QA_REPORT.md §4): startup 4.35 MB transferred until the default
+view is drawn (GLB uncompressed, JSON/JS gzip); interactive 0.7 s; skeleton 1.1–1.3 s (2.4 s at an emulated
+25 Mbit/s); orbit all 9 systems **32.8 fps** (X-ray on top 21.9), default layers 57 fps; draw calls 2; main JS 285 kB.
+All-systems fps stays below 50 on this 2020 iGPU. The levers are a coarser simplification of the muscles (2.06 M of
+the 5.15 M triangles) or a distance LOD; neither is done, because both change what students see and need a review.
+`npm run assets:validate` reports the startup data as served (JSON gzip, GLB as is), without JS.
+
 ## 10. Licensing
 
 - Code: MIT (`LICENSE`). Processed assets + extracted metadata: CC BY-SA 4.0 (`assets.LICENSE`), derived from
@@ -340,9 +365,13 @@ localhost, so network time is not included):
   (`z-anatomy` by default; `dundee-inner-ear` and `cowley-kidney` for NC items, `nonCommercial: true`).
   One filter (`!s.nonCommercial`) removes NC content.
 - TA2 terms/ids: credit "Terminologia Anatomica, 2nd ed. (TA2), FIPAT, via Z-Anatomy `TA2.csv`" in `ATTRIBUTION.md`.
-- `ATTRIBUTION.md` is generated by the pipeline and shown on the credits page. Generated models are not committed.
+- `ATTRIBUTION.md` is generated by the pipeline. The credits page shows it in full (bundled as text). The build
+  ships it with `LICENSE` and `assets.LICENSE` as `dist/licenses/*.txt` (`vite.config.ts`); the credits link them.
+  Each GLB carries `asset.copyright`. Generated models are not committed.
 - Upstream also credits "Brainder" and "White matter" (University of Washington) without a stated licence, and
-  "Cranial Nerves and Foramina" (Dundee, CC BY 4.0); per-structure provenance for these is not in the file.
+  "Cranial Nerves and Foramina" (Dundee, CC BY 4.0). Per-structure provenance for these is not in the file, so both
+  are attribution records in the manifest (`dundee-cranial-nerves`, `uw-brainder-white-matter`) and are credited
+  as a whole.
 
 ## 11. Ownership and process
 
@@ -395,6 +424,16 @@ port and build folder: `PW_PORT=4181` (B), `4182` (C), `4183` (lead/QA) — e.g.
 16. **Fasciae hidden by default**: the 56 structures of the source's `Fascia` collection (muscular system) would cover
     every muscle (fascia lata, crural/brachial fascia, …). They are listed in `Manifest.defaultHiddenIds`
     (`systems.json` → `defaultHiddenCollections`), start hidden, stay searchable and can be shown from the tree.
+17. **Liver segments hidden by default** (QA M2): the 8 Couinaud segments are children of `Liver` and fill its
+    volume, so exploding showed duplicate tissue and the segments were unclickable Locate targets. Hidden by
+    default like the fasciae, and never asked in the quiz.
+18. **Three Latin spelling fixes** (QA M4), all letter swaps, each confirmed by the same file's spelling of a
+    sibling name: `nameFixes` in `overrides.json`. Reported upstream.
+19. **Phone view insets** (QA H1): the phone sheets cover the lower half of the canvas, so views are fitted and
+    centred in the uncovered area (§6), not at the canvas centre.
+20. **Locate accepts same-named structures** (QA M5): 322 attachment patches share 76 labels (numbered patches),
+    so a pick on any structure with the target's name and kind counts. Same side means correct, the other side
+    means wrong side.
 
 ## 13. Task list
 
@@ -408,5 +447,8 @@ port and build folder: `PW_PORT=4181` (B), `4182` (C), `4183` (lead/QA) — e.g.
 - [x] Phase 2 — all 9 systems on real assets; insertions published after owner review; origin/insertion kind in all
   name displays; fasciae hidden by default; overlay positions; screenshots checked (default, full X-ray, sagittal
   head cut, exploded thorax, isolate-with-context heart, muscles, phone); budgets measured (§9); 22/22 e2e
-- [ ] Phase 3 — independent QA (Agent D) → QA_REPORT.md, fixes, re-runs
-- [ ] Phase 4 — README (DE/EN), CONTRIBUTING (definition review workflow), deploy commands for the owner
+- [x] Phase 3 — independent QA (Agent D) → QA_REPORT.md; lead fixes and GPU re-runs (QA_REPORT.md §9): credits
+  (all upstream attributions, full ATTRIBUTION text, licence files shipped), phone view insets, search ranking,
+  liver segments, Latin typos, Locate equivalence, overlay positions, validator budget/doc fixes, GLB copyright
+- [x] Phase 4 — README (DE/EN), CONTRIBUTING (definition review workflow with hashed reviews), upstream issue list
+  (`docs/UPSTREAM_ISSUES.md`), deploy commands for the owner
