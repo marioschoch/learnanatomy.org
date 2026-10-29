@@ -1,0 +1,90 @@
+{
+  "$comment": "System table (ARCHITECTURE.md §4.1). Read by pipeline/blender/export.py and the Node steps. layerOrder: 0 = innermost. Defaults (skeletal + visceral visible) confirmed by the owner after Phase 0.",
+  "systems": [
+    {
+      "id": "skeletal",
+      "collection": "1: Skeletal system",
+      "layerOrder": 0,
+      "defaultVisible": true,
+      "defaultOpacity": 1
+    },
+    {
+      "id": "insertions",
+      "collection": "2: Muscular insertions",
+      "layerOrder": 1,
+      "defaultVisible": false,
+      "defaultOpacity": 1,
+      "publish": false,
+      "holdReason": "52 origin/insertion patches carry the wrong l/r letter upstream (15 pairs both swapped; 22 single patches whose geometry and parent bone are on the other side). Held until the owner decides on the proposed side swaps in data/inventory/side-review.json. Export and processing still run; publish with --systems insertions after approval."
+    },
+    {
+      "id": "joints",
+      "collection": "3: Joints",
+      "layerOrder": 2,
+      "defaultVisible": false,
+      "defaultOpacity": 1
+    },
+    {
+      "id": "visceral",
+      "collection": "8: Visceral systems",
+      "layerOrder": 3,
+      "defaultVisible": true,
+      "defaultOpacity": 1
+    },
+    {
+      "id": "cardiovascular",
+      "collection": "5: Cardiovascular system",
+      "layerOrder": 4,
+      "defaultVisible": false,
+      "defaultOpacity": 1
+    },
+    {
+      "id": "lymphoid",
+      "collection": "6: Lymphoid organs",
+      "layerOrder": 5,
+      "defaultVisible": false,
+      "defaultOpacity": 1
+    },
+    {
+      "id": "nervous",
+      "collection": "7: Nervous system & Sense organs",
+      "layerOrder": 6,
+      "defaultVisible": false,
+      "defaultOpacity": 1
+    },
+    {
+      "id": "muscular",
+      "collection": "4: Muscular system",
+      "layerOrder": 7,
+      "defaultVisible": false,
+      "defaultOpacity": 1
+    },
+    {
+      "id": "regions",
+      "collection": "9: Regions of human body",
+      "layerOrder": 8,
+      "defaultVisible": false,
+      "defaultOpacity": 1
+    }
+  ],
+  "mainDivisionsCollection": "Main divisions",
+  "regions": [
+    { "id": "head", "collections": ["Head"] },
+    { "id": "neck", "collections": ["Neck"] },
+    { "id": "trunk", "collections": ["Trunk"] },
+    { "id": "thorax", "collections": ["Thorax"], "parentId": "trunk" },
+    { "id": "abdomen", "collections": ["Abdomen"], "parentId": "trunk" },
+    { "id": "pelvis", "collections": ["Pelvis"], "parentId": "trunk" },
+    { "id": "back", "collections": ["Back"], "parentId": "trunk" },
+    { "id": "upper-limb", "collections": ["Left upper limb", "Right upper limb"], "nameEn": "Upper limb" },
+    { "id": "hand", "collections": ["Left hand", "Right hand"], "parentId": "upper-limb", "nameEn": "Hand" },
+    { "id": "lower-limb", "collections": ["Left lower limb", "Right lower limb"], "nameEn": "Lower limb" },
+    { "id": "foot", "collections": ["Left foot", "Right foot"], "parentId": "lower-limb", "nameEn": "Foot" }
+  ],
+  "export": {
+    "$comment": "Geometry reduction applied at export time on the in-memory file (never saved). Curves: resolution_u and round-bevel resolution are capped; SUBSURF viewport levels are capped.",
+    "subsurfCap": 1,
+    "curveResolutionCap": 6,
+    "bevelResolutionCap": 2
+  }
+}

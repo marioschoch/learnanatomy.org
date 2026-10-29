@@ -3,6 +3,10 @@
 //
 //   node pipeline/blender/run.mjs inventory   -> pipeline/blender/inventory.py --out data/inventory/
 //   node pipeline/blender/run.mjs export      -> pipeline/blender/export.py   --out data/export/
+//   node pipeline/blender/run.mjs export -- --systems skeletal   (extra args are passed to the script;
+//                                                                 ASSET_SYSTEMS=skeletal does the same)
+//   node pipeline/blender/run.mjs script <file.py> [args…]       (development: any read-only probe script,
+//                                                                 --out data/export/probe/)
 //
 // Blender is resolved in this order: BLENDER_PATH (env or .env.local) → `blender` on PATH →
 // the macOS / Windows default install locations.
@@ -82,9 +86,23 @@ function findBlend() {
 }
 
 const taskName = process.argv[2];
-const task = TASKS[taskName];
+let extra = process.argv.slice(3);
+let task = TASKS[taskName];
+if (taskName === 'script' && extra[0]) {
+  task = { script: resolve(extra[0]), out: 'data/export/probe' };
+  extra = extra.slice(1);
+}
+// `run.mjs export -- --systems skeletal`: drop the separator, the script gets its own `--` below.
+if (extra[0] === '--') extra = extra.slice(1);
+// ASSET_SYSTEMS=skeletal npm run assets:build → subset for every step (export, process, manifest, validate)
+if (taskName === 'export' && process.env.ASSET_SYSTEMS && !extra.some((a) => a.startsWith('--systems'))) {
+  extra = ['--systems', process.env.ASSET_SYSTEMS, ...extra];
+}
 if (!task) {
-  console.error(`Usage: node pipeline/blender/run.mjs <${Object.keys(TASKS).join('|')}> [extra args…]`);
+  console.error(
+    `Usage: node pipeline/blender/run.mjs <${Object.keys(TASKS).join('|')}> [-- extra args…]\n` +
+      `       node pipeline/blender/run.mjs script <file.py> [extra args…]`,
+  );
   process.exit(2);
 }
 loadEnv();
@@ -104,11 +122,11 @@ const r = spawnSync(
     '--python-exit-code',
     '1',
     '--python',
-    join(root, task.script),
+    resolve(root, task.script),
     '--',
     '--out',
     out,
-    ...process.argv.slice(3),
+    ...extra,
   ],
   { stdio: 'inherit' },
 );

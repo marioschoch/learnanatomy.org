@@ -1,0 +1,151 @@
+{
+  "at": "2026-10-29T05:52:38.610Z",
+  "systems": [
+    "skeletal",
+    "joints",
+    "visceral",
+    "cardiovascular",
+    "lymphoid",
+    "nervous",
+    "muscular",
+    "regions"
+  ],
+  "ok": true,
+  "errors": [],
+  "warnings": [
+    "pair kidney-l / kidney-r: |x_l + x_r| = 0.0047 m",
+    "pair renal-pelvis-l / renal-pelvis-r: |x_l + x_r| = 0.0058 m",
+    "pair suprarenal-gland-l / suprarenal-gland-r: |x_l + x_r| = 0.0059 m",
+    "pair common-iliac-artery-l / common-iliac-artery-r: |x_l + x_r| = 0.0045 m",
+    "pair common-iliac-vein-l / common-iliac-vein-r: |x_l + x_r| = 0.0094 m",
+    "pair first-posterior-intercostal-artery-l / first-posterior-intercostal-artery-r: |x_l + x_r| = 0.0034 m",
+    "pair lumbar-arteries-l / lumbar-arteries-r: |x_l + x_r| = 0.0050 m",
+    "pair posterior-branch-of-renal-artery-l / posterior-branch-of-renal-artery-r: |x_l + x_r| = 0.0074 m",
+    "pair posterior-intercostal-arteries-l / posterior-intercostal-arteries-r: |x_l + x_r| = 0.0099 m",
+    "REVIEW pair vagus-nerve-x-l / vagus-nerve-x-r: |x_l + x_r| = 0.0355 m (open review item)",
+    "side: left-medial-segment-of-liver-iv is 'left' but its vertex centroid is at x = -0.0192 — side from the name (organ-internal designation)",
+    "side: anterior-papillary-muscle-of-right-ventricle is 'right' but its vertex centroid is at x = 0.0301 — side from the name (organ-internal designation)",
+    "side: inferior-papillary-muscle-of-right-ventricle is 'right' but its vertex centroid is at x = 0.0218 — side from the name (organ-internal designation)",
+    "side: right-coronary-artery is 'right' but its vertex centroid is at x = 0.0139 — side from the name (organ-internal designation)",
+    "side: right-coronary-leaflet is 'right' but its vertex centroid is at x = 0.0135 — side from the name (organ-internal designation)",
+    "side: right-inferolateral-branch-of-right-coronary-artery is 'right' but its vertex centroid is at x = 0.0554 — side from the name (organ-internal designation)",
+    "side: right-semilunar-leaflet-of-pulmonary-valve is 'right' but its vertex centroid is at x = 0.0184 — side from the name (organ-internal designation)",
+    "side: right-ventricle is 'right' but its vertex centroid is at x = 0.0205 — side from the name (organ-internal designation)",
+    "side: septal-leaflet-of-right-atrioventricular-valve is 'right' but its vertex centroid is at x = 0.0068 — side from the name (organ-internal designation)",
+    "side: septal-papillary-muscle-of-right-ventricle is 'right' but its vertex centroid is at x = 0.0222 — side from the name (organ-internal designation)",
+    "side: right-lobe-of-thymus is 'right' but its vertex centroid is at x = 0.0042 — side from the name (organ-internal designation)",
+    "side: vagus-nerve-x-r is 'right' but its vertex centroid is at x = 0.0194 — open review item (overrides.json)"
+  ],
+  "orientation": [
+    {
+      "check": "Liver centroid on the patient's right (x < 0) [liver]",
+      "ok": true,
+      "detail": "x = -0.0227"
+    },
+    {
+      "check": "Stomach centroid on the patient's left (x > 0) [stomach]",
+      "ok": true,
+      "detail": "x = 0.0435"
+    },
+    {
+      "check": "Spleen centroid on the patient's left (x > 0) [spleen]",
+      "ok": true,
+      "detail": "x = 0.0863"
+    },
+    {
+      "check": "Left ventricle centroid on the patient's left (x > 0) [left-ventricle]",
+      "ok": true,
+      "detail": "x = 0.0471"
+    },
+    {
+      "check": "head above feet (frontal bone y > calcaneus y + 1 m)",
+      "ok": true,
+      "detail": "frontal y = 1.634, calcaneus y = 0.044"
+    },
+    {
+      "check": "face towards +Z (nasal bone z > occipital bone z)",
+      "ok": true,
+      "detail": "nasal z = 0.089, occipital z = -0.053"
+    },
+    {
+      "check": "feet near y = 0 (calcaneus bbox min y < 0.05)",
+      "ok": true,
+      "detail": "min y = 0.0118"
+    },
+    {
+      "check": "side of 2846 sided structures (vertex centroid, tolerance 0.002 m; strict for .l/.r suffixes)",
+      "ok": true,
+      "detail": "0 failures; 12 reported as warnings (left-medial-segment-of-liver-iv, anterior-papillary-muscle-of-right-ventricle, inferior-papillary-muscle-of-right-ventricle, right-coronary-artery, right-coronary-leaflet, right-inferolateral-branch-of-right-coronary-artery, right-semilunar-leaflet-of-pulmonary-valve, right-ventricle, septal-leaflet-of-right-atrioventricular-valve, septal-papillary-muscle-of-right-ventricle, right-lobe-of-thymus, vagus-nerve-x-r)"
+    },
+    {
+      "check": "left/right pairs mirror (|x_l + x_r| ≤ 0.01 m; review items excluded)",
+      "ok": true,
+      "detail": "worst posterior-intercostal-arteries-l/posterior-intercostal-arteries-r: 0.0099 m"
+    },
+    {
+      "check": "triangle winding agrees with normals (≥ 50 % of surface per structure)",
+      "ok": true,
+      "detail": "min 95.0 %, mean 100.0 %, 0 below 80 %"
+    }
+  ],
+  "notes": [
+    "skeletal.glb: 277 nodes, 448,730 triangles, 2.05 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
+    "joints.glb: 413 nodes, 259,199 triangles, 1.67 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
+    "visceral.glb: 119 nodes, 326,419 triangles, 1.40 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
+    "cardiovascular.glb: 675 nodes, 811,402 triangles, 3.81 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
+    "lymphoid.glb: 163 nodes, 106,120 triangles, 586.5 KiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
+    "nervous.glb: 582 nodes, 853,509 triangles, 3.99 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
+    "muscular.glb: 683 nodes, 2,059,543 triangles, 9.56 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
+    "regions.glb: 256 nodes, 124,302 triangles, 895.6 KiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
+    "open review item vagus-nerve-x-l: vertex centroid x = 0.0161 (patient's left)",
+    "open review item vagus-nerve-x-r: vertex centroid x = 0.0194 (patient's left)"
+  ],
+  "budget": {
+    "startupBytes": 2931398,
+    "ok": true,
+    "totalBytes": 36631709,
+    "files": 26
+  },
+  "stats": {
+    "skeletal": {
+      "structures": 277,
+      "triangles": 448730,
+      "bytes": 2154684
+    },
+    "joints": {
+      "structures": 413,
+      "triangles": 259199,
+      "bytes": 1751416
+    },
+    "visceral": {
+      "structures": 119,
+      "triangles": 326419,
+      "bytes": 1467680
+    },
+    "cardiovascular": {
+      "structures": 675,
+      "triangles": 811402,
+      "bytes": 3996524
+    },
+    "lymphoid": {
+      "structures": 163,
+      "triangles": 106120,
+      "bytes": 600564
+    },
+    "nervous": {
+      "structures": 582,
+      "triangles": 853509,
+      "bytes": 4183604
+    },
+    "muscular": {
+      "structures": 683,
+      "triangles": 2059543,
+      "bytes": 10026840
+    },
+    "regions": {
+      "structures": 256,
+      "triangles": 124302,
+      "bytes": 917088
+    }
+  }
+}
