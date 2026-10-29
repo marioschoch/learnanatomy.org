@@ -14,8 +14,7 @@
       "layerOrder": 1,
       "defaultVisible": false,
       "defaultOpacity": 1,
-      "publish": false,
-      "holdReason": "52 origin/insertion patches carry the wrong l/r letter upstream (15 pairs both swapped; 22 single patches whose geometry and parent bone are on the other side). Held until the owner decides on the proposed side swaps in data/inventory/side-review.json. Export and processing still run; publish with --systems insertions after approval."
+      "publish": true
     },
     {
       "id": "joints",
@@ -69,17 +68,60 @@
   ],
   "mainDivisionsCollection": "Main divisions",
   "regions": [
-    { "id": "head", "collections": ["Head"] },
-    { "id": "neck", "collections": ["Neck"] },
-    { "id": "trunk", "collections": ["Trunk"] },
-    { "id": "thorax", "collections": ["Thorax"], "parentId": "trunk" },
-    { "id": "abdomen", "collections": ["Abdomen"], "parentId": "trunk" },
-    { "id": "pelvis", "collections": ["Pelvis"], "parentId": "trunk" },
-    { "id": "back", "collections": ["Back"], "parentId": "trunk" },
-    { "id": "upper-limb", "collections": ["Left upper limb", "Right upper limb"], "nameEn": "Upper limb" },
-    { "id": "hand", "collections": ["Left hand", "Right hand"], "parentId": "upper-limb", "nameEn": "Hand" },
-    { "id": "lower-limb", "collections": ["Left lower limb", "Right lower limb"], "nameEn": "Lower limb" },
-    { "id": "foot", "collections": ["Left foot", "Right foot"], "parentId": "lower-limb", "nameEn": "Foot" }
+    {
+      "id": "head",
+      "collections": ["Head"]
+    },
+    {
+      "id": "neck",
+      "collections": ["Neck"]
+    },
+    {
+      "id": "trunk",
+      "collections": ["Trunk"]
+    },
+    {
+      "id": "thorax",
+      "collections": ["Thorax"],
+      "parentId": "trunk"
+    },
+    {
+      "id": "abdomen",
+      "collections": ["Abdomen"],
+      "parentId": "trunk"
+    },
+    {
+      "id": "pelvis",
+      "collections": ["Pelvis"],
+      "parentId": "trunk"
+    },
+    {
+      "id": "back",
+      "collections": ["Back"],
+      "parentId": "trunk"
+    },
+    {
+      "id": "upper-limb",
+      "collections": ["Left upper limb", "Right upper limb"],
+      "nameEn": "Upper limb"
+    },
+    {
+      "id": "hand",
+      "collections": ["Left hand", "Right hand"],
+      "parentId": "upper-limb",
+      "nameEn": "Hand"
+    },
+    {
+      "id": "lower-limb",
+      "collections": ["Left lower limb", "Right lower limb"],
+      "nameEn": "Lower limb"
+    },
+    {
+      "id": "foot",
+      "collections": ["Left foot", "Right foot"],
+      "parentId": "lower-limb",
+      "nameEn": "Foot"
+    }
   ],
   "export": {
     "$comment": "Geometry reduction applied at export time on the in-memory file (never saved). Curves: resolution_u and round-bevel resolution are capped; SUBSURF viewport levels are capped.",

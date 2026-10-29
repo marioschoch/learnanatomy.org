@@ -1,7 +1,8 @@
 {
-  "generatedAt": "2026-10-29T06:05:01.708Z",
+  "generatedAt": "2026-10-29T06:23:46.474Z",
   "systems": [
     "skeletal",
+    "insertions",
     "joints",
     "visceral",
     "cardiovascular",
@@ -10,7 +11,7 @@
     "muscular",
     "regions"
   ],
-  "appDataVersion": "12f1983a54df99a7",
+  "appDataVersion": "0668f4979786e076",
   "report": {
     "collisions": [
       {
@@ -49,6 +50,266 @@
         "source": "Lateral temporomandibular ligament.r",
         "suffixSide": "right",
         "side": "left"
+      },
+      {
+        "source": "Pectineus muscle.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Piriformis muscle.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Piriformis muscle.ol",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Piriformis muscle.or",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Plantar interossei muscles.e1l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Plantar interossei muscles.e2l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Plantar interossei muscles.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Plantar interossei muscles.o1l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Plantar interossei muscles.o2l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Plantar interossei muscles.ol",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Procerus muscle.ol",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Procerus muscle.or",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Pronator quadratus.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Pronator quadratus.ol",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Rectus anterior capitis muscle.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Rectus anterior capitis muscle.er",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Rectus anterior capitis muscle.ol",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Rectus anterior capitis muscle.or",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Rectus lateralis capitis muscle.ol",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Rectus lateralis capitis muscle.or",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Rectus posterior major capitis muscle.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Rectus posterior major capitis muscle.er",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Rectus posterior major capitis muscle.ol",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Rectus posterior major capitis muscle.or",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Rectus posterior minor capitis muscle.ol",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Rectus posterior minor capitis muscle.or",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Scalenus anterior muscle.e1l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Scalenus anterior muscle.e1r",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Scalenus anterior muscle.e2l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Scalenus anterior muscle.e2r",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Scalenus anterior muscle.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Scalenus anterior muscle.er",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Scalenus medius muscle.e1l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Scalenus medius muscle.e1r",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Scalenus medius muscle.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Scalenus medius muscle.er",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Scalenus posterior muscle.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Scalenus posterior muscle.er",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Serratus anterior muscle.e1l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Serratus anterior muscle.e2l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Serratus anterior muscle.e2r",
+        "suffixSide": "right",
+        "side": "left"
+      },
+      {
+        "source": "Serratus anterior muscle.e8l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Serratus posterior inferior muscle.e1l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Serratus posterior inferior muscle.e2l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Serratus posterior inferior muscle.e3l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Serratus posterior inferior muscle.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Serratus posterior superior muscle.e1l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Serratus posterior superior muscle.e2l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Serratus posterior superior muscle.e3l",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Serratus posterior superior muscle.el",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Short head of biceps brachii.ol",
+        "suffixSide": "left",
+        "side": "right"
+      },
+      {
+        "source": "Short head of biceps femoris.el",
+        "suffixSide": "left",
+        "side": "right"
       }
     ],
     "missingTranslations": {

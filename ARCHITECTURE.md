@@ -373,10 +373,11 @@ port and build folder: `PW_PORT=4181` (B), `4182` (C), `4183` (lead/QA) — e.g.
     mirrored normals, speed; §4.4).
 12. Sides read from names are dropped when the geometry disagrees (organ-internal "right/left" designations, §4.3).
 13. Explode is region-aware (§5): the pure system-centre formula moved the body out of view.
-14. **`insertions` is not published yet**: 52 origin/insertion patches carry the wrong `l`/`r` letter upstream
-    (`data/inventory/side-review.json`); they need owner-approved overrides first.
-15. The right vagus nerve (`Vagus nerve (X).r`) is published as named, but its thoracic part (64 % of vertices) lies
-    on the patient's left — an upstream modelling issue, open in `overrides.json`.
+14. 52 origin/insertion patches carry the wrong `l`/`r` letter upstream (15 pairs on midline bones, 22 single patches
+    on a bone of the other side). Corrected from the geometry after owner approval (2026-10-29, `overrides.json`).
+15. The right vagus nerve (`Vagus nerve (X).r`) is published as named (owner decision): its cervical part is right,
+    but its thoracic part (64 % of vertices) lies on the patient's left — an upstream modelling issue, `accepted` in
+    `overrides.json`, reported as a validator warning, to be reported to Z-Anatomy.
 
 ## 13. Task list
 

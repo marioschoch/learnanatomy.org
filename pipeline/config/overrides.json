@@ -1,5 +1,5 @@
 {
-  "$comment": "Human-reviewed corrections of upstream data errors. Only entries listed here may be corrected by the pipeline; anything else that fails validation fails the build. status: 'proposed' (not applied, structure is reported) | 'approved' (applied).",
+  "$comment": "Human-reviewed corrections of upstream data errors. Only entries listed here may be corrected by the pipeline; anything else that fails validation fails the build. sideSwaps status: 'proposed' (not applied, structure is reported) | 'approved' (applied). toReview status: 'open' (undecided) | 'accepted' (known upstream issue, published as named); both are validator warnings.",
   "sideSwaps": [
     {
       "source": ["Eyelashes.l", "Eyelashes.r"],
@@ -10,13 +10,236 @@
       "source": ["Lateral temporomandibular ligament.l", "Lateral temporomandibular ligament.r"],
       "reason": "Object named .l sits at x = -0.053 (patient's right) and .r at +0.053.",
       "status": "approved"
+    },
+    {
+      "source": ["Piriformis muscle.ol", "Piriformis muscle.or"],
+      "reason": "Both on the other side of their suffix (centroid x Piriformis muscle.ol: -0.0334, Piriformis muscle.or: 0.0335); parents Sacrum / Sacrum.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Procerus muscle.ol", "Procerus muscle.or"],
+      "reason": "Both on the other side of their suffix (centroid x Procerus muscle.ol: -0.0124, Procerus muscle.or: 0.0124); parents Frontal bone / Frontal bone.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Rectus anterior capitis muscle.el", "Rectus anterior capitis muscle.er"],
+      "reason": "Both on the other side of their suffix (centroid x Rectus anterior capitis muscle.el: -0.0188, Rectus anterior capitis muscle.er: 0.0188); parents Atlas (C1) / Atlas (C1).",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Rectus anterior capitis muscle.ol", "Rectus anterior capitis muscle.or"],
+      "reason": "Both on the other side of their suffix (centroid x Rectus anterior capitis muscle.ol: -0.0065, Rectus anterior capitis muscle.or: 0.0065); parents Occipital bone / Occipital bone.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Rectus lateralis capitis muscle.ol", "Rectus lateralis capitis muscle.or"],
+      "reason": "Both on the other side of their suffix (centroid x Rectus lateralis capitis muscle.ol: -0.0368, Rectus lateralis capitis muscle.or: 0.0368); parents Occipital bone / Occipital bone.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Rectus posterior major capitis muscle.el", "Rectus posterior major capitis muscle.er"],
+      "reason": "Both on the other side of their suffix (centroid x Rectus posterior major capitis muscle.el: -0.0023, Rectus posterior major capitis muscle.er: 0.0024); parents Axis (C2) / Axis (C2).",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Rectus posterior major capitis muscle.ol", "Rectus posterior major capitis muscle.or"],
+      "reason": "Both on the other side of their suffix (centroid x Rectus posterior major capitis muscle.ol: -0.0314, Rectus posterior major capitis muscle.or: 0.0314); parents Occipital bone / Occipital bone.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Rectus posterior minor capitis muscle.ol", "Rectus posterior minor capitis muscle.or"],
+      "reason": "Both on the other side of their suffix (centroid x Rectus posterior minor capitis muscle.ol: -0.0158, Rectus posterior minor capitis muscle.or: 0.0158); parents Occipital bone / Occipital bone.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Scalenus anterior muscle.e1l", "Scalenus anterior muscle.e1r"],
+      "reason": "Both on the other side of their suffix (centroid x Scalenus anterior muscle.e1l: -0.0237, Scalenus anterior muscle.e1r: 0.0237); parents Vertebra C5 / Vertebra C5.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Scalenus anterior muscle.e2l", "Scalenus anterior muscle.e2r"],
+      "reason": "Both on the other side of their suffix (centroid x Scalenus anterior muscle.e2l: -0.0253, Scalenus anterior muscle.e2r: 0.0253); parents Vertebra C6 / Vertebra C6.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Scalenus anterior muscle.el", "Scalenus anterior muscle.er"],
+      "reason": "Both on the other side of their suffix (centroid x Scalenus anterior muscle.el: -0.0227, Scalenus anterior muscle.er: 0.0227); parents Vertebra C4 / Vertebra C4.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Scalenus medius muscle.e1l", "Scalenus medius muscle.e1r"],
+      "reason": "Both on the other side of their suffix (centroid x Scalenus medius muscle.e1l: -0.034, Scalenus medius muscle.e1r: 0.034); parents Vertebra C7 / Vertebra C7.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Scalenus medius muscle.el", "Scalenus medius muscle.er"],
+      "reason": "Both on the other side of their suffix (centroid x Scalenus medius muscle.el: -0.029, Scalenus medius muscle.er: 0.029); parents Vertebra C6 / Vertebra C6.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Scalenus posterior muscle.el", "Scalenus posterior muscle.er"],
+      "reason": "Both on the other side of their suffix (centroid x Scalenus posterior muscle.el: -0.0291, Scalenus posterior muscle.er: 0.0291); parents Vertebra C5 / Vertebra C5.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus anterior muscle.e2l", "Serratus anterior muscle.e2r"],
+      "reason": "Both on the other side of their suffix (centroid x Serratus anterior muscle.e2l: -0.1107, Serratus anterior muscle.e2r: 0.1108); parents Third rib.r / Third rib.l.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Pectineus muscle.el"],
+      "reason": "Named left but centroid x = -0.0958 (right); parent Femur.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Piriformis muscle.el"],
+      "reason": "Named left but centroid x = -0.1252 (right); parent Femur.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Plantar interossei muscles.e1l"],
+      "reason": "Named left but centroid x = -0.1153 (right); parent Proximal phalanx of fourth finger of foot.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Plantar interossei muscles.e2l"],
+      "reason": "Named left but centroid x = -0.1285 (right); parent Proximal phalanx of fifth finger of foot.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Plantar interossei muscles.el"],
+      "reason": "Named left but centroid x = -0.1028 (right); parent Proximal phalanx of third finger of foot.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Plantar interossei muscles.o1l"],
+      "reason": "Named left but centroid x = -0.1055 (right); parent Fourth metatarsal bone.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Plantar interossei muscles.o2l"],
+      "reason": "Named left but centroid x = -0.1123 (right); parent Fifth metatarsal bone.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Plantar interossei muscles.ol"],
+      "reason": "Named left but centroid x = -0.0977 (right); parent Third metatarsal bone.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Pronator quadratus.el"],
+      "reason": "Named left but centroid x = -0.2667 (right); parent Radius.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Pronator quadratus.ol"],
+      "reason": "Named left but centroid x = -0.2384 (right); parent Ulna.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus anterior muscle.e1l"],
+      "reason": "Named left but centroid x = -0.0981 (right); parent Second rib.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus anterior muscle.e8l"],
+      "reason": "Named left but centroid x = -0.127 (right); parent Ninth rib.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus posterior inferior muscle.e1l"],
+      "reason": "Named left but centroid x = -0.0954 (right); parent Tenth rib.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus posterior inferior muscle.e2l"],
+      "reason": "Named left but centroid x = -0.0877 (right); parent Eleventh rib.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus posterior inferior muscle.e3l"],
+      "reason": "Named left but centroid x = -0.0717 (right); parent Twelfth rib.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus posterior inferior muscle.el"],
+      "reason": "Named left but centroid x = -0.1038 (right); parent Ninth rib.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus posterior superior muscle.e1l"],
+      "reason": "Named left but centroid x = -0.0839 (right); parent Third rib.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus posterior superior muscle.e2l"],
+      "reason": "Named left but centroid x = -0.093 (right); parent Fourth rib.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus posterior superior muscle.e3l"],
+      "reason": "Named left but centroid x = -0.0919 (right); parent Fifth rib.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Serratus posterior superior muscle.el"],
+      "reason": "Named left but centroid x = -0.0717 (right); parent Second rib.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Short head of biceps brachii.ol"],
+      "reason": "Named left but centroid x = -0.1408 (right); parent Scapula.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
+    },
+    {
+      "source": ["Short head of biceps femoris.el"],
+      "reason": "Named left but centroid x = -0.0966 (right); parent Femur.r; no counterpart on the other side.",
+      "status": "approved",
+      "reviewedBy": "owner, 2026-10-29"
     }
   ],
   "toReview": [
     {
       "source": "Vagus nerve (X).r",
       "reason": "bbox centre at x = +0.020 (patient's left). The right vagus has branches crossing the midline; check the vertex centroid before deciding.",
-      "status": "open"
+      "status": "accepted",
+      "decision": "Owner, 2026-10-29: publish as named (the cervical part is the right vagus); the thoracic part lies on the patient's left (64 % of vertices, y < 1.30 m) — upstream modelling issue, to be reported to Z-Anatomy. Reported as a warning, not an error."
     }
   ]
 }

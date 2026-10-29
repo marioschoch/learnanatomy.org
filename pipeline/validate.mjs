@@ -379,7 +379,7 @@ export async function validate({ systems: requested, dir = PATHS.models } = {}) 
   // ---------------------------------------------------------------- orientation (critical)
   const { overrides } = loadConfigs();
   const openReview = new Set(
-    (overrides.toReview ?? []).filter((r) => r.status === 'open').map((r) => r.source),
+    (overrides.toReview ?? []).filter((r) => ['open', 'accepted'].includes(r.status)).map((r) => r.source),
   );
   const findStruct = (en, system) =>
     [...structById.values()].filter(

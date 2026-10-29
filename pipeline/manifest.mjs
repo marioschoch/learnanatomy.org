@@ -755,7 +755,7 @@ export function sideReview(model, scene, processedAll, tolerance = 0.002) {
 /** Per-height mean x of the vertices of open review items and their pair (decoded from the processed GLB). */
 export async function reviewAnalysis(io, model, overrides, processedAll) {
   const out = [];
-  for (const r of (overrides.toReview ?? []).filter((x) => x.status === 'open')) {
+  for (const r of (overrides.toReview ?? []).filter((x) => ['open', 'accepted'].includes(x.status))) {
     const s = model.structByName.get(r.source);
     if (!s || !processedAll[s.system]) continue;
     const ids = [s.id, s.pairId].filter(Boolean);

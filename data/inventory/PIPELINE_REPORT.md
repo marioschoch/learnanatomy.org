@@ -3,7 +3,7 @@ full delivered: 2026-10-29T05:53:10Z (8 systems published, insertions held pendi
 
 # Pipeline report
 
-_Generated 2026-10-29T06:05:01.702Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
+_Generated 2026-10-29T06:23:46.464Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
 
 Source: `Startup.blend`, Blender 4.5.0, export 2026-10-29T05:45:38Z. Export settings: {"subsurfCap":1,"curveResolutionCap":6,"bevelResolutionCap":2}. Body height (all systems) 1.7437 m; normalization offset (Y-up) [0,-0.000382,-0.001348].
 
@@ -12,6 +12,7 @@ Source: `Startup.blend`, Blender 4.5.0, export 2026-10-29T05:45:38Z. Export sett
 | system | structures | groups | landmarks | triangles (inventory, original settings) | triangles exported | triangles published | reduction | bytes per file | languages | with definition | NC |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | skeletal | 277 | 63 | 882 | 702,465 | 702,015 | 448,730 | 36.1 % | skeletal.glb: 2.05 MiB | la, en, fr, es, pt | 90.6 % | 0 |
+| insertions | 705 | 0 | 0 | 931,484 | 916,812 | 289,986 | 68.4 % | insertions.glb: 1.98 MiB | la, en, fr, es, pt | 95.2 % | 0 |
 | joints | 413 | 113 | 0 | 358,326 | 340,431 | 259,199 | 23.9 % | joints.glb: 1.67 MiB | la, en, fr, es, pt | 75.8 % | 0 |
 | visceral | 119 | 37 | 133 | 715,043 | 439,119 | 326,419 | 25.7 % | visceral.glb: 1.40 MiB | la, en, fr, es, pt | 95.0 % | 4 |
 | cardiovascular | 675 | 30 | 0 | 3,843,768 | 1,343,832 | 811,402 | 39.6 % | cardiovascular.glb: 3.81 MiB | la, en, fr, es, pt | 69.5 % | 4 |
@@ -19,19 +20,20 @@ Source: `Startup.blend`, Blender 4.5.0, export 2026-10-29T05:45:38Z. Export sett
 | nervous | 582 | 92 | 36 | 2,408,368 | 1,528,394 | 853,509 | 44.2 % | nervous.glb: 3.99 MiB | la, en, fr, es, pt | 82.8 % | 4 |
 | muscular | 683 | 105 | 0 | 2,324,365 | 2,275,395 | 2,059,543 | 9.5 % | muscular.glb: 9.56 MiB | la, en, fr, es, pt | 80.7 % | 0 |
 | regions | 256 | 34 | 9 | 136,121 | 132,660 | 124,302 | 6.3 % | regions.glb: 895.6 KiB | la, en, fr, es, pt | 57.0 % | 0 |
-| **total** | 3168 | 519 | 1071 | 10,616,809 | 6,889,528 | 4,989,224 | 27.6 % | 23.94 MiB | la, en, fr, es, pt | 76.8 % | 12 |
+| **total** | 3873 | 519 | 1071 | 11,548,293 | 7,806,340 | 5,279,210 | 32.4 % | 25.92 MiB | la, en, fr, es, pt | 80.1 % | 12 |
 
-Startup download (manifest + search index + skeletal GLB, uncompressed by HTTP): **2.80 MiB** (budget 5 MB, met). Largest file: muscular.glb (9.56 MiB).
+Startup download (manifest + search index + skeletal GLB, uncompressed by HTTP): **2.91 MiB** (budget 5 MB, met). Largest file: muscular.glb (9.56 MiB).
 
-Timings (s): manifest 6.2, process skeletal 13.3, process joints 7.2, process visceral 8.1, process cardiovascular 25.4, process lymphoid 3.3, process nervous 37.7, process muscular 51.3, process regions 3.7.
+Timings (s): manifest 7.7, process skeletal 1.7, process insertions 1.9, process joints 1.0, process visceral 1.1, process cardiovascular 3.0, process lymphoid 0.4, process nervous 3.5, process muscular 6.4, process regions 0.6.
 
 ## Simplification
 
-meshoptimizer `simplify` with `ErrorAbsolute` + `LockBorder` (no pruning), error 0.05 mm (curves × 0.5), structures under 64 triangles untouched; a result is rejected when its bounding box moves by more than 2 × error. Quantization (scene volume per file): skeletal 16-bit, joints 16-bit, visceral 16-bit, cardiovascular 16-bit, lymphoid 16-bit, nervous 16-bit, muscular 16-bit, regions 16-bit positions; normals octahedral 8-bit (meshopt level `high`).
+meshoptimizer `simplify` with `ErrorAbsolute` + `LockBorder` (no pruning), error 0.05 mm (curves × 0.5), structures under 64 triangles untouched; a result is rejected when its bounding box moves by more than 2 × error. Quantization (scene volume per file): skeletal 16-bit, insertions 16-bit, joints 16-bit, visceral 16-bit, cardiovascular 16-bit, lymphoid 16-bit, nervous 16-bit, muscular 16-bit, regions 16-bit positions; normals octahedral 8-bit (meshopt level `high`).
 
 | system | simplified primitives | skipped (reason) |
 |---|---|---|
 | skeletal | 275 | none: 2 |
+| insertions | 702 | bbox: 3 |
 | joints | 247 | none: 48, small: 116, bbox: 2 |
 | visceral | 114 | none: 5 |
 | cardiovascular | 657 | none: 18 |
@@ -47,6 +49,7 @@ meshoptimizer `simplify` with `ErrorAbsolute` + `LockBorder` (no pruning), error
 | skeletal | structure | 277 | 0 | 0 | 0 |
 | skeletal | group | 63 | 0 | 0 | 0 |
 | skeletal | landmark | 882 | 0 | 0 | 4 |
+| insertions | structure | 705 | 0 | 0 | 0 |
 | joints | structure | 411 | 0 | 2 | 0 |
 | joints | group | 113 | 0 | 0 | 0 |
 | visceral | structure | 119 | 0 | 0 | 0 |
@@ -74,73 +77,69 @@ Applied side swaps (approved in `pipeline/config/overrides.json`):
 - `Eyelashes.r` → left (`eyelashes-l`)
 - `Lateral temporomandibular ligament.l` → right (`lateral-temporomandibular-ligament-r`)
 - `Lateral temporomandibular ligament.r` → left (`lateral-temporomandibular-ligament-l`)
+- `Pectineus muscle.el` → right (`pectineus-muscle-insertion-r`)
+- `Piriformis muscle.el` → right (`piriformis-muscle-insertion-r`)
+- `Piriformis muscle.ol` → right (`piriformis-muscle-origin-r`)
+- `Piriformis muscle.or` → left (`piriformis-muscle-origin-l`)
+- `Plantar interossei muscles.e1l` → right (`plantar-interossei-muscles-insertion-1-r`)
+- `Plantar interossei muscles.e2l` → right (`plantar-interossei-muscles-insertion-2-r`)
+- `Plantar interossei muscles.el` → right (`plantar-interossei-muscles-insertion-r`)
+- `Plantar interossei muscles.o1l` → right (`plantar-interossei-muscles-origin-1-r`)
+- `Plantar interossei muscles.o2l` → right (`plantar-interossei-muscles-origin-2-r`)
+- `Plantar interossei muscles.ol` → right (`plantar-interossei-muscles-origin-r`)
+- `Procerus muscle.ol` → right (`procerus-muscle-origin-r`)
+- `Procerus muscle.or` → left (`procerus-muscle-origin-l`)
+- `Pronator quadratus.el` → right (`pronator-quadratus-insertion-r`)
+- `Pronator quadratus.ol` → right (`pronator-quadratus-origin-r`)
+- `Rectus anterior capitis muscle.el` → right (`rectus-anterior-capitis-muscle-insertion-r`)
+- `Rectus anterior capitis muscle.er` → left (`rectus-anterior-capitis-muscle-insertion-l`)
+- `Rectus anterior capitis muscle.ol` → right (`rectus-anterior-capitis-muscle-origin-r`)
+- `Rectus anterior capitis muscle.or` → left (`rectus-anterior-capitis-muscle-origin-l`)
+- `Rectus lateralis capitis muscle.ol` → right (`rectus-lateralis-capitis-muscle-origin-r`)
+- `Rectus lateralis capitis muscle.or` → left (`rectus-lateralis-capitis-muscle-origin-l`)
+- `Rectus posterior major capitis muscle.el` → right (`rectus-posterior-major-capitis-muscle-insertion-r`)
+- `Rectus posterior major capitis muscle.er` → left (`rectus-posterior-major-capitis-muscle-insertion-l`)
+- `Rectus posterior major capitis muscle.ol` → right (`rectus-posterior-major-capitis-muscle-origin-r`)
+- `Rectus posterior major capitis muscle.or` → left (`rectus-posterior-major-capitis-muscle-origin-l`)
+- `Rectus posterior minor capitis muscle.ol` → right (`rectus-posterior-minor-capitis-muscle-origin-r`)
+- `Rectus posterior minor capitis muscle.or` → left (`rectus-posterior-minor-capitis-muscle-origin-l`)
+- `Scalenus anterior muscle.e1l` → right (`scalenus-anterior-muscle-insertion-1-r`)
+- `Scalenus anterior muscle.e1r` → left (`scalenus-anterior-muscle-insertion-1-l`)
+- `Scalenus anterior muscle.e2l` → right (`scalenus-anterior-muscle-insertion-2-r`)
+- `Scalenus anterior muscle.e2r` → left (`scalenus-anterior-muscle-insertion-2-l`)
+- `Scalenus anterior muscle.el` → right (`scalenus-anterior-muscle-insertion-r`)
+- `Scalenus anterior muscle.er` → left (`scalenus-anterior-muscle-insertion-l`)
+- `Scalenus medius muscle.e1l` → right (`scalenus-medius-muscle-insertion-1-r`)
+- `Scalenus medius muscle.e1r` → left (`scalenus-medius-muscle-insertion-1-l`)
+- `Scalenus medius muscle.el` → right (`scalenus-medius-muscle-insertion-r`)
+- `Scalenus medius muscle.er` → left (`scalenus-medius-muscle-insertion-l`)
+- `Scalenus posterior muscle.el` → right (`scalenus-posterior-muscle-insertion-r`)
+- `Scalenus posterior muscle.er` → left (`scalenus-posterior-muscle-insertion-l`)
+- `Serratus anterior muscle.e1l` → right (`serratus-anterior-muscle-insertion-1-r`)
+- `Serratus anterior muscle.e2l` → right (`serratus-anterior-muscle-insertion-2-r`)
+- `Serratus anterior muscle.e2r` → left (`serratus-anterior-muscle-insertion-2-l`)
+- `Serratus anterior muscle.e8l` → right (`serratus-anterior-muscle-insertion-8-r`)
+- `Serratus posterior inferior muscle.e1l` → right (`serratus-posterior-inferior-muscle-insertion-1-r`)
+- `Serratus posterior inferior muscle.e2l` → right (`serratus-posterior-inferior-muscle-insertion-2-r`)
+- `Serratus posterior inferior muscle.e3l` → right (`serratus-posterior-inferior-muscle-insertion-3-r`)
+- `Serratus posterior inferior muscle.el` → right (`serratus-posterior-inferior-muscle-insertion-r`)
+- `Serratus posterior superior muscle.e1l` → right (`serratus-posterior-superior-muscle-insertion-1-r`)
+- `Serratus posterior superior muscle.e2l` → right (`serratus-posterior-superior-muscle-insertion-2-r`)
+- `Serratus posterior superior muscle.e3l` → right (`serratus-posterior-superior-muscle-insertion-3-r`)
+- `Serratus posterior superior muscle.el` → right (`serratus-posterior-superior-muscle-insertion-r`)
+- `Short head of biceps brachii.ol` → right (`short-head-of-biceps-brachii-origin-r`)
+- `Short head of biceps femoris.el` → right (`short-head-of-biceps-femoris-insertion-r`)
 
-Suffix sides that disagree with the geometry (vertex centroid beyond ±0.002 m), all processed systems: **53** — 15 pairs where both members are swapped, 23 single objects. Nothing is changed; proposed `sideSwaps` entries for the owner are in `data/inventory/side-review.json`.
+Suffix sides that disagree with the geometry (vertex centroid beyond ±0.002 m), all processed systems: **1** — 0 pairs where both members are swapped, 1 single objects. Nothing is changed; proposed `sideSwaps` entries for the owner are in `data/inventory/side-review.json`.
 
 | object | system | named | centroid x | parent | parent side |
 |---|---|---|---|---|---|
-| `Piriformis muscle.ol` | insertions | left | -0.0334 | Sacrum | – |
-| `Piriformis muscle.or` | insertions | right | 0.0335 | Sacrum | – |
-| `Procerus muscle.ol` | insertions | left | -0.0124 | Frontal bone | – |
-| `Procerus muscle.or` | insertions | right | 0.0124 | Frontal bone | – |
-| `Rectus anterior capitis muscle.el` | insertions | left | -0.0188 | Atlas (C1) | – |
-| `Rectus anterior capitis muscle.er` | insertions | right | 0.0188 | Atlas (C1) | – |
-| `Rectus anterior capitis muscle.ol` | insertions | left | -0.0065 | Occipital bone | – |
-| `Rectus anterior capitis muscle.or` | insertions | right | 0.0065 | Occipital bone | – |
-| `Rectus lateralis capitis muscle.ol` | insertions | left | -0.0368 | Occipital bone | – |
-| `Rectus lateralis capitis muscle.or` | insertions | right | 0.0368 | Occipital bone | – |
-| `Rectus posterior major capitis muscle.el` | insertions | left | -0.0023 | Axis (C2) | – |
-| `Rectus posterior major capitis muscle.er` | insertions | right | 0.0024 | Axis (C2) | – |
-| `Rectus posterior major capitis muscle.ol` | insertions | left | -0.0314 | Occipital bone | – |
-| `Rectus posterior major capitis muscle.or` | insertions | right | 0.0314 | Occipital bone | – |
-| `Rectus posterior minor capitis muscle.ol` | insertions | left | -0.0158 | Occipital bone | – |
-| `Rectus posterior minor capitis muscle.or` | insertions | right | 0.0158 | Occipital bone | – |
-| `Scalenus anterior muscle.e1l` | insertions | left | -0.0237 | Vertebra C5 | – |
-| `Scalenus anterior muscle.e1r` | insertions | right | 0.0237 | Vertebra C5 | – |
-| `Scalenus anterior muscle.e2l` | insertions | left | -0.0253 | Vertebra C6 | – |
-| `Scalenus anterior muscle.e2r` | insertions | right | 0.0253 | Vertebra C6 | – |
-| `Scalenus anterior muscle.el` | insertions | left | -0.0227 | Vertebra C4 | – |
-| `Scalenus anterior muscle.er` | insertions | right | 0.0227 | Vertebra C4 | – |
-| `Scalenus medius muscle.e1l` | insertions | left | -0.034 | Vertebra C7 | – |
-| `Scalenus medius muscle.e1r` | insertions | right | 0.034 | Vertebra C7 | – |
-| `Scalenus medius muscle.el` | insertions | left | -0.029 | Vertebra C6 | – |
-| `Scalenus medius muscle.er` | insertions | right | 0.029 | Vertebra C6 | – |
-| `Scalenus posterior muscle.el` | insertions | left | -0.0291 | Vertebra C5 | – |
-| `Scalenus posterior muscle.er` | insertions | right | 0.0291 | Vertebra C5 | – |
-| `Serratus anterior muscle.e2l` | insertions | left | -0.1107 | Third rib.r | right |
-| `Serratus anterior muscle.e2r` | insertions | right | 0.1108 | Third rib.l | left |
-| `Pectineus muscle.el` | insertions | left | -0.0958 | Femur.r | right |
-| `Piriformis muscle.el` | insertions | left | -0.1252 | Femur.r | right |
-| `Plantar interossei muscles.e1l` | insertions | left | -0.1153 | Proximal phalanx of fourth finger of foot.r | right |
-| `Plantar interossei muscles.e2l` | insertions | left | -0.1285 | Proximal phalanx of fifth finger of foot.r | right |
-| `Plantar interossei muscles.el` | insertions | left | -0.1028 | Proximal phalanx of third finger of foot.r | right |
-| `Plantar interossei muscles.o1l` | insertions | left | -0.1055 | Fourth metatarsal bone.r | right |
-| `Plantar interossei muscles.o2l` | insertions | left | -0.1123 | Fifth metatarsal bone.r | right |
-| `Plantar interossei muscles.ol` | insertions | left | -0.0977 | Third metatarsal bone.r | right |
-| `Pronator quadratus.el` | insertions | left | -0.2667 | Radius.r | right |
-| `Pronator quadratus.ol` | insertions | left | -0.2384 | Ulna.r | right |
-| `Serratus anterior muscle.e1l` | insertions | left | -0.0981 | Second rib.r | right |
-| `Serratus anterior muscle.e8l` | insertions | left | -0.127 | Ninth rib.r | right |
-| `Serratus posterior inferior muscle.e1l` | insertions | left | -0.0954 | Tenth rib.r | right |
-| `Serratus posterior inferior muscle.e2l` | insertions | left | -0.0877 | Eleventh rib.r | right |
-| `Serratus posterior inferior muscle.e3l` | insertions | left | -0.0717 | Twelfth rib.r | right |
-| `Serratus posterior inferior muscle.el` | insertions | left | -0.1038 | Ninth rib.r | right |
-| `Serratus posterior superior muscle.e1l` | insertions | left | -0.0839 | Third rib.r | right |
-| `Serratus posterior superior muscle.e2l` | insertions | left | -0.093 | Fourth rib.r | right |
-| `Serratus posterior superior muscle.e3l` | insertions | left | -0.0919 | Fifth rib.r | right |
-| `Serratus posterior superior muscle.el` | insertions | left | -0.0717 | Second rib.r | right |
-| `Short head of biceps brachii.ol` | insertions | left | -0.1408 | Scapula.r | right |
-| `Short head of biceps femoris.el` | insertions | left | -0.0966 | Femur.r | right |
 | `Vagus nerve (X).r` | nervous | right | 0.0194 | Cranial nerves.g | – |
 
 ### Open review item `Vagus nerve (X).r` (`vagus-nerve-x-r`)
 
 - `vagus-nerve-x-l`: 1832 vertices, vertex centroid x = 0.0159 m, y 1.347–1.576 m; mean x per 5 cm height band (top → bottom): 1.55–1.6: 0.0119, 1.5–1.55: 0.0199, 1.45–1.5: 0.023, 1.4–1.45: 0.0168, 1.35–1.4: 0.0137, 1.3–1.35: 0.0058
 - `vagus-nerve-x-r`: 5875 vertices, vertex centroid x = 0.0198 m, y 1.105–1.576 m; mean x per 5 cm height band (top → bottom): 1.55–1.6: -0.0119, 1.5–1.55: -0.0195, 1.45–1.5: -0.0232, 1.4–1.45: -0.0168, 1.35–1.4: -0.0136, 1.3–1.35: 0.0014, 1.25–1.3: 0.0182, 1.2–1.25: 0.0436, 1.15–1.2: 0.038, 1.1–1.15: 0.0381
-
-## Systems held back (not published)
-
-- **insertions**: 52 origin/insertion patches carry the wrong l/r letter upstream (15 pairs both swapped; 22 single patches whose geometry and parent bone are on the other side). Held until the owner decides on the proposed side swaps in data/inventory/side-review.json. Export and processing still run; publish with --systems insertions after approval.
 
 ## Data issues (for review)
 
@@ -200,7 +199,7 @@ _none_
 
 skeletal: Anterior cells of ethmoid bone.l, skeletal: Anterior cells of ethmoid bone.r, skeletal: Middle cells of ethmoid bone.l, skeletal: Middle cells of ethmoid bone.r, skeletal: Posterior cells of ethmoid bone.l, skeletal: Posterior cells of ethmoid bone.r, visceral: Mucosa of stomach
 
-Colour method per system: skeletal {"none":6,"node":67,"node-any-bsdf":204}; joints {"node":413}; visceral {"node":72,"node-any-bsdf":46,"none":1}; cardiovascular {"node":667,"node-any-bsdf":8}; lymphoid {"node-any-bsdf":161,"node":2}; nervous {"node":282,"node-any-bsdf":300}; muscular {"node-any-bsdf":426,"node":257}; regions {"node":256}
+Colour method per system: skeletal {"none":6,"node":67,"node-any-bsdf":204}; insertions {"node-any-bsdf":705}; joints {"node":413}; visceral {"node":72,"node-any-bsdf":46,"none":1}; cardiovascular {"node":667,"node-any-bsdf":8}; lymphoid {"node-any-bsdf":161,"node":2}; nervous {"node":282,"node-any-bsdf":300}; muscular {"node-any-bsdf":426,"node":257}; regions {"node":256}
 
 ### Objects without a usable name (not published) (1)
 
@@ -218,7 +217,7 @@ _none_
 
 ## Validation
 
-_`node pipeline/validate.mjs` at 2026-10-29T06:05:13.265Z — systems: skeletal, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions — **passed** (0 errors, 11 warnings)._
+_`node pipeline/validate.mjs` at 2026-10-29T06:23:58.763Z — systems: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions — **passed** (0 errors, 11 warnings)._
 
 | orientation / side check | result | detail |
 |---|---|---|
@@ -229,13 +228,14 @@ _`node pipeline/validate.mjs` at 2026-10-29T06:05:13.265Z — systems: skeletal,
 | head above feet (frontal bone y > calcaneus y + 1 m) | ok | frontal y = 1.634, calcaneus y = 0.044 |
 | face towards +Z (nasal bone z > occipital bone z) | ok | nasal z = 0.089, occipital z = -0.053 |
 | feet near y = 0 (calcaneus bbox min y < 0.05) | ok | min y = 0.0118 |
-| side of 2835 sided structures (vertex centroid, tolerance 0.002 m; strict for every published side, only open review items are warnings) | ok | 0 failures; 1 reported as warnings (vagus-nerve-x-r) |
+| side of 3540 sided structures (vertex centroid, tolerance 0.002 m; strict for every published side, only open review items are warnings) | ok | 0 failures; 1 reported as warnings (vagus-nerve-x-r) |
 | left/right pairs mirror (|x_l + x_r| ≤ 0.01 m; review items excluded) | ok | worst posterior-intercostal-arteries-l/posterior-intercostal-arteries-r: 0.0099 m |
 | triangle winding agrees with normals (≥ 50 % of surface per structure) | ok | min 95.0 %, mean 100.0 %, 0 below 80 % |
 
 | system | structures | triangles | bytes |
 |---|---|---|---|
 | skeletal | 277 | 448,730 | 2.05 MiB |
+| insertions | 705 | 289,986 | 1.98 MiB |
 | joints | 413 | 259,199 | 1.67 MiB |
 | visceral | 119 | 326,419 | 1.40 MiB |
 | cardiovascular | 675 | 811,402 | 3.81 MiB |
@@ -244,9 +244,10 @@ _`node pipeline/validate.mjs` at 2026-10-29T06:05:13.265Z — systems: skeletal,
 | muscular | 683 | 2,059,543 | 9.56 MiB |
 | regions | 256 | 124,302 | 895.6 KiB |
 
-Startup download (manifest + search index + skeletal): 2.80 MiB (budget 5 MB: met); public/models total 34.93 MiB in 26 files.
+Startup download (manifest + search index + skeletal): 2.91 MiB (budget 5 MB: met); public/models total 38.06 MiB in 29 files.
 
 - skeletal.glb: 277 nodes, 448,730 triangles, 2.05 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- insertions.glb: 705 nodes, 289,986 triangles, 1.98 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
 - joints.glb: 413 nodes, 259,199 triangles, 1.67 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
 - visceral.glb: 119 nodes, 326,419 triangles, 1.40 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
 - cardiovascular.glb: 675 nodes, 811,402 triangles, 3.81 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
