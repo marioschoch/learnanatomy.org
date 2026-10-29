@@ -132,6 +132,24 @@ describe('URL state codec', () => {
     expect(d.pinnedIds).toEqual(['heart']);
   });
 
+  it('encodes hidden nodes as differences from the default-hidden set', () => {
+    const defaults = { layers: defaultsLayers, hiddenIds: ['fascia-lata-l', 'fascia-lata-r'] };
+    const dctx: UrlDecodeContext = { ...ctx, hiddenIds: defaults.hiddenIds };
+    const atDefault = { ...baseState(), hiddenIds: ['fascia-lata-l', 'fascia-lata-r'] };
+    expect(encodeShareableState(atDefault, defaults)).toEqual([]);
+
+    const changed = { ...baseState(), hiddenIds: ['fascia-lata-r', 'femur-l'] };
+    const enc = encodeShareableState(changed, defaults);
+    expect(enc).toEqual([
+      ['h', 'femur-l'],
+      ['v', 'fascia-lata-l'],
+    ]);
+    const search = '?' + new URLSearchParams(enc).toString();
+    expect(decodeShareableState(search, dctx).hiddenIds?.sort()).toEqual(['fascia-lata-r', 'femur-l']);
+    // A link without h/v keeps the defaults (nothing decoded → the store keeps its default-hidden set).
+    expect(decodeShareableState('?s=femur-l', dctx).hiddenIds).toBeUndefined();
+  });
+
   it('refuses a future incompatible format', () => {
     expect(decodeShareableState('?u=2&s=heart', ctx)).toEqual({});
   });

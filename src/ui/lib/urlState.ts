@@ -3,7 +3,8 @@
  *
  *   s   selected id                         s=femur-l
  *   l   visible layers + opacity %          l=skeletal.100,muscular.40   (authoritative when present)
- *   h   hidden node ids                     h=g-ribs,sternum
+ *   h   hidden node ids (beyond defaults)   h=g-ribs,sternum
+ *   v   default-hidden ids shown            v=fascia-lata-l
  *   i   isolate (i) / with context (c)      i=c:heart
  *   c   clip planes s/c/t + % [+ f]         c=s50,t32.5f
  *   e   explode %                           e=40
@@ -26,7 +27,7 @@ import type {
   Vec3,
 } from '@/contract';
 
-export const URL_KEYS = ['s', 'l', 'h', 'i', 'c', 'e', 'x', 'cam', 'n', 'p', 'u'] as const;
+export const URL_KEYS = ['s', 'l', 'h', 'v', 'i', 'c', 'e', 'x', 'cam', 'n', 'p', 'u'] as const;
 export const URL_FORMAT_VERSION = 1;
 
 const ID_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -39,6 +40,8 @@ export interface UrlDefaults {
   layers: BySystem<LayerState>;
   /** Camera pose that counts as "default" (not written). */
   camera?: CameraPose | null;
+  /** Nodes hidden by default (Manifest.defaultHiddenIds); `h` / `v` encode only the differences. */
+  hiddenIds?: readonly string[];
 }
 
 export interface UrlDecodeContext extends UrlDefaults {
@@ -83,7 +86,12 @@ export function encodeShareableState(state: ShareableState, defaults: UrlDefault
     out.push(['l', parts.join(',')]);
   }
 
-  if (state.hiddenIds.length) out.push(['h', state.hiddenIds.join(',')]);
+  const defaultHidden = new Set(defaults.hiddenIds ?? []);
+  const hidden = new Set(state.hiddenIds);
+  const extraHidden = state.hiddenIds.filter((id) => !defaultHidden.has(id));
+  const shown = [...defaultHidden].filter((id) => !hidden.has(id));
+  if (extraHidden.length) out.push(['h', extraHidden.join(',')]);
+  if (shown.length) out.push(['v', shown.join(',')]);
 
   if (state.isolate.mode !== 'none' && state.isolate.ids.length)
     out.push(['i', `${state.isolate.mode === 'context' ? 'c' : 'i'}:${state.isolate.ids.join(',')}`]);
@@ -147,7 +155,12 @@ export function decodeShareableState(search: string, ctx: UrlDecodeContext): Par
     out.layers = layers;
   }
 
-  if (q.has('h')) out.hiddenIds = idList(q.get('h'), ctx);
+  if (q.has('h') || q.has('v')) {
+    const shown = new Set(idList(q.get('v'), ctx));
+    const hidden = new Set((ctx.hiddenIds ?? []).filter((id) => !shown.has(id)));
+    for (const id of idList(q.get('h'), ctx)) hidden.add(id);
+    out.hiddenIds = [...hidden];
+  }
 
   const i = q.get('i');
   if (i !== null) {

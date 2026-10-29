@@ -90,3 +90,24 @@ describe('atlas store', () => {
     expect(s().clipping.coronal.position).toBe(1);
   });
 });
+
+describe('default-hidden nodes', () => {
+  beforeEach(async () => {
+    resetAtlasStore();
+    const ds = createMockDataSource();
+    const loadManifest = ds.loadManifest.bind(ds);
+    ds.loadManifest = async () => ({ ...(await loadManifest()), defaultHiddenIds: ['deltoid-muscle-l'] });
+    await s().init(ds);
+  });
+
+  it('starts hidden and comes back on reset and "show all"', () => {
+    expect(s().hiddenIds).toEqual({ 'deltoid-muscle-l': true });
+    s().setNodeHidden('deltoid-muscle-l', false);
+    s().setNodeHidden('femur-l', true);
+    s().showAllNodes();
+    expect(s().hiddenIds).toEqual({ 'deltoid-muscle-l': true });
+    s().setNodeHidden('deltoid-muscle-l', false);
+    s().resetLayers();
+    expect(s().hiddenIds).toEqual({ 'deltoid-muscle-l': true });
+  });
+});

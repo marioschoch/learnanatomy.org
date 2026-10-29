@@ -56,7 +56,8 @@
       "collection": "4: Muscular system",
       "layerOrder": 7,
       "defaultVisible": false,
-      "defaultOpacity": 1
+      "defaultOpacity": 1,
+      "defaultHiddenCollections": ["Fascia"]
     },
     {
       "id": "regions",

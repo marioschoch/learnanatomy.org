@@ -68,6 +68,11 @@ export interface Manifest {
   attributions: Record<string, AttributionInfo>;
   /** Relative to the manifest. Small file with names only, loaded at startup. */
   searchIndexFile: string;
+  /**
+   * Structures hidden until the user shows them (initial `hiddenIds`): the muscular fasciae of the source's
+   * "Fascia" collection, which would otherwise cover the muscles. Shared links encode only differences.
+   */
+  defaultHiddenIds?: string[];
 }
 
 export interface ChunkInfo {

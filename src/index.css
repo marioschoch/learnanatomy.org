@@ -19,3 +19,24 @@ body {
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
 }
+
+/*
+ * Positions of the viewer's own overlays (orientation gizmo, loading badges, dev stats), so they clear the UI
+ * panels. Defaults live in src/viewer/components (gizmo bottom 96px, progress bottom 152px, stats 72px/12px).
+ */
+:root {
+  --atlas-stats-left: 344px; /* right of the desktop sidebar */
+}
+@media (max-width: 639px) {
+  :root {
+    --atlas-gizmo-bottom: 84px; /* above the phone bottom bar */
+    --atlas-progress-bottom: 150px;
+    --atlas-stats-top: 104px; /* below the phone search bar */
+    --atlas-stats-left: 12px;
+  }
+  /* The selection card sits above the bottom bar while something is selected. */
+  :root:has([data-testid='info-peek']) {
+    --atlas-gizmo-bottom: 140px;
+    --atlas-progress-bottom: 200px;
+  }
+}

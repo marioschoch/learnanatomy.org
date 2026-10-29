@@ -285,7 +285,8 @@ safe separators.
 |---|---|---|
 | `s` | selected id | `s=femur-l` |
 | `l` | visible layers with opacity % (authoritative when present) | `l=skeletal.100,muscular.40` |
-| `h` | hidden node ids | `h=g-ribs,sternum` |
+| `h` | hidden node ids beyond the default-hidden set | `h=g-ribs,sternum` |
+| `v` | default-hidden ids that are shown (`Manifest.defaultHiddenIds`) | `v=fascia-lata-l` |
 | `i` | isolate `i` (isolate) / `c` (context) + ids | `i=c:heart` |
 | `c` | clip planes `s`/`c`/`t` + position % (1 decimal) + optional `f` (flipped) | `c=s50,t32.5f` |
 | `e` | explode % | `e=40` |
@@ -316,6 +317,19 @@ self-hosted Inter (`@fontsource-variable/inter`), Radix primitives from `radix-u
 | memory | no growth in `renderer.info.memory` when toggling systems |
 
 Phase-0 baseline: empty shell 107 kB gzip (three.js included via mocks).
+
+Phase-2 measurement (2026-10-29; 2020 MacBook Air, Intel Iris Plus, Chromium + Metal, production build from
+localhost, so network time is not included):
+
+| budget | measured | |
+|---|---|---|
+| startup download | 2.9 MB models (manifest, search index, skeletal) + 0.29 MB JS gzip; default view incl. visceral 3.8 MB | met |
+| first interactive / skeleton visible | data 0.47 s, 3D view 0.88 s, skeleton + organs 1.19 s | met |
+| orbit fps | default layers 57–60; all 9 systems (5.2 M triangles) 36–40 | default met; all-systems below 50 on this 2020 iGPU (vertex-bound) |
+| draw calls default view | 2 | met |
+| largest file | muscular.glb 9.6 MB | met |
+| main JS | 285 kB gzip initial (canvas 187 kB, quiz 7.5 kB, credits 1 kB lazy) | met |
+| memory | no growth over repeated layer toggles (viewer e2e) | met |
 
 ## 10. Licensing
 
@@ -378,6 +392,9 @@ port and build folder: `PW_PORT=4181` (B), `4182` (C), `4183` (lead/QA) — e.g.
 15. The right vagus nerve (`Vagus nerve (X).r`) is published as named (owner decision): its cervical part is right,
     but its thoracic part (64 % of vertices) lies on the patient's left — an upstream modelling issue, `accepted` in
     `overrides.json`, reported as a validator warning, to be reported to Z-Anatomy.
+16. **Fasciae hidden by default**: the 56 structures of the source's `Fascia` collection (muscular system) would cover
+    every muscle (fascia lata, crural/brachial fascia, …). They are listed in `Manifest.defaultHiddenIds`
+    (`systems.json` → `defaultHiddenCollections`), start hidden, stay searchable and can be shown from the tree.
 
 ## 13. Task list
 

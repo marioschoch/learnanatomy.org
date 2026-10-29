@@ -177,8 +177,10 @@ export interface AtlasActions {
   setLayerOpacity(systemId: SystemId, opacity: number): void;
   /** Replace several layers at once (presets). Systems not mentioned are hidden. */
   applyLayerPreset(layers: Partial<BySystem<Partial<LayerState>>>): void;
+  /** Default layers, default-hidden nodes (Manifest.defaultHiddenIds), X-ray off. */
   resetLayers(): void;
   setNodeHidden(id: string, hidden: boolean): void;
+  /** Shows every node the user hid; default-hidden nodes stay hidden. */
   showAllNodes(): void;
   setXray(on: boolean): void;
 

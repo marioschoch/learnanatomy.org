@@ -80,6 +80,7 @@ export function buildModel({ scene, texts, config, nc, overrides, ta2 }) {
   const ncByBase = new Map();
   for (const [srcId, src] of Object.entries(nc.sources ?? {}))
     for (const b of src.structures) ncByBase.set(b, srcId);
+  const sysConfig = new Map(config.systems.map((s) => [s.id, s]));
   const swaps = new Set();
   for (const s of overrides.sideSwaps ?? []) {
     if (s.status === 'approved') for (const n of s.source) swaps.add(n);
@@ -148,6 +149,10 @@ export function buildModel({ scene, texts, config, nc, overrides, ta2 }) {
       material: o.material,
       parentName: o.parent,
       regionCollections: o.regionCollections ?? [],
+      // Hidden until the user shows them (systems.json defaultHiddenCollections, e.g. the fasciae over the muscles)
+      defaultHidden: (sysConfig.get(o.system)?.defaultHiddenCollections ?? []).some((c) =>
+        (o.collections ?? []).includes(c),
+      ),
       stem: baseId(kind, p.base, { side, sideFromSuffix: sideSource === 'suffix', patch: p.patch }),
     };
     structures.push(s);

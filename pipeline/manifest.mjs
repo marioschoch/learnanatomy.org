@@ -223,6 +223,10 @@ export function assemble(model, systems, processed, config, nc) {
       regions: model.regions,
       attributions,
       searchIndexFile: 'search-index.json',
+      defaultHiddenIds: model.structures
+        .filter((s) => s.defaultHidden && present.has(s.id))
+        .map((s) => s.id)
+        .sort(),
     },
     files: {
       structures: Object.fromEntries(

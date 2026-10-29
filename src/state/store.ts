@@ -39,6 +39,11 @@ function defaultLayers(manifest: Manifest | null): BySystem<LayerState> {
   return out;
 }
 
+/** Nodes hidden until the user shows them (Manifest.defaultHiddenIds, e.g. fasciae over the muscles). */
+export function defaultHiddenIds(manifest: Manifest | null): Record<string, true> {
+  return Object.fromEntries((manifest?.defaultHiddenIds ?? []).map((id) => [id, true as const]));
+}
+
 function detectUiLang(): UiLang {
   try {
     const langs = typeof navigator !== 'undefined' ? (navigator.languages ?? [navigator.language]) : [];
@@ -125,6 +130,7 @@ export const useAtlasStore = create<AtlasStore>()(
           manifest,
           searchIndex: index.entries,
           layers: defaultLayers(manifest),
+          hiddenIds: defaultHiddenIds(manifest),
           systemLoad,
           dataStatus: 'loaded',
         });
@@ -274,7 +280,11 @@ export const useAtlasStore = create<AtlasStore>()(
     },
 
     resetLayers() {
-      set({ layers: defaultLayers(get().manifest), hiddenIds: {}, xray: false });
+      set({
+        layers: defaultLayers(get().manifest),
+        hiddenIds: defaultHiddenIds(get().manifest),
+        xray: false,
+      });
     },
 
     setNodeHidden(id, hidden) {
@@ -287,7 +297,8 @@ export const useAtlasStore = create<AtlasStore>()(
     },
 
     showAllNodes() {
-      set({ hiddenIds: {} });
+      // Everything the user hid comes back; default-hidden nodes stay hidden (they are shown from the tree).
+      set({ hiddenIds: defaultHiddenIds(get().manifest) });
     },
 
     setXray(on) {

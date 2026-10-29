@@ -13,7 +13,11 @@ import { PRESET_IDS, presetAvailable, presetLayers, type PresetId } from './pres
 export function LayersPanel() {
   const { t } = useTranslation();
   const manifest = useAtlasStore((s) => s.manifest);
-  const hiddenCount = useAtlasStore((s) => Object.keys(s.hiddenIds).length);
+  // Only what the user hid; default-hidden nodes (fasciae) are not counted.
+  const hiddenCount = useAtlasStore((s) => {
+    const defaults = new Set(s.manifest?.defaultHiddenIds ?? []);
+    return Object.keys(s.hiddenIds).filter((id) => !defaults.has(id)).length;
+  });
   const xray = useAtlasStore((s) => s.xray);
   const systems = sortedSystems(manifest);
 

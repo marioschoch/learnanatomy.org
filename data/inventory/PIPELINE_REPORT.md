@@ -3,7 +3,7 @@ full delivered: 2026-10-29T05:53:10Z (8 systems published, insertions held pendi
 
 # Pipeline report
 
-_Generated 2026-10-29T06:29:23.002Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
+_Generated 2026-10-29T06:35:14.730Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
 
 Source: `Startup.blend`, Blender 4.5.0, export 2026-10-29T05:45:38Z. Export settings: {"subsurfCap":1,"curveResolutionCap":6,"bevelResolutionCap":2}. Body height (all systems) 1.7437 m; normalization offset (Y-up) [0,-0.000382,-0.001348].
 
@@ -24,7 +24,7 @@ Source: `Startup.blend`, Blender 4.5.0, export 2026-10-29T05:45:38Z. Export sett
 
 Startup download (manifest + search index + skeletal GLB, uncompressed by HTTP): **2.93 MiB** (budget 5 MB, met). Largest file: muscular.glb (9.56 MiB).
 
-Timings (s): manifest 11.4, process skeletal 1.7, process insertions 1.9, process joints 1.0, process visceral 1.1, process cardiovascular 3.0, process lymphoid 0.4, process nervous 3.5, process muscular 6.4, process regions 0.6.
+Timings (s): manifest 7.4, process skeletal 1.7, process insertions 1.9, process joints 1.0, process visceral 1.1, process cardiovascular 3.0, process lymphoid 0.4, process nervous 3.5, process muscular 6.4, process regions 0.6.
 
 ## Simplification
 

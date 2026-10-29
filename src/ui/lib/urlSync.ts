@@ -39,6 +39,7 @@ function decodeContext(): UrlDecodeContext {
   const known = new Set(s.searchIndex.map((e) => e.id));
   return {
     layers: defaultLayersOf(s.manifest),
+    hiddenIds: s.manifest?.defaultHiddenIds ?? [],
     nameLangs: nameLangOptions(s.manifest),
     isKnownId: (id) => known.has(id) || id in s.structures || id in s.groups || id in s.landmarks,
   };
@@ -54,6 +55,7 @@ export function currentSearch(): string {
   const manifest = useAtlasStore.getState().manifest;
   const encoded = encodeShareableState(shareableNow(), {
     layers: defaultLayersOf(manifest),
+    hiddenIds: manifest?.defaultHiddenIds ?? [],
     camera: urlHadCamera ? null : homeCamera,
   });
   return mergeSearch(window.location.search, encoded);
