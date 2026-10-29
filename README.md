@@ -13,7 +13,7 @@ for diagnosis.
 ![Muscles and skeleton, anterior view](docs/screenshot-muscles.png)
 ![Sagittal section through the head](docs/screenshot-sagittal.png)
 
-**Live: <https://open-anatomy-atlas.pages.dev>**
+**Live: <https://learnanatomy.org>**
 
 Data: [Z-Anatomy](https://github.com/Z-Anatomy/Models-of-human-anatomy) (CC BY-SA 4.0), derived from BodyParts3D.
 Full attribution in [ATTRIBUTION.md](ATTRIBUTION.md).
@@ -84,7 +84,7 @@ Useful URL flags: `?data=mock` (small mock scene), `?testHooks=1` (exposes `wind
 
 ### 5. Deploy (Cloudflare Pages)
 
-Live: <https://open-anatomy-atlas.pages.dev>
+Live: <https://learnanatomy.org> (custom domain of the Pages project; also <https://open-anatomy-atlas.pages.dev>)
 
 ```bash
 npm run assets:build          # public/models/ must exist; it is copied into dist/
