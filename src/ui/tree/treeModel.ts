@@ -3,8 +3,8 @@
  * Pure (no React, no store) so it can be tested with thousands of nodes.
  */
 import { systemRootKey } from '@/contract';
-import type { AtlasState, NameLang, Side, SystemInfo } from '@/contract';
-import { displayName } from '@/state';
+import type { AtlasState, NameLang, PatchKind, Side, SystemInfo } from '@/contract';
+import { displayName, patchKindOf } from '@/state';
 import { normalizeText } from '../lib/labels';
 
 export type TreeRowKind = 'system' | 'group' | 'structure';
@@ -19,6 +19,8 @@ export interface TreeRow {
   depth: number;
   label: string;
   side?: Side;
+  /** Origin/insertion patch: the label is the muscle name, the row shows this kind next to it. */
+  patchKind?: PatchKind;
   hasChildren: boolean;
   expanded: boolean;
   /** Own visibility (layer visible for systems; not in hiddenIds for nodes); 'mixed' when descendants are hidden. */
@@ -139,6 +141,8 @@ export function buildTreeRows(input: TreeInput, expanded: ReadonlySet<string>, f
         hiddenByParent: parentHidden,
       };
       if (st?.side) row.side = st.side;
+      const patchKind = patchKindOf(st);
+      if (patchKind) row.patchKind = patchKind;
       if (fr?.matches.has(id)) row.match = true;
       rows.push(row);
       if (isExpanded) pushChildren(id, sysId, depth + 1, parentHidden || ownHidden);

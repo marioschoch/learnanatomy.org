@@ -1,4 +1,4 @@
-import type { Lang, Names } from '@/contract';
+import type { Lang, Names, PatchKind, StructureKind } from '@/contract';
 
 /**
  * Name to display for the preferred language. Falls back Latin → English. Never translates.
@@ -14,4 +14,10 @@ export function allNames(names: Names, lang: Lang): string[] {
     if (value && !out.includes(value)) out.push(value);
   }
   return out;
+}
+
+/** Origin/insertion patches share their muscle's name; callers show this kind next to the name. */
+export function patchKindOf(node: object | null | undefined): PatchKind | undefined {
+  const kind = node && 'kind' in node ? (node.kind as StructureKind | undefined) : undefined;
+  return kind === 'origin' || kind === 'insertion' ? kind : undefined;
 }

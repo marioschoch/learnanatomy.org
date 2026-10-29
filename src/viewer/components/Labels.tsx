@@ -17,6 +17,7 @@ import { resolveLabelItems } from '../core/labelItems';
 import type { LabelItem } from '../core/labelItems';
 import { layoutLabels } from '../core/labelLayout';
 import type { LabelInput } from '../core/labelLayout';
+import { useViewerStrings } from './strings';
 
 interface LabelRefs {
   group: Group;
@@ -151,6 +152,7 @@ const LabelNode = memo(function LabelNode({
     };
   }, [mounted, registry, item.key, invalidate]);
 
+  const strings = useViewerStrings();
   const sideBadge = item.side === 'left' ? 'L' : item.side === 'right' ? 'R' : null;
   return (
     <group ref={group}>
@@ -194,6 +196,9 @@ const LabelNode = memo(function LabelNode({
             }
           >
             {item.text}
+            {item.patchKind ? (
+              <span className="font-normal opacity-75"> · {strings.kind[item.patchKind]}</span>
+            ) : null}
             {sideBadge && (
               <span className="ml-1.5 rounded bg-neutral-200 px-1 text-[10px] font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
                 {sideBadge}

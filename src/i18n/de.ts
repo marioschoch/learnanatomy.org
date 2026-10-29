@@ -45,6 +45,10 @@ export const de: Messages = {
     rightShort: 'R',
     patient: 'Sicht des Patienten',
   },
+  kind: {
+    origin: 'Ursprung',
+    insertion: 'Ansatz',
+  },
   sidebar: {
     label: 'Seitenleiste',
     layers: 'Ebenen',

@@ -7,14 +7,16 @@
  *  - group     → the label of the descendant structure closest to the group's centre (preferring visible ones),
  *                so the leader line ends on real geometry, never in empty space between left and right
  */
-import type { AtlasState, Side, Structure, Vec3 } from '@/contract';
-import { displayName, structureIdsOfNode, unionBBox } from '@/state';
+import type { AtlasState, PatchKind, Side, Structure, Vec3 } from '@/contract';
+import { displayName, patchKindOf, structureIdsOfNode, unionBBox } from '@/state';
 
 export interface LabelItem {
   /** Node id (structure, group or landmark). */
   key: string;
   text: string;
   side?: Side;
+  /** Origin/insertion patch: `text` is the muscle name, the label adds the kind. */
+  patchKind?: PatchKind;
   selected: boolean;
   /** Structure the label follows (explode offset, visibility). */
   structureId: string;
@@ -78,6 +80,8 @@ export function resolveLabelItems(s: LabelState, isVisible: (structureId: string
         centroid: st.centroid,
       };
       if (st.side) item.side = st.side;
+      const patchKind = patchKindOf(st);
+      if (patchKind) item.patchKind = patchKind;
       out.push(item);
       continue;
     }

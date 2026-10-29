@@ -3,7 +3,7 @@
  * never asked (landmarks have no geometry, ARCHITECTURE.md §12.5).
  */
 import type { NameLang, RegionInfo, Structure } from '@/contract';
-import { displayName } from '@/state';
+import { displayName, patchKindOf } from '@/state';
 
 export type QuestionType = 'locate' | 'identify' | 'name';
 export type SideFilter = 'both' | 'left' | 'right';
@@ -85,7 +85,14 @@ export function buildPool(
   return out.sort((a, b) => a.id.localeCompare(b.id));
 }
 
-const labelKey = (st: Structure, lang: NameLang) => displayName(st.names, lang).trim().toLowerCase();
+// Origin and insertion patches carry their muscle's name: the kind is part of what tells options apart.
+const kindKey = (st: Structure) => {
+  const kind = patchKindOf(st);
+  return kind ? `#${kind}` : '';
+};
+const labelKey = (st: Structure, lang: NameLang) =>
+  displayName(st.names, lang).trim().toLowerCase() + kindKey(st);
+const enKey = (st: Structure) => st.names.en.trim().toLowerCase() + kindKey(st);
 
 /**
  * Up to `n` distractors for an Identify question, all with a name different from the target and from each
@@ -101,7 +108,7 @@ export function pickDistractors(
   rng: Rng,
   n = 3,
 ): Structure[] {
-  const used = new Set([labelKey(target, nameLang), target.names.en.trim().toLowerCase()]);
+  const used = new Set([labelKey(target, nameLang), enKey(target)]);
   const sameSystem = pool.filter(
     (s) => s.id !== target.id && s.id !== target.pairId && s.system === target.system,
   );
@@ -117,7 +124,7 @@ export function pickDistractors(
   for (const tier of tiers) {
     for (const s of tier) {
       if (out.length >= n) return out;
-      const keys = [labelKey(s, nameLang), s.names.en.trim().toLowerCase()];
+      const keys = [labelKey(s, nameLang), enKey(s)];
       if (keys.some((k) => used.has(k))) continue;
       keys.forEach((k) => used.add(k));
       out.push(s);

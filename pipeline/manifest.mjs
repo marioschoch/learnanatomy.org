@@ -200,6 +200,7 @@ export function assemble(model, systems, processed, config, nc) {
     const e = { id: n.id, type, system: n.system, names };
     if (n.synonyms?.length) e.synonyms = n.synonyms;
     if (n.side) e.side = n.side;
+    if (n.kind === 'origin' || n.kind === 'insertion') e.kind = n.kind;
     return e;
   };
   for (const sid of systems) {

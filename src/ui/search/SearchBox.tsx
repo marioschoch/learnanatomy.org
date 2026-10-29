@@ -239,6 +239,8 @@ function ResultRow({
       </span>
       {e.type !== 'structure' ? (
         <Badge>{e.type === 'group' ? t('search.group') : t('search.landmark')}</Badge>
+      ) : e.kind ? (
+        <Badge>{t(`kind.${e.kind}`)}</Badge>
       ) : null}
       <span className="hidden max-w-32 truncate text-xs text-zinc-600 md:inline dark:text-zinc-400">
         {systemName}

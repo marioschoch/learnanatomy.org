@@ -6,10 +6,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Structure, SystemInfo } from '@/contract';
-import { displayName, useAtlasStore } from '@/state';
+import { displayName, patchKindOf, useAtlasStore } from '@/state';
 import { cx, inputClass, mutedText } from '@/ui/components/classes';
 import { Icon } from '@/ui/components/Icon';
 import {
+  Badge,
   Button,
   IconButton,
   SectionTitle,
@@ -39,9 +40,26 @@ function allLoadedStructures(): Structure[] {
   return Object.values(useAtlasStore.getState().structures);
 }
 
-function sideSuffix(st: Structure, t: (k: 'side.left' | 'side.right') => string): string {
-  if (!st.side || st.sideSource === 'name') return '';
-  return ` (${t(st.side === 'left' ? 'side.left' : 'side.right').toLowerCase()})`;
+/** " (origin)" for muscle attachment patches (Identify options must tell origin and insertion apart). */
+function kindSuffix(st: Structure, t: (k: 'kind.origin' | 'kind.insertion') => string): string {
+  const kind = patchKindOf(st);
+  return kind ? ` (${t(`kind.${kind}`)})` : '';
+}
+
+/**
+ * " (origin, left)": the kind of a muscle attachment patch (it carries the muscle's name) and the body side
+ * (sides read from the name are already part of it).
+ */
+function sideSuffix(
+  st: Structure,
+  t: (k: 'side.left' | 'side.right' | 'kind.origin' | 'kind.insertion') => string,
+): string {
+  const parts: string[] = [];
+  const kind = patchKindOf(st);
+  if (kind) parts.push(t(`kind.${kind}`));
+  if (st.side && st.sideSource !== 'name')
+    parts.push(t(st.side === 'left' ? 'side.left' : 'side.right').toLowerCase());
+  return parts.length ? ` (${parts.join(', ')})` : '';
 }
 
 export default function QuizPanel({ variant = 'panel' }: { variant?: 'panel' | 'sheet' }) {
@@ -495,7 +513,7 @@ function IdentifyQuestion({ question, answer }: { question: Question; answer: Qu
       <div className="flex flex-col gap-2" role="group" aria-label={t('quiz.identifyPrompt')}>
         {options.map((id, i) => {
           const st = structures[id];
-          const label = st ? displayName(st.names, nameLang) : id;
+          const label = st ? displayName(st.names, nameLang) + kindSuffix(st, t) : id;
           const isTarget = id === question.targetId;
           const chosen = answer?.givenId === id;
           return (
@@ -571,6 +589,11 @@ function NameQuestion({
       <p className={cx('text-xs font-semibold tracking-wide uppercase', mutedText)}>{t('quiz.typeName')}</p>
       <label htmlFor="quiz-name-input" className="mt-1 mb-3 block text-lg leading-snug">
         {t('quiz.namePrompt')}
+        {patchKindOf(target) ? (
+          <span className="ml-2 align-middle">
+            <Badge>{t(`kind.${patchKindOf(target)!}`)}</Badge>
+          </span>
+        ) : null}
         {target.side && target.sideSource !== 'name' ? (
           <span className="ml-2 align-middle">
             <SideBadge side={target.side} label={t(target.side === 'left' ? 'side.left' : 'side.right')} />

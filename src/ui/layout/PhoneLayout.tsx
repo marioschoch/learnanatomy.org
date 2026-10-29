@@ -5,7 +5,7 @@
  */
 import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { displayName, useAtlasStore } from '@/state';
+import { displayName, patchKindOf, useAtlasStore } from '@/state';
 import { useQuizLauncher } from '@/quiz/launcher';
 import { cx, mutedText, panelClass } from '../components/classes';
 import { Icon, type IconName } from '../components/Icon';
@@ -261,6 +261,7 @@ function InfoPeek() {
   const nameLang = useAtlasStore((s) => s.nameLang);
   if (!selectedId) return null;
   const sys = node ? findSystem(manifest, node.system) : undefined;
+  const patchKind = patchKindOf(node);
   const open = () => useUiStore.getState().setSheet('info');
   return (
     <div className={cx(panelClass, 'flex items-center gap-2 rounded-xl p-2 pl-3')} data-testid="info-peek">
@@ -274,6 +275,9 @@ function InfoPeek() {
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-semibold">
             {node ? displayName(node.names, nameLang) : '…'}
+            {patchKind ? (
+              <span className={cx('font-normal', mutedText)}> · {t(`kind.${patchKind}`)}</span>
+            ) : null}
           </span>
           {sys ? <span className={cx('block truncate text-xs', mutedText)}>{systemLabel(sys)}</span> : null}
         </span>

@@ -146,6 +146,8 @@ export interface SystemStructuresFile {
  * - 'origin' / 'insertion': muscle attachment patch on a bone (Z-Anatomy ".o"/".e" objects, system 'insertions')
  */
 export type StructureKind = 'structure' | 'origin' | 'insertion';
+/** Muscle attachment patches. They carry their muscle's name, so UIs show the kind next to it. */
+export type PatchKind = Exclude<StructureKind, 'structure'>;
 
 /** A pickable thing with geometry. Exactly one GLB node per structure. */
 export interface Structure {
@@ -251,6 +253,8 @@ export interface SearchEntry {
   names: Names;
   synonyms?: string[];
   side?: Side;
+  /** Set for origin/insertion patches (structures only). */
+  kind?: PatchKind;
 }
 
 export interface SearchIndexFile {

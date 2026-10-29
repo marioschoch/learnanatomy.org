@@ -156,3 +156,25 @@ describe('generateQuiz', () => {
     ]);
   });
 });
+
+describe('muscle attachment patches', () => {
+  const base = all.find((s) => s.id === 'biceps-brachii-l')!;
+  const patch = (id: string, kind: 'origin' | 'insertion'): Structure => ({
+    ...base,
+    id,
+    nodeName: id,
+    kind,
+    system: 'insertions',
+    regions: ['upper-limb'],
+  });
+  const pool = [
+    patch('biceps-brachii-origin-l', 'origin'),
+    patch('biceps-brachii-insertion-l', 'insertion'),
+    { ...patch('deltoid-origin-l', 'origin'), names: { en: 'Deltoid muscle', la: 'Musculus deltoideus' } },
+  ];
+
+  it('offers the origin and the insertion of the same muscle as different options', () => {
+    const d = pickDistractors(pool[0]!, pool, 'la', seededRng(3));
+    expect(d.map((s) => s.id).sort()).toEqual(['biceps-brachii-insertion-l', 'deltoid-origin-l']);
+  });
+});

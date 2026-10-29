@@ -43,6 +43,11 @@ export const en = {
     rightShort: 'R',
     patient: 'patient’s view',
   },
+  /** Kind of a muscle attachment patch, shown next to the muscle name it carries. */
+  kind: {
+    origin: 'origin',
+    insertion: 'insertion',
+  },
   sidebar: {
     label: 'Side panel',
     layers: 'Layers',

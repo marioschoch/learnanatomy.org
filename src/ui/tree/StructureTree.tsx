@@ -10,7 +10,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { useAtlasStore } from '@/state';
 import { cx, focusRing, inputClass } from '../components/classes';
 import { Icon } from '../components/Icon';
-import { Button, SideBadge, Spinner, SystemChip } from '../components/ui';
+import { Badge, Button, SideBadge, Spinner, SystemChip } from '../components/ui';
 import { findSystem, sortedSystems, systemLabel } from '../lib/labels';
 import { buildTreeRows, expansionPathFor, filterTree, type TreeRow } from './treeModel';
 
@@ -352,6 +352,7 @@ function TreeRowView({
       {notLoaded && row.expanded ? (
         <span className="text-[11px] text-zinc-500">{t('tree.loading')}</span>
       ) : null}
+      {row.patchKind ? <Badge>{t(`kind.${row.patchKind}`)}</Badge> : null}
       {row.side ? (
         <SideBadge side={row.side} label={t(row.side === 'left' ? 'side.left' : 'side.right')} />
       ) : null}
