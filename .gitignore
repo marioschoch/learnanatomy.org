@@ -18,6 +18,8 @@ data/raw/
 data/export/
 data/inventory/full/
 public/models/
+# structure page images (reproducible with `npm run seo:thumbs`); public/og-image.jpg is committed
+public/thumbs/
 
 # env / local
 .env

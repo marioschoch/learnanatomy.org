@@ -1,12 +1,12 @@
 /**
  * Keeps the URL in sync with the shareable state (ARCHITECTURE.md §7):
  *  1. once the manifest + search index are loaded, the URL is decoded and applied
- *     (camera via a viewer command; a selection without camera is focused),
+ *     (camera via a viewer command; a selection without camera is focused and shown),
  *  2. afterwards every change is written back with history.replaceState, debounced 300 ms,
  *     only non-default values, and never during a quiz.
  */
 import type { BySystem, CameraPose, LayerState, Manifest, ShareableState } from '@/contract';
-import { useAtlasStore } from '@/state';
+import { systemOfNode, useAtlasStore } from '@/state';
 import { nameLangOptions } from './labels';
 import {
   camerasEqual,
@@ -96,7 +96,15 @@ async function applyFromUrl(): Promise<void> {
       pendingCamera = null;
     });
   } else if (decoded.selectedId) {
-    void s.requestViewer({ type: 'focus', ids: [decoded.selectedId], animate: false });
+    const id = decoded.selectedId;
+    // A bare link to a structure (the static pages link /?s=<id>) shows it even when its layer is off or it is
+    // hidden by default; links that carry their own layers / hidden ids are applied as they are.
+    const st = useAtlasStore.getState();
+    const system = systemOfNode(st, id);
+    if (!decoded.layers && !decoded.isolate && system && !st.layers[system]?.visible)
+      st.setLayerVisible(system, true);
+    if (!decoded.hiddenIds && st.hiddenIds[id]) st.setNodeHidden(id, false);
+    void s.requestViewer({ type: 'focus', ids: [id], animate: false });
   }
 }
 

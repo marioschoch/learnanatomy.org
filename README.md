@@ -88,7 +88,8 @@ Live: <https://learnanatomy.org> (custom domain of the Pages project; also <http
 
 ```bash
 npm run assets:build          # public/models/ must exist; it is copied into dist/
-npm run build
+npm run seo:thumbs            # page images + social cards → public/thumbs/ (GPU, ~35 min; only missing ones)
+npm run build                 # app + ~6 000 static structure pages, sitemap.xml, 404.html
 npx wrangler login            # once per machine
 npx wrangler pages deploy dist --project-name open-anatomy-atlas --branch main
 ```
@@ -99,6 +100,21 @@ otherwise routes `pages` commands to Workers:
 
 `public/_headers` sets cache headers. The site is fully static (no functions, no cookies). The build also ships
 `ATTRIBUTION.md`, `LICENSE` and `assets.LICENSE` as `/licenses/*.txt`; the credits page links them.
+
+### 6. Search engines
+
+`npm run build` writes a static page for every structure in English and German (`/en/femur`, `/de/femur`), an
+index per system, `sitemap.xml` and `404.html` (details: [ARCHITECTURE.md §14](ARCHITECTURE.md)). Skip
+`seo:thumbs` and the pages are built without images. `npm run seo:thumbs -- --only femur,heart --force`
+re-renders single pages.
+
+One-time setup in the Cloudflare and Google dashboards (not in the code):
+
+1. **www**: Workers & Pages → `open-anatomy-atlas` → Custom domains → add `www.learnanatomy.org`. Then
+   Rules → Redirect Rules → template "Redirect from WWW to root" (301, keep the query string).
+2. **Google Search Console**: add a *Domain* property `learnanatomy.org`, verify with the DNS TXT record
+   (Cloudflare can add it automatically), then Sitemaps → `https://learnanatomy.org/sitemap.xml`.
+3. **Bing Webmaster Tools**: "Import from Google Search Console".
 
 ## Project structure
 

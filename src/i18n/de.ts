@@ -3,7 +3,7 @@
  * Must have exactly the keys of `en` (enforced by the `Messages` type and src/i18n/i18n.test.ts).
  * System and region labels are UI labels; anatomical structure names are never translated.
  */
-import type { Messages } from './en';
+import type { Messages } from './en.ts';
 
 export const de: Messages = {
   app: {

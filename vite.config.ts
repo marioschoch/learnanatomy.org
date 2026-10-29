@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
+import { seoPages } from './seo/plugin.ts';
 
 /**
  * The attribution and licence texts live in the repo root (outside public/). Ship them with the site as plain
@@ -37,7 +38,7 @@ function licenseFiles(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), licenseFiles()],
+  plugins: [react(), tailwindcss(), licenseFiles(), seoPages()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
@@ -51,7 +52,12 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/unit/setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}', 'tests/unit/**/*.test.{ts,tsx}', 'pipeline/**/*.test.mjs'],
+    include: [
+      'src/**/*.test.{ts,tsx}',
+      'tests/unit/**/*.test.{ts,tsx}',
+      'pipeline/**/*.test.mjs',
+      'seo/**/*.test.ts',
+    ],
     css: false,
   },
 });

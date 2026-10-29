@@ -1,5 +1,5 @@
-/** Project-wide constants. Rename the project here only. */
-export const APP_NAME = 'Open Anatomy Atlas';
+/** Project-wide constants. The project name lives in ./appName.ts. */
+export { APP_NAME } from './appName';
 
 export const APP_REPO_URL = '';
 

@@ -53,6 +53,11 @@ export default tseslint.config(
     },
   },
   {
+    // build scripts: Node, plus browser code that seo/thumbnails.ts runs in the page
+    files: ['seo/**/*.ts'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
+  {
     files: ['tests/**/*.{ts,tsx}', '**/*.test.{ts,tsx}'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
     rules: { 'react-refresh/only-export-components': 'off' },

@@ -3,7 +3,7 @@
 Static single-page app (Vite + React 19 + TypeScript strict + three.js/R3F). No backend, no accounts, no
 tracking. Data: Z-Anatomy (CC BY-SA 4.0), converted by an offline pipeline into compressed GLB chunks + JSON.
 
-The project name lives in one constant: `src/config.ts → APP_NAME`.
+The project name lives in one constant: `src/appName.ts → APP_NAME` (re-exported by `src/config.ts`).
 
 ---
 
@@ -315,6 +315,10 @@ safe separators.
 
 Unknown ids are ignored. A future incompatible change adds `u=2`.
 
+A link with `s` but without `cam` focuses the selection. When it also has no `l` / `i`, the selection's layer is
+switched on, and without `h` / `v` a default-hidden selection is shown: `/?s=biceps-brachii-muscle-l` from a static
+page (§14) lands on the muscle although the muscular layer is off by default.
+
 ## 8. UI (Agent C, `src/ui/`, `src/quiz/`, `src/i18n/`)
 
 Layout per PROMPT.md §6-C. Talks to the viewer only through the store. System and region labels for German come
@@ -452,3 +456,32 @@ port and build folder: `PW_PORT=4181` (B), `4182` (C), `4183` (lead/QA) — e.g.
   liver segments, Latin typos, Locate equivalence, overlay positions, validator budget/doc fixes, GLB copyright
 - [x] Phase 4 — README (DE/EN), CONTRIBUTING (definition review workflow with hashed reviews), upstream issue list
   (`docs/UPSTREAM_ISSUES.md`), deploy commands for the owner
+- [x] Search visibility — static structure pages, sitemap, robots, 404, social cards (§14)
+
+## 14. Static structure pages (`seo/`)
+
+The app is one URL, so search engines see one page. `vite build` therefore also writes a static HTML page per
+structure and language (`/en/<slug>`, `/de/<slug>`), per-system indexes (`/en/systems/<id>`), language indexes
+(`/en/`, `/de/`), `404.html` (which also ends Cloudflare's SPA fallback, so unknown paths are real 404s) and
+`sitemap.xml`. Plugin `seo/plugin.ts`, page model `seo/model.ts`, HTML `seo/render.ts`. Input is
+`public/models/`; without it the plugin only warns.
+
+- **Pages:** structures (left/right pairs merged; slug = id without side suffix), groups (a same-named structure
+  inside or next to the group is folded into it), and landmarks that have their own description. Groups with
+  neither geometry nor description are dropped. Slug clashes: structures, then groups, then landmarks, then skin
+  regions keep the bare slug; the others get `-group` / `-landmark` / `-region`. Origin/insertion patches have no
+  pages; they become "muscle attachments" lists (patches without `muscleId` are matched to a page by exact English
+  name).
+- **Content:** names (English first on `/en/`, Latin first on `/de/`; the data has no German names), system,
+  regions, sides, hierarchy (breadcrumb + BreadcrumbList JSON-LD), parts, landmarks, siblings, muscle
+  attachments, other-language names, and the description (Wikipedia: lead only, with a link to the article;
+  "unreviewed" badge as in the app). "Open in 3D" links `/?s=<left id>` (§7).
+- **Head:** canonical, `hreflang` en/de/x-default, Open Graph / Twitter card. Home page meta and a static shell
+  inside `#root` (replaced when React mounts) live in `index.html`.
+- **Images:** `npm run seo:thumbs` (`seo/thumbnails.ts`, Playwright + GPU, ~35 min) renders every structure and
+  group page in the real viewer: isolate with context (tiny structures < 2.4 cm alone, shot at 4× and cropped),
+  camera from the bounding box (front; back when the box lies behind the coronal midplane; sideways skin regions
+  from the side), both sides only when they sit close. Output in `public/thumbs/` (gitignored):
+  `<slug>.webp` (800², on the page) and `og/<slug>.jpg` (1200×630 card with names). Landmark pages show their
+  structure's image with their own card. `public/og-image.jpg` (site card) is committed. Pages without an
+  image are still written.

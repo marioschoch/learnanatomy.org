@@ -3,13 +3,117 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="Free, open-source interactive 3D anatomy atlas for medical students." />
+    <title>Open Anatomy Atlas – free interactive 3D anatomy atlas</title>
+    <meta
+      name="description"
+      content="Free interactive 3D anatomy atlas for medical students: bones, muscles, organs, vessels and nerves with Latin and English names. No sign-up, runs in the browser."
+    />
     <meta name="color-scheme" content="light dark" />
+    <link rel="canonical" href="https://learnanatomy.org/" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Open Anatomy Atlas</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Open Anatomy Atlas" />
+    <meta property="og:title" content="Open Anatomy Atlas – free interactive 3D anatomy atlas" />
+    <meta
+      property="og:description"
+      content="Bones, muscles, organs, vessels and nerves in 3D, with Latin and English names. Free, open source, no sign-up."
+    />
+    <meta property="og:url" content="https://learnanatomy.org/" />
+    <meta property="og:image" content="https://learnanatomy.org/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Open Anatomy Atlas: muscles and skeleton of the upper body in 3D"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Open Anatomy Atlas",
+        "url": "https://learnanatomy.org/",
+        "description": "Free interactive 3D anatomy atlas for medical students, with Latin and English names.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any (web browser)",
+        "inLanguage": ["en", "de"],
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+        "image": "https://learnanatomy.org/og-image.jpg"
+      }
+    </script>
+    <style>
+      /* Shown until the app mounts (React replaces #root), and to crawlers that do not run scripts. */
+      .boot {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 16px;
+        text-align: center;
+        font:
+          15px/1.5 ui-sans-serif,
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        background: #f6f7f9;
+        color: #3f3f46;
+      }
+      .boot h1 {
+        margin: 12px 0 0;
+        font-size: 22px;
+        color: #18181b;
+      }
+      .boot p {
+        margin: 0;
+        max-width: 34rem;
+      }
+      .boot nav {
+        margin-top: 12px;
+        font-size: 13px;
+      }
+      .boot a {
+        color: #0f766e;
+      }
+      @media (prefers-color-scheme: dark) {
+        .boot {
+          background: #181b20;
+          color: #a1a1aa;
+        }
+        .boot h1 {
+          color: #f4f4f5;
+        }
+        .boot a {
+          color: #5eead4;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="boot">
+        <svg viewBox="0 0 32 32" width="40" height="40" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="#0f766e" />
+          <g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="16" cy="8.5" r="2.6" />
+            <path d="M16 12v8M10.5 14.5l5.5 2 5.5-2M12.5 26l3.5-6 3.5 6" />
+          </g>
+        </svg>
+        <h1>Open Anatomy Atlas</h1>
+        <p>
+          Free interactive 3D anatomy atlas: bones, muscles, organs, vessels and nerves with Latin and English
+          names.
+        </p>
+        <nav>
+          <a href="/en/">Browse all structures</a> ·
+          <a href="/de/" hreflang="de" lang="de">Alle Strukturen auf Deutsch</a>
+        </nav>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

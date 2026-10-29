@@ -2,6 +2,9 @@
 /models/*
   Cache-Control: public, max-age=86400
   Access-Control-Allow-Origin: *
+  X-Robots-Tag: noindex
+/thumbs/*
+  Cache-Control: public, max-age=86400
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 /licenses/*
