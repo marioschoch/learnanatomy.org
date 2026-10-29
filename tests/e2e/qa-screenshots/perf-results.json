@@ -1,0 +1,138 @@
+{
+  "gpu": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) Iris(TM) Plus Graphics, Unspecified Version)",
+  "coldStartLocalhost": [
+    {
+      "firstDrawMs": 719,
+      "interactiveMs": 737,
+      "skeletonVisibleMs": 1335,
+      "defaultVisibleMs": 1335,
+      "bytesUntilSkeleton": 4348241,
+      "bytesUntilDefaultView": 4348241,
+      "longTasksOver50": 6,
+      "longestTaskMs": 385,
+      "files": [
+        "/assets/index-1XVwy-G5.js 155935",
+        "/assets/rolldown-runtime-XKyaHtl9.js 1026",
+        "/assets/three.core-Dp-eO7LC.js 100239",
+        "/assets/state-BV-H_4gl.js 27157",
+        "/assets/index-IXeoXJl7.css 11122",
+        "/models/manifest.json 2722",
+        "/assets/ViewerCanvas-RND2v_w9.js 185960",
+        "/assets/inter-latin-wght-normal-Dx4kXJAl.woff2 48556",
+        "/models/search-index.json 81162",
+        "/models/structures/skeletal.json 64844",
+        "/models/structures/visceral.json 22714",
+        "/models/skeletal.glb 2154984",
+        "/models/visceral.glb 1467980",
+        "/assets/decodeGlbImpl-BezhFZ0x.js 22643"
+      ]
+    },
+    {
+      "firstDrawMs": 662,
+      "interactiveMs": 687,
+      "skeletonVisibleMs": 1063,
+      "defaultVisibleMs": 1063,
+      "bytesUntilSkeleton": 4348241,
+      "bytesUntilDefaultView": 4348241,
+      "longTasksOver50": 5,
+      "longestTaskMs": 253
+    },
+    {
+      "firstDrawMs": 687,
+      "interactiveMs": 705,
+      "skeletonVisibleMs": 1100,
+      "defaultVisibleMs": 1100,
+      "bytesUntilSkeleton": 4348241,
+      "bytesUntilDefaultView": 4348241,
+      "longTasksOver50": 5,
+      "longestTaskMs": 265
+    }
+  ],
+  "coldStart25Mbit": {
+    "firstDrawMs": 970,
+    "interactiveMs": 988,
+    "skeletonVisibleMs": 2420,
+    "defaultVisibleMs": 2420,
+    "bytesUntilSkeleton": 4348241
+  },
+  "orbitDefault": {
+    "seconds": 6.047699999988079,
+    "frames": 346,
+    "fps": 57.21183259762919,
+    "p95FrameMs": 16.800000000000182,
+    "worstFrameMs": 33.400000000000546,
+    "drawsPerFrameMedian": 2,
+    "viewerStats": {
+      "fps": 54,
+      "drawCalls": 2,
+      "triangles": 775149,
+      "geometries": 2,
+      "textures": 8
+    }
+  },
+  "loadAllSystemsMs": 3037,
+  "orbitAllSystems": {
+    "seconds": 6.034,
+    "frames": 198,
+    "fps": 32.81405369572423,
+    "p95FrameMs": 50,
+    "worstFrameMs": 83.30000000000291,
+    "drawsPerFrameMedian": 9,
+    "viewerStats": {
+      "fps": 31,
+      "drawCalls": 9,
+      "triangles": 5154811,
+      "geometries": 9,
+      "textures": 29
+    }
+  },
+  "orbitAllSystemsXray": {
+    "seconds": 6.036,
+    "frames": 132,
+    "fps": 21.86878727634195,
+    "p95FrameMs": 66.70000000000437,
+    "worstFrameMs": 100.10000000000218,
+    "drawsPerFrameMedian": 17,
+    "viewerStats": {
+      "fps": 20,
+      "drawCalls": 17,
+      "triangles": 9860892,
+      "geometries": 9,
+      "textures": 29
+    }
+  },
+  "memory": {
+    "before": {
+      "fps": 21,
+      "drawCalls": 9,
+      "triangles": 5154811,
+      "geometries": 9,
+      "textures": 29
+    },
+    "after": {
+      "fps": 14,
+      "drawCalls": 9,
+      "triangles": 5154811,
+      "geometries": 9,
+      "textures": 29
+    },
+    "heapBeforeMB": 342,
+    "heapAfterMB": 342
+  },
+  "phoneIndicative": {
+    "interactiveMs": 2677,
+    "skeletonVisibleMs": 3778,
+    "orbit": {
+      "frames": 293,
+      "fps": 48.274953043087
+    },
+    "viewerStats": {
+      "fps": 50,
+      "drawCalls": 2,
+      "triangles": 775149,
+      "geometries": 2,
+      "textures": 8
+    }
+  },
+  "note": "GPU: Intel Iris Plus (2020 MacBook Air), Chromium 156 + ANGLE/Metal, production build via vite preview on localhost (network time not included except coldStart25Mbit, emulated). Transfer sizes: JSON/JS gzip-compressed by the preview server, GLB uncompressed."
+}

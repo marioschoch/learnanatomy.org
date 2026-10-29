@@ -6,6 +6,8 @@ const OUT = `.e2e/${PORT}`;
 
 export default defineConfig({
   testDir: './tests/e2e',
+  // The QA specs (Phase 3) need the real assets in public/models/ and a GPU: opt in with QA_GPU=1 / QA_PERF=1.
+  testIgnore: process.env.QA_GPU || process.env.QA_PERF ? [] : ['**/qa-*.spec.ts'],
   outputDir: `./test-results/${PORT}`,
   // SwiftShader (no GPU) renders X-ray / transparent passes slowly; 60 s was not enough with 2 workers.
   timeout: 120_000,
