@@ -135,7 +135,9 @@ Every exported structure must belong to exactly one numbered collection (validat
 - Structure: `slug(base)` + `-l`/`-r` when the side comes from the suffix (`femur-l`, `liver`, `left-ventricle`).
 - Origin/insertion: `slug(muscle) + -origin|-insertion + -l|-r` (`biceps-brachii-origin-l`).
 - Group: `g-` + slug; landmark: `lm-` + slug (+ side of its structure).
-- Collisions: deterministic (sort by source name), append `-<system>`, then `-2`, `-3`; listed in the report.
+- Numbered patches keep their number: `Diaphragm.o2r` → `diaphragm-origin-2-r`.
+- Collisions: deterministic (sort by source name), append `-<system>`, then `-<system>-2`, …; listed in the report
+  (only one so far: `Central canal` / `Central canal'` → `central-canal`, `central-canal-nervous`).
 - `names.en` = English base as in the source (parentheses kept). `la/fr/es/pt` from `Translations`
   (exact English match). Never generated, never translated. Missing → logged.
 - `taId` / TA2 (owner-approved download, `data/raw/ta2/TA2.csv`, gitignored, from the Z-Anatomy repo; UTF-8 with BOM,
@@ -145,8 +147,12 @@ Every exported structure must belong to exactly one numbered collection (validat
   Then `taId` = the TA2ID as a string (e.g. `"1234"`), and `names.la` is filled from TA2 Latin **only if Translations has
   no Latin name** (it never overrides). Ambiguous/no match → no `taId`, counted in the report. TA2 is optional: if
   the file is missing the pipeline still runs. `fmaId` stays empty.
-- `side`: `.l/.r` suffix (`sideSource: 'suffix'`), else leading "Left …"/"Right …" or "… of left/right …"
-  in the English name (`'name'`), else none. `pairId` = same base, other side.
+- `side` = **body side**: `.l/.r` suffix (`sideSource: 'suffix'`; `'override'` when the suffix was corrected through
+  `overrides.json`), else leading "Left …"/"Right …" or "… of left/right …" in the English name (`'name'`) — kept
+  only when the vertex centroid lies on that side (same 2 mm tolerance as the validator). Organ-internal
+  designations that cross the midline (right ventricle and its valve/papillary parts, right coronary artery, left
+  medial segment of liver, right lobe of thymus: 11 structures) get no side; the name still says "Right …".
+  `pairId` = same base, other side, suffix pairs only.
 - `regions`: mapped from Main-divisions membership to side-agnostic ids
   (`head, neck, trunk, thorax, abdomen, pelvis, back, upper-limb, hand, lower-limb, foot`; `RegionInfo.parentId`
   gives thorax → trunk etc.). Insertion patches inherit the regions of their bone. No membership → `[]`.
@@ -170,10 +176,16 @@ Every exported structure must belong to exactly one numbered collection (validat
   winding for the cut-surface colour). No negative scales in the output.
 - GLB per system: one node per structure, node name = structure id, base-colour material only, no textures,
   `POSITION` + `NORMAL`, indexed, identical attribute layout within a chunk (BatchedMesh requirement).
-- `process.mjs`: weld, dedup, prune, careful simplify (very low error first; skip tiny/thin structures; report
-  triangles before/after per system), `quantize` with **`quantizationVolume: 'scene'`** (all nodes then carry the
-  same dequantization transform — `decodeGlb` applies it), `EXT_meshopt_compression`. Split a chunk by region if
-  > 20 MB.
+  `export.py` writes the raw GLB with its own small numpy writer instead of `bpy.ops.export_scene.gltf`: node names
+  must be full ids (Blender object names are capped at 63 bytes), mirrored instances need exact normal transforms,
+  and it is much faster. Metadata travels in JSON, so glTF extras are not needed. Output passes `gltf-validator`.
+- `process.mjs`: dedup, weld, careful simplify, prune, quantize, compress. Simplify = meshoptimizer with an
+  **absolute** error of 0.05 mm (0.025 mm for curves), borders locked, structures < 64 triangles untouched, a result
+  is rejected if its bbox moves by more than 2 × error. `quantize` with **`quantizationVolume: 'scene'`** (all nodes
+  then carry the same dequantization transform — `decodeGlb` applies it), **16-bit positions** (step ≈ 0.03 mm; same
+  compressed size as 14-bit) and 8-bit octahedral normals, then `EXT_meshopt_compression`. Split a chunk by region
+  if > 20 MB (implemented, not needed so far). `manifest.mjs` builds into a staging folder, validates it and only
+  then swaps it into `public/models/`. Subsets: `ASSET_SYSTEMS=skeletal npm run assets:build`.
 - Deliver **skeletal first**.
 
 ### 4.5 Outputs
@@ -191,6 +203,9 @@ root) is generated from the upstream README attributions + modification note + N
 **Orientation (critical):** liver centroid x < 0; spleen, stomach, left ventricle x > 0; head above feet; nasal
 bone z > occipital z (faces +Z); every `side: 'left'` structure has centroid x > 0 and `'right'` x < 0
 (vertex centroid, small tolerance), left/right pairs mirror each other (|x_l + x_r| small).
+The side check is strict for every published side (suffix, override, name); only `toReview` items with status
+`open` are reported as warnings. Two extra checks: triangle winding agrees with the normals (≥ 95 % area), and every
+object belongs to exactly one numbered collection.
 Known upstream errors are listed in `pipeline/config/overrides.json` with a reason and reviewer; only listed
 entries may be corrected (e.g. swap side), anything else fails the build.
 
@@ -212,7 +227,8 @@ entries may be corrected (e.g. swap side), anything else fails the build.
   - isolate with context: isolated set opaque; the rest of what was visible drawn as **ghost**
     (`GHOST_OPACITY` 0.08, desaturated, not pickable)
   - rendered opacity < `PICK_MIN_OPACITY` (0.05) → not pickable
-- **Transparency order:** opaque chunks first. Transparent chunks: `transparent`, `depthWrite: false`,
+- **Transparency order:** opaque chunks first, outer layers before inner ones (they enclose them, so this is roughly
+  front-to-back and early-z rejects hidden inner fragments). Transparent chunks: `transparent`, `depthWrite: false`,
   `renderOrder` by `layerOrder` (inner → outer), each preceded by a **depth pre-pass** of the same geometry
   (`colorWrite: false`, `depthWrite: true`) so a layer shows only its front-most surface and does not self-overlap;
   per-instance sorting (`sortObjects`) on. Target look: skin 20 % over muscles 60 % over opaque bones, clean.
@@ -220,11 +236,15 @@ entries may be corrected (e.g. swap side), anything else fails the build.
   Plane position = `bodyBounds.min + position × size` on the axis (sagittal x, coronal z, transverse y);
   `flipped: false` keeps the side with the larger coordinate. Cut faces: `DoubleSide` + `gl_FrontFacing` in the
   fragment shader → flat cut colour (stencil capping is a stretch goal).
-- **Picking:** three-mesh-bvh 0.9.17 supports BatchedMesh (`computeBatchedBoundsTree`, accelerated raycast uses
-  per-instance matrices, so exploded positions are hit correctly). Skip non-pickable instances and hits on the
+- **Picking:** one three-mesh-bvh `MeshBVH` per structure over its range of the shared batch geometry (built lazily
+  and in idle time); instance matrices are pure translations (explode), so the ray is shifted by the offset instead
+  of inverting a matrix. Skip non-pickable instances and hits on the
   clipped side of an active plane. Click = pointer up within ~5 px / 500 ms of down; hover only for fine
   pointers, throttled. Pick → `pickStructure(id)` (the store routes it to selection or quiz).
-- **Explode:** offset = (centroid − system bbox centre) × explode × k, animated (instant with reduced motion).
+- **Explode:** offset = [(centroid − region centre) × k_local + (region centre − system centre) × k_global] × explode,
+  region = the structure's most specific region within its system (none → system centre); k_local 0.9,
+  k_global 0.35 (equal k's give the plain system-centre formula, which flew the body out of view). Animated
+  (instant with reduced motion).
 - **Camera:** drei `CameraControls`, damping, zoom limits from `bodyBounds`, standard views (§2), focus = fit
   union bbox of `structureIdsOfNode`, reset. Reports `setCamera(pose)` when at rest.
 - **Labels:** drei `Html` for selected + pinned nodes (landmarks use `anchor`), leader line to `labelAnchor`
@@ -349,6 +369,14 @@ port and build folder: `PW_PORT=4181` (B), `4182` (C), `4183` (lead/QA) — e.g.
    later optimization if the budget is missed.
 9. Upstream wrong-side names are corrected only through `pipeline/config/overrides.json` after human review.
 10. Ghosted structures (isolate with context) are not pickable.
+11. The raw GLB is written by our own numpy writer, not Blender's glTF exporter (full-length ids as node names, exact
+    mirrored normals, speed; §4.4).
+12. Sides read from names are dropped when the geometry disagrees (organ-internal "right/left" designations, §4.3).
+13. Explode is region-aware (§5): the pure system-centre formula moved the body out of view.
+14. **`insertions` is not published yet**: 52 origin/insertion patches carry the wrong `l`/`r` letter upstream
+    (`data/inventory/side-review.json`); they need owner-approved overrides first.
+15. The right vagus nerve (`Vagus nerve (X).r`) is published as named, but its thoracic part (64 % of vertices) lies
+    on the patient's left — an upstream modelling issue, open in `overrides.json`.
 
 ## 13. Task list
 
@@ -356,8 +384,9 @@ port and build folder: `PW_PORT=4181` (B), `4182` (C), `4183` (lead/QA) — e.g.
   mocks; ARCHITECTURE.md; agent definitions (`.claude/agents/`)
 - [x] Phase 0 review — owner approved (2026-10-29): skeletal + visceral default, NC list, side swaps for Eyelashes and
   lateral TMJ ligament (vagus: Agent A checks), TA2.csv download, esbuild/workerd install scripts
-- [ ] Phase 1 — Agents A (pipeline, skeletal first), B (viewer on mocks → skeletal), C (UI/quiz on mocks) in parallel;
-  lead reviews each diff, answers contract proposals
+- [x] Phase 1 — Agents A, B, C reviewed and merged (pipeline 8/9 systems validated; viewer on real data; UI/quiz on
+  mocks). Accepted: SideSource 'override', store camera fix, explode/transparency doc changes. Deferred:
+  `RegionInfo.definitionKey` (region texts), `kind` in search entries (needed once insertions are published).
 - [ ] Phase 2 — integration on real assets, screenshots (default, X-ray, sagittal head cut, exploded thorax,
   isolate-with-context heart, mobile), budgets
 - [ ] Phase 3 — independent QA (Agent D) → QA_REPORT.md, fixes, re-runs

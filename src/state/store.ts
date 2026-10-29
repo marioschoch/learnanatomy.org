@@ -495,7 +495,8 @@ export const useAtlasStore = create<AtlasStore>()(
         if (sys) systems.add(sys);
       }
       await Promise.all([...systems].map((id) => get().ensureSystemMeta(id)));
-      if (u.camera) await get().requestViewer({ type: 'setCameraPose', pose: u.camera, animate: false });
+      // Queued, not awaited: the viewer may mount later (or never, e.g. in tests); the queue holds the pose until then.
+      if (u.camera) void get().requestViewer({ type: 'setCameraPose', pose: u.camera, animate: false });
     },
   })),
 );

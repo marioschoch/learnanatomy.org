@@ -121,10 +121,13 @@ export function buildModel({ scene, texts, config, nc, overrides, ta2 }) {
     if (p.kind === 'group' || p.kind === 'label' || p.kind === 'line') kind = 'structure';
     let side = p.side;
     let sideSource = side ? 'suffix' : undefined;
+    // Approved swaps behave like suffix sides internally (ids, pairs); they are published as 'override'.
+    let sideOverridden = false;
     if (side && swaps.has(o.name)) {
       const corrected = side === 'left' ? 'right' : 'left';
       report.sideSwaps.push({ source: o.name, suffixSide: side, side: corrected });
       side = corrected;
+      sideOverridden = true;
     }
     if (!side) {
       side = sideFromName(p.base);
@@ -138,6 +141,7 @@ export function buildModel({ scene, texts, config, nc, overrides, ta2 }) {
       patch: p.patch,
       side,
       sideSource,
+      sideOverridden,
       isCurve: !!o.isCurve,
       color: o.color,
       colorMethod: o.colorMethod,
@@ -486,7 +490,7 @@ export function toStructure(s, geo) {
   };
   if (s.side) {
     out.side = s.side;
-    out.sideSource = s.sideSource;
+    out.sideSource = s.sideOverridden ? 'override' : s.sideSource;
   }
   if (s.pairId) out.pairId = s.pairId;
   if (s.parentId) out.parentId = s.parentId;

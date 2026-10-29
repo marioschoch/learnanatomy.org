@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-29T05:52:01.228Z",
+  "generatedAt": "2026-10-29T06:05:01.708Z",
   "systems": [
     "skeletal",
     "joints",
@@ -10,7 +10,7 @@
     "muscular",
     "regions"
   ],
-  "appDataVersion": "d3001871e33f3724",
+  "appDataVersion": "12f1983a54df99a7",
   "report": {
     "collisions": [
       {
@@ -8293,6 +8293,63 @@
     "duplicatesAcrossSystems": [],
     "translationConflicts": [],
     "dropped": [],
-    "danglingRefs": []
+    "danglingRefs": [],
+    "nameSidesDropped": [
+      {
+        "id": "anterior-papillary-muscle-of-right-ventricle",
+        "side": "right",
+        "x": 0.0301
+      },
+      {
+        "id": "inferior-papillary-muscle-of-right-ventricle",
+        "side": "right",
+        "x": 0.0218
+      },
+      {
+        "id": "left-medial-segment-of-liver-iv",
+        "side": "left",
+        "x": -0.0192
+      },
+      {
+        "id": "right-coronary-artery",
+        "side": "right",
+        "x": 0.0139
+      },
+      {
+        "id": "right-coronary-leaflet",
+        "side": "right",
+        "x": 0.0135
+      },
+      {
+        "id": "right-inferolateral-branch-of-right-coronary-artery",
+        "side": "right",
+        "x": 0.0554
+      },
+      {
+        "id": "right-lobe-of-thymus",
+        "side": "right",
+        "x": 0.0042
+      },
+      {
+        "id": "right-semilunar-leaflet-of-pulmonary-valve",
+        "side": "right",
+        "x": 0.0184
+      },
+      {
+        "id": "right-ventricle",
+        "side": "right",
+        "x": 0.0205
+      },
+      {
+        "id": "septal-leaflet-of-right-atrioventricular-valve",
+        "side": "right",
+        "x": 0.0068
+      },
+      {
+        "id": "septal-papillary-muscle-of-right-ventricle",
+        "side": "right",
+        "x": 0.0222
+      }
+    ]
   }
 }

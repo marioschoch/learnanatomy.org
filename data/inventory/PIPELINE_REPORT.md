@@ -3,7 +3,7 @@ full delivered: 2026-10-29T05:53:10Z (8 systems published, insertions held pendi
 
 # Pipeline report
 
-_Generated 2026-10-29T05:52:01.071Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
+_Generated 2026-10-29T06:05:01.702Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
 
 Source: `Startup.blend`, Blender 4.5.0, export 2026-10-29T05:45:38Z. Export settings: {"subsurfCap":1,"curveResolutionCap":6,"bevelResolutionCap":2}. Body height (all systems) 1.7437 m; normalization offset (Y-up) [0,-0.000382,-0.001348].
 
@@ -23,7 +23,7 @@ Source: `Startup.blend`, Blender 4.5.0, export 2026-10-29T05:45:38Z. Export sett
 
 Startup download (manifest + search index + skeletal GLB, uncompressed by HTTP): **2.80 MiB** (budget 5 MB, met). Largest file: muscular.glb (9.56 MiB).
 
-Timings (s): manifest 42.7, process skeletal 13.3, process joints 7.2, process visceral 8.1, process cardiovascular 25.4, process lymphoid 3.3, process nervous 37.7, process muscular 51.3, process regions 3.7.
+Timings (s): manifest 6.2, process skeletal 13.3, process joints 7.2, process visceral 8.1, process cardiovascular 25.4, process lymphoid 3.3, process nervous 37.7, process muscular 51.3, process regions 3.7.
 
 ## Simplification
 
@@ -156,6 +156,10 @@ skeletal: Supra-acetabular groove, skeletal: Symphysial surface of pubis, joints
 
 _none_
 
+### Sides from the name dropped (geometry crosses the midline / lies on the other side) (11)
+
+`anterior-papillary-muscle-of-right-ventricle` named right, vertex centroid x = 0.0301 m, `inferior-papillary-muscle-of-right-ventricle` named right, vertex centroid x = 0.0218 m, `left-medial-segment-of-liver-iv` named left, vertex centroid x = -0.0192 m, `right-coronary-artery` named right, vertex centroid x = 0.0139 m, `right-coronary-leaflet` named right, vertex centroid x = 0.0135 m, `right-inferolateral-branch-of-right-coronary-artery` named right, vertex centroid x = 0.0554 m, `right-lobe-of-thymus` named right, vertex centroid x = 0.0042 m, `right-semilunar-leaflet-of-pulmonary-valve` named right, vertex centroid x = 0.0184 m, `right-ventricle` named right, vertex centroid x = 0.0205 m, `septal-leaflet-of-right-atrioventricular-valve` named right, vertex centroid x = 0.0068 m, `septal-papillary-muscle-of-right-ventricle` named right, vertex centroid x = 0.0222 m
+
 ### References to unpublished nodes (0)
 
 _none_
@@ -214,7 +218,7 @@ _none_
 
 ## Validation
 
-_`node pipeline/validate.mjs` at 2026-10-29T05:52:38.605Z — systems: skeletal, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions — **passed** (0 errors, 22 warnings)._
+_`node pipeline/validate.mjs` at 2026-10-29T06:05:13.265Z — systems: skeletal, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions — **passed** (0 errors, 11 warnings)._
 
 | orientation / side check | result | detail |
 |---|---|---|
@@ -225,7 +229,7 @@ _`node pipeline/validate.mjs` at 2026-10-29T05:52:38.605Z — systems: skeletal,
 | head above feet (frontal bone y > calcaneus y + 1 m) | ok | frontal y = 1.634, calcaneus y = 0.044 |
 | face towards +Z (nasal bone z > occipital bone z) | ok | nasal z = 0.089, occipital z = -0.053 |
 | feet near y = 0 (calcaneus bbox min y < 0.05) | ok | min y = 0.0118 |
-| side of 2846 sided structures (vertex centroid, tolerance 0.002 m; strict for .l/.r suffixes) | ok | 0 failures; 12 reported as warnings (left-medial-segment-of-liver-iv, anterior-papillary-muscle-of-right-ventricle, inferior-papillary-muscle-of-right-ventricle, right-coronary-artery, right-coronary-leaflet, right-inferolateral-branch-of-right-coronary-artery, right-semilunar-leaflet-of-pulmonary-valve, right-ventricle, septal-leaflet-of-right-atrioventricular-valve, septal-papillary-muscle-of-right-ventricle, right-lobe-of-thymus, vagus-nerve-x-r) |
+| side of 2835 sided structures (vertex centroid, tolerance 0.002 m; strict for every published side, only open review items are warnings) | ok | 0 failures; 1 reported as warnings (vagus-nerve-x-r) |
 | left/right pairs mirror (|x_l + x_r| ≤ 0.01 m; review items excluded) | ok | worst posterior-intercostal-arteries-l/posterior-intercostal-arteries-r: 0.0099 m |
 | triangle winding agrees with normals (≥ 50 % of surface per structure) | ok | min 95.0 %, mean 100.0 %, 0 below 80 % |
 
@@ -265,17 +269,6 @@ Startup download (manifest + search index + skeletal): 2.80 MiB (budget 5 MB: me
 - pair posterior-branch-of-renal-artery-l / posterior-branch-of-renal-artery-r: |x_l + x_r| = 0.0074 m
 - pair posterior-intercostal-arteries-l / posterior-intercostal-arteries-r: |x_l + x_r| = 0.0099 m
 - REVIEW pair vagus-nerve-x-l / vagus-nerve-x-r: |x_l + x_r| = 0.0355 m (open review item)
-- side: left-medial-segment-of-liver-iv is 'left' but its vertex centroid is at x = -0.0192 — side from the name (organ-internal designation)
-- side: anterior-papillary-muscle-of-right-ventricle is 'right' but its vertex centroid is at x = 0.0301 — side from the name (organ-internal designation)
-- side: inferior-papillary-muscle-of-right-ventricle is 'right' but its vertex centroid is at x = 0.0218 — side from the name (organ-internal designation)
-- side: right-coronary-artery is 'right' but its vertex centroid is at x = 0.0139 — side from the name (organ-internal designation)
-- side: right-coronary-leaflet is 'right' but its vertex centroid is at x = 0.0135 — side from the name (organ-internal designation)
-- side: right-inferolateral-branch-of-right-coronary-artery is 'right' but its vertex centroid is at x = 0.0554 — side from the name (organ-internal designation)
-- side: right-semilunar-leaflet-of-pulmonary-valve is 'right' but its vertex centroid is at x = 0.0184 — side from the name (organ-internal designation)
-- side: right-ventricle is 'right' but its vertex centroid is at x = 0.0205 — side from the name (organ-internal designation)
-- side: septal-leaflet-of-right-atrioventricular-valve is 'right' but its vertex centroid is at x = 0.0068 — side from the name (organ-internal designation)
-- side: septal-papillary-muscle-of-right-ventricle is 'right' but its vertex centroid is at x = 0.0222 — side from the name (organ-internal designation)
-- side: right-lobe-of-thymus is 'right' but its vertex centroid is at x = 0.0042 — side from the name (organ-internal designation)
 - side: vagus-nerve-x-r is 'right' but its vertex centroid is at x = 0.0194 — open review item (overrides.json)
 
 

@@ -35,7 +35,7 @@ import {
   writeJsonAtomic,
 } from './lib/io.mjs';
 import { ATTRIBUTIONS, buildModel, toGroup, toLandmark, toStructure } from './lib/model.mjs';
-import { validate } from './validate.mjs';
+import { SIDE_TOLERANCE, validate } from './validate.mjs';
 
 const SOURCE = {
   name: 'Z-Anatomy',
@@ -56,7 +56,7 @@ function sortById(a, b) {
 /** Assemble the published data for the given systems. Pure apart from reading processed/*.json. */
 export function assemble(model, systems, processed, config, nc) {
   const included = new Set(systems);
-  const issues = { dropped: [], danglingRefs: [] };
+  const issues = { dropped: [], danglingRefs: [], nameSidesDropped: [] };
   // structures that actually have a GLB node
   const geoById = new Map();
   for (const sid of systems) {
@@ -73,6 +73,19 @@ export function assemble(model, systems, processed, config, nc) {
       continue;
     }
     structures.push(toStructure(s, geo));
+  }
+  // `side` is the body side. A side read from the name ("Right ventricle", "Left medial segment of liver (IV)")
+  // is kept only when the geometry lies on that side; organ-internal designations that cross the midline get
+  // no side (ARCHITECTURE.md §4.3). Same tolerance as the validator, which is strict for every published side.
+  const nameSideDropped = new Set();
+  for (const s of structures) {
+    if (s.sideSource !== 'name') continue;
+    const x = s.centroid[0];
+    if (s.side === 'left' ? x > -SIDE_TOLERANCE : x < SIDE_TOLERANCE) continue;
+    issues.nameSidesDropped.push({ id: s.id, side: s.side, x: Math.round(x * 1e4) / 1e4 });
+    nameSideDropped.add(s.id);
+    delete s.side;
+    delete s.sideSource;
   }
   const present = new Set(structures.map((s) => s.id));
   const modelById = new Map(model.structures.map((s) => [s.id, s]));
@@ -100,6 +113,7 @@ export function assemble(model, systems, processed, config, nc) {
   const landmarks = model.landmarks
     .filter((m) => included.has(m.system) && present.has(m.structureId))
     .map(toLandmark);
+  for (const m of landmarks) if (nameSideDropped.has(m.structureId)) delete m.side;
 
   const bySys = (arr) => {
     const out = Object.fromEntries(systems.map((s) => [s, []]));
@@ -616,6 +630,11 @@ export function reportMarkdown({
   list('Names without a Translations row (English only unless TA2 filled Latin)', missing, (x) => x, 80);
   list('Structures dropped (no geometry after export)', assembled.issues.dropped);
   list(
+    'Sides from the name dropped (geometry crosses the midline / lies on the other side)',
+    assembled.issues.nameSidesDropped,
+    (d) => `\`${d.id}\` named ${d.side}, vertex centroid x = ${d.x} m`,
+  );
+  list(
     'References to unpublished nodes',
     assembled.issues.danglingRefs,
     (d) => `${d.id}.${d.key} → ${d.ref} (${d.reason})`,
@@ -961,6 +980,7 @@ async function main() {
         ...model.report,
         dropped: assembled.issues.dropped,
         danglingRefs: assembled.issues.danglingRefs,
+        nameSidesDropped: assembled.issues.nameSidesDropped,
       },
     },
     true,

@@ -170,7 +170,7 @@ export async function validate({ systems: requested, dir = PATHS.models } = {}) 
       if (!/^#[0-9a-f]{6}$/.test(s.color)) c.error(`${s.id}: bad colour ${s.color}`);
       for (const r of s.regions) if (!regionIds.has(r)) c.error(`${s.id}: unknown region ${r}`);
       if (s.side && !['left', 'right'].includes(s.side)) c.error(`${s.id}: bad side ${s.side}`);
-      if (s.side && !['suffix', 'name'].includes(s.sideSource))
+      if (s.side && !['suffix', 'override', 'name'].includes(s.sideSource))
         c.error(`${s.id}: bad sideSource ${s.sideSource}`);
       if (s.parentId) {
         const p = groupById.get(s.parentId) ?? structById.get(s.parentId);
@@ -476,8 +476,6 @@ export async function validate({ systems: requested, dir = PATHS.models } = {}) 
     if (!ok) {
       const f = { id: s.id, side: s.side, sideSource: s.sideSource, x };
       if (reviewIds.has(s.id)) softSide.push({ ...f, why: 'open review item (overrides.json)' });
-      else if (s.sideSource === 'name')
-        softSide.push({ ...f, why: 'side from the name (organ-internal designation)' });
       else sideFailures.push(f);
     }
     if (s.pairId && s.side === 'left' && centroidOf.has(s.pairId)) {
@@ -498,7 +496,7 @@ export async function validate({ systems: requested, dir = PATHS.models } = {}) 
   for (const f of softSide)
     c.warn(`side: ${f.id} is '${f.side}' but its vertex centroid is at x = ${f.x.toFixed(4)} — ${f.why}`);
   c.orientation.push({
-    check: `side of ${sided} sided structures (vertex centroid, tolerance ${SIDE_TOLERANCE} m; strict for .l/.r suffixes)`,
+    check: `side of ${sided} sided structures (vertex centroid, tolerance ${SIDE_TOLERANCE} m; strict for every published side, only open review items are warnings)`,
     ok: sideFailures.length === 0,
     detail: `${sideFailures.length} failures; ${softSide.length} reported as warnings (${softSide.map((f) => f.id).join(', ') || '–'})`,
   });

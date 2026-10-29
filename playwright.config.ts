@@ -7,7 +7,8 @@ const OUT = `.e2e/${PORT}`;
 export default defineConfig({
   testDir: './tests/e2e',
   outputDir: `./test-results/${PORT}`,
-  timeout: 60_000,
+  // SwiftShader (no GPU) renders X-ray / transparent passes slowly; 60 s was not enough with 2 workers.
+  timeout: 120_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
   retries: process.env.CI ? 1 : 0,

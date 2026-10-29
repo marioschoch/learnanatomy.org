@@ -39,8 +39,14 @@ export interface BBox {
  */
 export type Side = 'left' | 'right';
 
-/** How `side` was determined (for QA / reviewers). */
-export type SideSource = 'suffix' | 'name';
+/**
+ * How `side` was determined (for QA / reviewers):
+ *  - 'suffix'   `.l` / `.r` in the source object name
+ *  - 'override' the suffix was wrong upstream; corrected from the geometry after owner review
+ *               (pipeline/config/overrides.json)
+ *  - 'name'     "Left …" / "… of right …" in the English name, kept only when the geometry lies on that side
+ */
+export type SideSource = 'suffix' | 'override' | 'name';
 
 // ---------------------------------------------------------------------------------------------
 // Manifest (public/models/manifest.json) — loaded at startup, must stay small

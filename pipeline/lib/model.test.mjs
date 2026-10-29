@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
+import { assemble } from '../manifest.mjs';
 import { buildModel, toStructure } from './model.mjs';
 
 const config = {
@@ -158,6 +159,13 @@ const ta2 = [
   { id: '3023', en: 'Liver', la: 'Hepar' },
 ];
 
+const geoStub = (centroid) => ({
+  chunk: 'x.glb',
+  centroid,
+  bbox: { min: centroid, max: centroid },
+  triangles: 1,
+});
+
 describe('buildModel', () => {
   const m = buildModel({ scene, texts, config, nc, overrides, ta2 });
   const byName = (n) => m.structByName.get(n);
@@ -272,5 +280,30 @@ describe('buildModel', () => {
     });
     const ids = (mm) => mm.structures.map((s) => [s.sourceName, s.id]).sort();
     expect(ids(again)).toEqual(ids(m));
+  });
+
+  it('publishes approved swaps as sideSource override', () => {
+    expect(toStructure(byName('Eyelashes.l'), geoStub([-0.03, 1.6, 0.1])).sideSource).toBe('override');
+    expect(toStructure(byName('Femur.l'), geoStub([0.1, 0.5, 0])).sideSource).toBe('suffix');
+  });
+
+  it('keeps a side from the name only when the geometry lies on that side', () => {
+    const visceral = m.structures.filter((s) => s.system === 'visceral');
+    const processedWith = (x) => ({
+      visceral: {
+        chunks: [{ file: 'visceral.glb', bytes: 1, nodes: visceral.map((s) => s.id) }],
+        structures: Object.fromEntries(
+          visceral.map((s) => [s.id, { ...geoStub([s.id === 'left-ventricle' ? x : -0.02, 1.3, 0.05]) }]),
+        ),
+      },
+    });
+    const lv = (x) =>
+      assemble(m, ['visceral'], processedWith(x), config, nc).files.structures.visceral.structures.find(
+        (s) => s.id === 'left-ventricle',
+      );
+    expect(lv(0.04)).toMatchObject({ side: 'left', sideSource: 'name' });
+    const crossing = lv(-0.01);
+    expect(crossing.side).toBeUndefined();
+    expect(crossing.sideSource).toBeUndefined();
   });
 });

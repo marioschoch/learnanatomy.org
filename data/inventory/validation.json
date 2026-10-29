@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-29T05:52:38.610Z",
+  "at": "2026-10-29T06:05:13.267Z",
   "systems": [
     "skeletal",
     "joints",
@@ -23,17 +23,6 @@
     "pair posterior-branch-of-renal-artery-l / posterior-branch-of-renal-artery-r: |x_l + x_r| = 0.0074 m",
     "pair posterior-intercostal-arteries-l / posterior-intercostal-arteries-r: |x_l + x_r| = 0.0099 m",
     "REVIEW pair vagus-nerve-x-l / vagus-nerve-x-r: |x_l + x_r| = 0.0355 m (open review item)",
-    "side: left-medial-segment-of-liver-iv is 'left' but its vertex centroid is at x = -0.0192 — side from the name (organ-internal designation)",
-    "side: anterior-papillary-muscle-of-right-ventricle is 'right' but its vertex centroid is at x = 0.0301 — side from the name (organ-internal designation)",
-    "side: inferior-papillary-muscle-of-right-ventricle is 'right' but its vertex centroid is at x = 0.0218 — side from the name (organ-internal designation)",
-    "side: right-coronary-artery is 'right' but its vertex centroid is at x = 0.0139 — side from the name (organ-internal designation)",
-    "side: right-coronary-leaflet is 'right' but its vertex centroid is at x = 0.0135 — side from the name (organ-internal designation)",
-    "side: right-inferolateral-branch-of-right-coronary-artery is 'right' but its vertex centroid is at x = 0.0554 — side from the name (organ-internal designation)",
-    "side: right-semilunar-leaflet-of-pulmonary-valve is 'right' but its vertex centroid is at x = 0.0184 — side from the name (organ-internal designation)",
-    "side: right-ventricle is 'right' but its vertex centroid is at x = 0.0205 — side from the name (organ-internal designation)",
-    "side: septal-leaflet-of-right-atrioventricular-valve is 'right' but its vertex centroid is at x = 0.0068 — side from the name (organ-internal designation)",
-    "side: septal-papillary-muscle-of-right-ventricle is 'right' but its vertex centroid is at x = 0.0222 — side from the name (organ-internal designation)",
-    "side: right-lobe-of-thymus is 'right' but its vertex centroid is at x = 0.0042 — side from the name (organ-internal designation)",
     "side: vagus-nerve-x-r is 'right' but its vertex centroid is at x = 0.0194 — open review item (overrides.json)"
   ],
   "orientation": [
@@ -73,9 +62,9 @@
       "detail": "min y = 0.0118"
     },
     {
-      "check": "side of 2846 sided structures (vertex centroid, tolerance 0.002 m; strict for .l/.r suffixes)",
+      "check": "side of 2835 sided structures (vertex centroid, tolerance 0.002 m; strict for every published side, only open review items are warnings)",
       "ok": true,
-      "detail": "0 failures; 12 reported as warnings (left-medial-segment-of-liver-iv, anterior-papillary-muscle-of-right-ventricle, inferior-papillary-muscle-of-right-ventricle, right-coronary-artery, right-coronary-leaflet, right-inferolateral-branch-of-right-coronary-artery, right-semilunar-leaflet-of-pulmonary-valve, right-ventricle, septal-leaflet-of-right-atrioventricular-valve, septal-papillary-muscle-of-right-ventricle, right-lobe-of-thymus, vagus-nerve-x-r)"
+      "detail": "0 failures; 1 reported as warnings (vagus-nerve-x-r)"
     },
     {
       "check": "left/right pairs mirror (|x_l + x_r| ≤ 0.01 m; review items excluded)",
@@ -101,9 +90,9 @@
     "open review item vagus-nerve-x-r: vertex centroid x = 0.0194 (patient's left)"
   ],
   "budget": {
-    "startupBytes": 2931398,
+    "startupBytes": 2931234,
     "ok": true,
-    "totalBytes": 36631709,
+    "totalBytes": 36631169,
     "files": 26
   },
   "stats": {
