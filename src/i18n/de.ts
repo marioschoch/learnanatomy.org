@@ -216,6 +216,8 @@ export const de: Messages = {
     about: 'Über',
     help: 'Hilfe & Tastenkürzel',
     more: 'Menü',
+    support: 'Unterstützen',
+    supportLong: 'Den Atlas unterstützen',
   },
   phone: {
     layers: 'Ebenen',
@@ -281,6 +283,8 @@ export const de: Messages = {
     privacyTitle: 'Datenschutz',
     privacy:
       'Diese Seite speichert nur deine Anzeige-Einstellungen und deinen Quiz-Fortschritt in deinem Browser (localStorage). Es wird nichts übertragen.',
+    supportLine:
+      '{{app}} ist kostenlos und werbefrei. Wenn es dir beim Lernen hilft, kannst du es <support>unterstützen</support>.',
     loading: 'Wird geladen…',
   },
   quiz: {

@@ -51,6 +51,8 @@ const PATHS = {
   arrowLeft: 'M19 12H5M12 19l-7-7 7-7',
   minus: 'M5 12h14',
   plus: 'M12 5v14M5 12h14',
+  heart:
+    'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
 } as const;
 
 export type IconName = keyof typeof PATHS;

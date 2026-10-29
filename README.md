@@ -98,6 +98,9 @@ The Pages project already exists. Creating it anew with wrangler ≥ 4.15x needs
 otherwise routes `pages` commands to Workers:
 `npx wrangler pages project create open-anatomy-atlas --production-branch main --force`.
 
+Donations go through a Stripe Payment Link: `DONATION_URL` in `src/donation.ts` is the only place it is set. In the
+Stripe dashboard, the link's "After payment" setting redirects to `https://learnanatomy.org/thanks`.
+
 `public/_headers` sets cache headers. The site is fully static (no functions, no cookies). The build also ships
 `ATTRIBUTION.md`, `LICENSE` and `assets.LICENSE` as `/licenses/*.txt`; the credits page links them.
 

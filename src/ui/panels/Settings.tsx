@@ -4,10 +4,11 @@
  */
 import { DropdownMenu } from 'radix-ui';
 import { useTranslation } from 'react-i18next';
+import { supportPath } from '@/config';
 import type { NameLang, ThemePref, UiLang } from '@/contract';
 import { useAtlasStore } from '@/state';
 import { useQuizLauncher } from '@/quiz/launcher';
-import { cx, mutedText, panelClass } from '../components/classes';
+import { cx, heartClass, mutedText, panelClass } from '../components/classes';
 import { Icon, type IconName } from '../components/Icon';
 import { Button, IconButton, Segmented, Tip } from '../components/ui';
 import { nameLangOptions } from '../lib/labels';
@@ -104,10 +105,11 @@ function ThemeRadio() {
   );
 }
 
-/** Everything from the top bar in one menu (phones, small tablets). */
+/** Everything from the top bar in one menu (phones, small tablets), ending with the support link. */
 export function MoreMenu() {
   const { t } = useTranslation();
   const reducedMotion = useAtlasStore((s) => s.reducedMotion);
+  const uiLang = useAtlasStore((s) => s.uiLang);
   const ui = useUiStore.getState;
   return (
     <DropdownMenu.Root>
@@ -156,6 +158,12 @@ export function MoreMenu() {
           <DropdownMenu.Item className={itemClass} onSelect={() => ui().setAboutOpen(true)}>
             <Icon name="info" className="size-4" />
             {t('menu.about')}
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={itemClass} asChild>
+            <a href={supportPath(uiLang)}>
+              <Icon name="heart" className={cx('size-4', heartClass)} />
+              {t('menu.supportLong')}
+            </a>
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

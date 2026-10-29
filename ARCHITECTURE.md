@@ -478,6 +478,11 @@ structure and language (`/en/<slug>`, `/de/<slug>`), per-system indexes (`/en/sy
   "unreviewed" badge as in the app). "Open in 3D" links `/?s=<left id>` (§7).
 - **Head:** canonical, `hreflang` en/de/x-default, Open Graph / Twitter card. Home page meta and a static shell
   inside `#root` (replaced when React mounts) live in `index.html`.
+- **Donations:** `/support` and `/de/support` say what donations pay for and hold the one link to the Stripe
+  Payment Link (`DONATION_URL` in `src/donation.ts`, set nowhere else). The app's top bar (phones: the menu), the
+  header and footer of every static page and the About dialog link there, never straight to Stripe. `/thanks`
+  (both languages, `noindex`) is the Payment Link's success URL. Plain links only: no Stripe.js, no cookies. These
+  pages are written even without `public/models/`.
 - **Images:** `npm run seo:thumbs` (`seo/thumbnails.ts`, Playwright + GPU, ~35 min) renders every structure and
   group page in the real viewer: isolate with context (tiny structures < 2.4 cm alone, shot at 4× and cropped),
   camera from the bounding box (front; back when the box lies behind the coronal midplane; sideways skin regions

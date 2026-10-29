@@ -17,6 +17,7 @@ import type {
   SystemStructuresFile,
   Vec3,
 } from '../src/contract/anatomy.ts';
+import { supportPath } from '../src/donation.ts';
 
 export const SITE_URL = 'https://learnanatomy.org';
 export const PAGE_LANGS = ['en', 'de'] as const;
@@ -248,7 +249,8 @@ export function buildSite(data: SiteData): Site {
       units.delete(key);
 
   // 3. slugs
-  const taken = new Set<string>([SYSTEMS_SEGMENT]);
+  // /de/support is the German support page (src/donation.ts), so "support" is never a structure slug either.
+  const taken = new Set<string>([SYSTEMS_SEGMENT, supportPath('de').split('/').pop()!]);
   const slugged: [string, Unit][] = [];
   const ordered = [...units.values()].sort(
     (a, b) => priority(a) - priority(b) || a.base.localeCompare(b.base),

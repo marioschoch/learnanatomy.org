@@ -1,6 +1,6 @@
 /**
- * Desktop (≥ 1024 px) and tablet (640–1023 px) layout: top bar (brand, search, settings), left sidebar
- * (Layers / Structures), right info or quiz panel, bottom toolbar. Panels float over the 3D view; the
+ * Desktop (≥ 1024 px) and tablet (640–1023 px) layout: top bar (brand, search, settings, support link), left
+ * sidebar (Layers / Structures), right info or quiz panel, bottom toolbar. Panels float over the 3D view; the
  * wrapper is pointer-events-none so the canvas stays interactive between them. On tablets the sidebar is
  * collapsed by default and the settings live in a menu.
  */
@@ -19,6 +19,7 @@ import { SearchBox } from '../search/SearchBox';
 import { useUiStore } from '../uiStore';
 import { Brand } from './Brand';
 import { Sidebar } from './Sidebar';
+import { SupportLink } from './SupportLink';
 
 const QuizPanel = lazy(() => import('@/quiz/QuizPanel'));
 
@@ -79,6 +80,7 @@ export function WideLayout({ tablet }: { tablet: boolean }) {
               onClick={() => useUiStore.getState().setAboutOpen(true)}
             />
           )}
+          <SupportLink />
         </div>
       </header>
 

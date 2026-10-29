@@ -1,5 +1,6 @@
-/** Project-wide constants. The project name lives in ./appName.ts. */
+/** Project-wide constants. The project name lives in ./appName.ts, the donation link in ./donation.ts. */
 export { APP_NAME } from './appName';
+export { DONATION_URL, supportPath, THANKS_PATH } from './donation';
 
 export const APP_REPO_URL = '';
 

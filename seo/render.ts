@@ -2,6 +2,7 @@
 // the 404 page and the sitemap. Plain strings, no framework; the CSS is inlined (pages are small and stand alone).
 import { APP_NAME } from '../src/appName.ts';
 import type { Definition, Names, SystemId } from '../src/contract/anatomy.ts';
+import { DONATION_URL, supportPath, THANKS_PATH } from '../src/donation.ts';
 import { de } from '../src/i18n/de.ts';
 import { en } from '../src/i18n/en.ts';
 import { licenseLabel, licenseUrl } from '../src/ui/lib/licenses.ts';
@@ -55,6 +56,30 @@ const STRINGS = {
     otherLang: 'Deutsch',
     homeDescription:
       'Free interactive 3D anatomy atlas for medical students: bones, muscles, organs, vessels and nerves with Latin and English names.',
+    supportTitle: 'Support the atlas',
+    supportDescription:
+      '{{app}} is free, ad-free and has no tracking. If it helps you study, a donation helps pay for the domain, hosting and new 3D models.',
+    supportHeading: 'Keep {{app}} free',
+    supportFree:
+      '{{app}} is free, has no ads and doesn’t track you. It’s built by a student in his free time.',
+    supportCosts:
+      'Donations cover the domain, the hosting and the time that goes into new models and features.',
+    supportAnyAmount:
+      'Any amount helps. And whether you donate or not, using {{app}} is and stays completely free.',
+    usesTitle: 'Where your money goes',
+    useHosting: 'Domain & hosting',
+    useHostingText: 'keeping the site online and fast.',
+    useFeatures: 'New models and features',
+    useFeaturesText: 'more structures and better tools for studying.',
+    useAdFree: 'Keeping it ad-free',
+    useAdFreeText: 'so the atlas never has to pay for itself with ads or your data.',
+    donate: 'Donate with TWINT or card',
+    donateNote: 'Secure payment via Stripe. TWINT, cards, Apple Pay and Google Pay accepted.',
+    notDeductible: 'Donations are not tax-deductible.',
+    thanksTitle: 'Thank you!',
+    thanksBody:
+      'Thank you for supporting {{app}}. Your donation helps keep the atlas free and ad-free for everyone who studies with it.',
+    backToAtlas: 'Back to the 3D atlas',
   },
   de: {
     titleSuffix: '3D-Anatomie',
@@ -85,6 +110,30 @@ const STRINGS = {
     otherLang: 'English',
     homeDescription:
       'Kostenloser interaktiver 3D-Anatomieatlas für Medizinstudierende: Knochen, Muskeln, Organe, Gefäße und Nerven mit lateinischen und englischen Namen.',
+    supportTitle: 'Den Atlas unterstützen',
+    supportDescription:
+      '{{app}} ist kostenlos, werbefrei und ohne Tracking. Wenn es dir beim Lernen hilft, hilft eine Spende bei Domain, Hosting und neuen 3D-Modellen.',
+    supportHeading: 'Damit {{app}} kostenlos bleibt',
+    supportFree:
+      '{{app}} ist kostenlos, zeigt keine Werbung und verfolgt dich nicht. Ein Student entwickelt es in seiner Freizeit.',
+    supportCosts:
+      'Spenden decken die Domain, das Hosting und die Zeit, die in neue Modelle und Funktionen fließt.',
+    supportAnyAmount:
+      'Jeder Betrag hilft. Und ob du spendest oder nicht: {{app}} ist und bleibt komplett kostenlos.',
+    usesTitle: 'Wofür deine Spende verwendet wird',
+    useHosting: 'Domain & Hosting',
+    useHostingText: 'damit die Seite online und schnell bleibt.',
+    useFeatures: 'Neue Modelle und Funktionen',
+    useFeaturesText: 'mehr Strukturen und bessere Werkzeuge zum Lernen.',
+    useAdFree: 'Werbefrei bleiben',
+    useAdFreeText: 'damit sich der Atlas nie über Werbung oder deine Daten finanzieren muss.',
+    donate: 'Mit TWINT oder Karte spenden',
+    donateNote: 'Sichere Zahlung über Stripe. TWINT, Karten, Apple Pay und Google Pay werden akzeptiert.',
+    notDeductible: 'Spenden sind nicht steuerlich abzugsfähig.',
+    thanksTitle: 'Danke!',
+    thanksBody:
+      'Danke, dass du {{app}} unterstützt. Deine Spende hilft, den Atlas für alle, die damit lernen, kostenlos und werbefrei zu halten.',
+    backToAtlas: 'Zurück zum 3D-Atlas',
   },
 } satisfies Record<PageLang, Record<string, string>>;
 
@@ -211,8 +260,8 @@ function firstParagraph(def: Definition | undefined): string | undefined {
 // ------------------------------------------------------------------------------------------------ layout
 
 const CSS = `
-:root{--bg:#fafafa;--fg:#18181b;--muted:#52525b;--line:#e4e4e7;--card:#fff;--accent:#0f766e;--accent-fg:#fff;--accent-hover:#115e59;--link:#0f766e;--warn-bg:#fef3c7;--warn-fg:#92400e;color-scheme:light dark}
-@media (prefers-color-scheme:dark){:root{--bg:#09090b;--fg:#f4f4f5;--muted:#a1a1aa;--line:#27272a;--card:#18181b;--accent:#2dd4bf;--accent-fg:#042f2e;--accent-hover:#5eead4;--link:#5eead4;--warn-bg:#451a03;--warn-fg:#fcd34d}}
+:root{--bg:#fafafa;--fg:#18181b;--muted:#52525b;--line:#e4e4e7;--card:#fff;--accent:#0f766e;--accent-fg:#fff;--accent-hover:#115e59;--link:#0f766e;--warn-bg:#fef3c7;--warn-fg:#92400e;--pill-bg:#f0fdfa;--pill-fg:#115e59;--pill-line:rgba(13,148,136,.2);--pill-hover:#ccfbf1;--heart:#f43f5e;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#09090b;--fg:#f4f4f5;--muted:#a1a1aa;--line:#27272a;--card:#18181b;--accent:#2dd4bf;--accent-fg:#042f2e;--accent-hover:#5eead4;--link:#5eead4;--warn-bg:#451a03;--warn-fg:#fcd34d;--pill-bg:rgba(45,212,191,.1);--pill-fg:#99f6e4;--pill-line:rgba(45,212,191,.25);--pill-hover:rgba(45,212,191,.2);--heart:#fb7185}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 "Inter Variable",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
 a{color:var(--link);text-underline-offset:2px}
@@ -221,7 +270,12 @@ a{color:var(--link);text-underline-offset:2px}
 .top .wrap{display:flex;align-items:center;gap:12px;min-height:56px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
 .brand svg{width:28px;height:28px;flex:none}
-.top nav{display:flex;gap:16px;font-size:14px}
+.top nav{display:flex;align-items:center;gap:16px;font-size:14px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 10px;border-radius:999px;background:var(--pill-bg);color:var(--pill-fg);box-shadow:inset 0 0 0 1px var(--pill-line);font-weight:500;text-decoration:none;white-space:nowrap}
+.pill:hover{background:var(--pill-hover)}
+.heart{display:inline-block;width:.85em;height:.85em;fill:var(--heart);stroke:var(--heart);stroke-width:2;stroke-linejoin:round;vertical-align:-.08em;margin-right:4px}
+.pill .heart{margin-right:0}
+.pill:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .crumbs{font-size:13px;color:var(--muted);margin:20px 0 8px}
 .crumbs ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 0}
 .crumbs li:not(:last-child)::after{content:"›";margin:0 8px;color:var(--muted)}
@@ -260,9 +314,16 @@ h3{font-size:16px;margin:16px 0 4px}
 .systems small{display:block;color:var(--muted)}
 footer{border-top:1px solid var(--line);margin-top:48px;padding:20px 0 40px;font-size:13px;color:var(--muted)}
 footer p{margin:4px 0}
+footer .support{margin-top:12px}
+.page{max-width:42rem;margin-top:32px}
+.page h1{margin-bottom:16px}
+.donate{margin:28px 0 8px}
 `
   .trim()
   .replace(/\n/g, '');
+
+/** Decorative heart of the support links (same path as the app's Icon "heart"). */
+const HEART = `<svg class="heart" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
 
 const LOGO = `<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#0f766e"/><g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="8.5" r="2.6"/><path d="M16 12v8M10.5 14.5l5.5 2 5.5-2M12.5 26l3.5-6 3.5 6"/></g></svg>`;
 
@@ -276,9 +337,20 @@ interface Head {
   image?: { path: string; width: number; height: number; alt: string };
   jsonLd?: object;
   noindex?: boolean;
+  /** Leave out the footer's support line (on the support and thank-you pages). */
+  noSupportLine?: boolean;
 }
 
-function layout(head: Head, body: string, ctx: Pick<RenderContext, 'site'>): string {
+/** The footer's support line: the i18n string's "<support>…</support>" becomes the link to the support page. */
+function supportLine(lang: PageLang): string {
+  return esc(UI[lang].credits.supportLine.replace('{{app}}', APP_NAME)).replace(
+    /&lt;support&gt;(.*?)&lt;\/support&gt;/,
+    (_, text: string) => `<a href="${supportPath(lang)}">${HEART}${text}</a>`,
+  );
+}
+
+/** `site` is missing only for the support and thank-you pages when the build has no model data. */
+function layout(head: Head, body: string, ctx: { site?: Site | undefined }): string {
   const { lang } = head;
   const image = head.image ?? {
     path: `/${SITE_CARD}`,
@@ -322,7 +394,8 @@ function layout(head: Head, body: string, ctx: Pick<RenderContext, 'site'>): str
       : []),
   ];
   const t = UI[lang];
-  const attributions = ctx.site.data.manifest.attributions;
+  const attributions = ctx.site?.data.manifest.attributions;
+  const support = supportPath(lang);
   return `<!doctype html>
 <html lang="${lang}">
 <head>
@@ -333,7 +406,9 @@ ${meta.join('\n')}
 <a class="brand" href="/">${LOGO}${esc(APP_NAME)}</a>
 <nav><a href="/${lang}/">${esc(s(lang, 'allStructures'))}</a>${
     alt ? `<a href="${alt[other]}" hreflang="${other}" lang="${other}">${esc(s(lang, 'otherLang'))}</a>` : ''
-  }</nav>
+  }<a class="pill" href="${support}" aria-label="${esc(t.menu.supportLong)}"${
+    head.path === support ? ' aria-current="page"' : ''
+  }>${HEART}${esc(t.menu.support)}</a></nav>
 </div></header>
 <main class="wrap">
 ${body}
@@ -341,8 +416,8 @@ ${body}
 <footer><div class="wrap">
 <p><strong>${esc(t.credits.disclaimerTitle)}.</strong> ${esc(t.credits.disclaimer)}</p>
 <p>${esc(t.credits.purpose)}</p>
-<p>${esc(t.info.modelLicense)}: ${esc(attributions['z-anatomy']?.text ?? 'Z-Anatomy')} · <a href="/licenses/ATTRIBUTION.txt">${esc(t.credits.fullAttribution)}</a></p>
-</div></footer>
+<p>${esc(t.info.modelLicense)}: ${esc(attributions?.['z-anatomy']?.text ?? 'Z-Anatomy')} · <a href="/licenses/ATTRIBUTION.txt">${esc(t.credits.fullAttribution)}</a></p>
+${head.noSupportLine ? '' : `<p class="support">${supportLine(lang)}</p>\n`}</div></footer>
 </body>
 </html>
 `;
@@ -678,10 +753,69 @@ export function renderNotFound(ctx: RenderContext): string {
   );
 }
 
+// ------------------------------------------------------------------------------------------------ support
+
+/** /support and /de/support: what donations pay for, and the one link to the payment page (DONATION_URL). */
+export function renderSupport(lang: PageLang, ctx: { site?: Site | undefined } = {}): string {
+  const app = { app: APP_NAME };
+  const item = (label: StringKey, text: StringKey) =>
+    `<li><strong>${esc(s(lang, label))}</strong> – ${esc(s(lang, text))}</li>`;
+  const body = `<article class="page">
+<h1>${esc(s(lang, 'supportHeading', app))}</h1>
+<p>${esc(s(lang, 'supportFree', app))}</p>
+<p>${esc(s(lang, 'supportCosts'))}</p>
+<p>${esc(s(lang, 'supportAnyAmount', app))}</p>
+<section aria-labelledby="uses">
+<h2 id="uses">${esc(s(lang, 'usesTitle'))}</h2>
+<ul>${item('useHosting', 'useHostingText')}${item('useFeatures', 'useFeaturesText')}${item('useAdFree', 'useAdFreeText')}</ul>
+</section>
+<p class="donate"><a class="btn" href="${esc(DONATION_URL)}">${esc(s(lang, 'donate'))} →</a></p>
+<p class="note">${esc(s(lang, 'donateNote'))}<br>${esc(s(lang, 'notDeductible'))}</p>
+</article>`;
+  return layout(
+    {
+      lang,
+      title: `${s(lang, 'supportTitle')} | ${APP_NAME}`,
+      description: s(lang, 'supportDescription', app),
+      path: supportPath(lang),
+      alternates: { en: supportPath('en'), de: supportPath('de') },
+      noSupportLine: true,
+    },
+    body,
+    ctx,
+  );
+}
+
+/** /thanks: where Stripe sends people after paying. One URL for both languages (like 404.html), not indexed. */
+export function renderThanks(ctx: { site?: Site | undefined } = {}): string {
+  const app = { app: APP_NAME };
+  const body = PAGE_LANGS.map(
+    (
+      lang,
+    ) => `<section lang="${lang}"><h1>${esc(s(lang, 'thanksTitle'))}</h1><p>${esc(s(lang, 'thanksBody', app))}</p>
+<p><a class="btn" href="/">${esc(s(lang, 'backToAtlas'))} →</a></p></section>`,
+  ).join('\n');
+  return layout(
+    {
+      lang: 'en',
+      title: `${s('en', 'thanksTitle')} | ${APP_NAME}`,
+      description: s('en', 'thanksBody', app),
+      path: THANKS_PATH,
+      noindex: true,
+      noSupportLine: true,
+    },
+    body,
+    ctx,
+  );
+}
+
+// ------------------------------------------------------------------------------------------------ sitemap
+
 export function renderSitemap(ctx: RenderContext): string {
   const { site, lastmod } = ctx;
   const paths = [
     '/',
+    ...PAGE_LANGS.map((lang) => supportPath(lang)),
     ...PAGE_LANGS.flatMap((lang) => [
       `/${lang}/`,
       ...systemsWithPages(site).map((id) => systemUrl(lang, id)),

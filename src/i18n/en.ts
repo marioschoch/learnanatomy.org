@@ -215,6 +215,8 @@ export const en = {
     about: 'About',
     help: 'Help & shortcuts',
     more: 'Menu',
+    support: 'Support',
+    supportLong: 'Support the atlas',
   },
   phone: {
     layers: 'Layers',
@@ -280,6 +282,8 @@ export const en = {
     privacyTitle: 'Privacy',
     privacy:
       'This site stores only your display preferences and quiz progress in your browser (localStorage). Nothing is sent anywhere.',
+    /** <support>…</support> becomes the link to the support page. */
+    supportLine: '{{app}} is free and ad-free. If it helps you study, you can <support>support it</support>.',
     loading: 'Loading…',
   },
   quiz: {

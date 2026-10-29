@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
+import { DONATION_URL } from '../src/donation';
 import { buildSite } from './model';
 import {
   excerpt,
@@ -7,6 +8,8 @@ import {
   renderNotFound,
   renderPage,
   renderSitemap,
+  renderSupport,
+  renderThanks,
   tidy,
   truncate,
   type RenderContext,
@@ -85,10 +88,45 @@ describe('renderPage', () => {
 describe('sitemap and 404', () => {
   it('lists every page in both languages', () => {
     const xml = renderSitemap(ctx());
-    expect(xml.match(/<url>/g)).toHaveLength(1 + 2 * (1 + 4 + site.pages.length));
+    expect(xml.match(/<url>/g)).toHaveLength(1 + 2 * (1 + 1 + 4 + site.pages.length));
     expect(xml).toContain('<loc>https://learnanatomy.org/de/femur</loc>');
+    expect(xml).toContain('<loc>https://learnanatomy.org/support</loc>');
+    expect(xml).toContain('<loc>https://learnanatomy.org/de/support</loc>');
+    expect(xml).not.toContain('/thanks');
   });
   it('keeps the 404 page out of the index', () => {
     expect(renderNotFound(ctx())).toContain('<meta name="robots" content="noindex">');
+  });
+});
+
+describe('support', () => {
+  it('links the support page from every header and footer, in the page language', () => {
+    const en = renderPage(femur, 'en', ctx());
+    expect(en).toContain('<a class="pill" href="/support" aria-label="Support the atlas">');
+    expect(en).toMatch(/you can <a href="\/support"><svg class="heart"[^>]*aria-hidden="true"/);
+    const de = renderPage(femur, 'de', ctx());
+    expect(de).toContain('<a class="pill" href="/de/support"');
+    expect(de).toContain('kannst du es <a href="/de/support">');
+  });
+
+  it('writes the support page with the donation link, canonical and alternates', () => {
+    const html = renderSupport('en', { site });
+    expect(html).toContain('<title>Support the atlas | learnanatomy.org</title>');
+    expect(html).toContain('<h1>Keep learnanatomy.org free</h1>');
+    expect(html).toContain(`<a class="btn" href="${DONATION_URL}">Donate with TWINT or card →</a>`);
+    expect(html.split(DONATION_URL)).toHaveLength(2);
+    expect(html).toContain('<link rel="canonical" href="https://learnanatomy.org/support">');
+    expect(html).toContain('<link rel="alternate" hreflang="de" href="https://learnanatomy.org/de/support">');
+    expect(html).toContain('href="/support" aria-label="Support the atlas" aria-current="page"');
+    expect(html).not.toContain('class="support"');
+    expect(renderSupport('de')).toContain('Mit TWINT oder Karte spenden');
+  });
+
+  it('keeps the thank-you page out of the index and links back to the atlas', () => {
+    const html = renderThanks();
+    expect(html).toContain('<meta name="robots" content="noindex">');
+    expect(html).not.toContain('rel="canonical"');
+    expect(html).toContain('<a class="btn" href="/">Back to the 3D atlas →</a>');
+    expect(html).toContain('<section lang="de"><h1>Danke!</h1>');
   });
 });
