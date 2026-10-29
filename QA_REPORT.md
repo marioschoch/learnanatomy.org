@@ -323,3 +323,17 @@ QA did not fix anything. Everything in this section was done by the lead afterwa
 | L8 | fixed | Each GLB has `asset.copyright` pointing to the attribution. |
 | L12b | fixed | ARCHITECTURE §4.6 now states the validator's real winding thresholds: error < 50 %, warning < 80 %; measured min 95 %. The validator's startup budget counts the default systems as served (JSON gzip), in decimal MB. |
 | L3, L4, L7, L9–L11, L12a | not changed | L9: source maps stay published on purpose; the code is MIT and they help bug reports. L12a: the QA specs are now opt-in (`QA_GPU=1` / `QA_PERF=1`), and the default `npm run test:e2e` runs the 22 mock-data tests. |
+
+**Re-run after the fixes (GPU, Intel Iris Plus, real assets):**
+
+| check | result |
+|---|---|
+| typecheck, lint, prettier | pass |
+| unit tests | 29 files, 196 tests, pass |
+| `npm run assets:validate` | passed, 0 errors, 11 warnings (unchanged: 9 pair-mirror warnings + vagus) |
+| default e2e (`npm run test:e2e`, mock data, SwiftShader) | 22/22 |
+| QA specs, desktop | all 14 pass (QA-05, QA-07, QA-08b and QA-10 also re-run after the last change) |
+| QA specs, phone (`--workers=2`) | 12 pass, 2 skipped (desktop-only data checks) |
+
+- QA-08b, highlighted target vs quiz panel: phone centroid y 217 px with the sheet at y ≥ 389; desktop x 748 px with the panel at x ≥ 1045.
+- With 4 GPU workers, phone QA-01 once timed out while loading: the loading badges stood at 46 % / 85 % after 60 s while the other workers were busy. It passes with 2 workers.
