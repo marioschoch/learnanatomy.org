@@ -8,16 +8,7 @@
 // The output is assembled in a staging folder next to public/models and swapped in with two renames, so the
 // dev server (and Agent B's watcher) never sees a half-written or missing manifest for more than a moment.
 import { createHash } from 'node:crypto';
-import {
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  renameSync,
-  rmSync,
-  statSync,
-} from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   fmtBytes,
@@ -35,6 +26,7 @@ import {
   writeJsonAtomic,
 } from './lib/io.mjs';
 import { ATTRIBUTIONS, buildModel, toGroup, toLandmark, toStructure } from './lib/model.mjs';
+import { applyReviews } from './lib/reviews.mjs';
 import { SIDE_TOLERANCE, validate } from './validate.mjs';
 
 const SOURCE = {
@@ -54,9 +46,9 @@ function sortById(a, b) {
 }
 
 /** Assemble the published data for the given systems. Pure apart from reading processed/*.json. */
-export function assemble(model, systems, processed, config, nc) {
+export function assemble(model, systems, processed, config, nc, reviewsFile = { reviews: {} }) {
   const included = new Set(systems);
-  const issues = { dropped: [], danglingRefs: [], nameSidesDropped: [] };
+  const issues = { dropped: [], danglingRefs: [], nameSidesDropped: [], reviews: null };
   // structures that actually have a GLB node
   const geoById = new Map();
   for (const sid of systems) {
@@ -133,9 +125,12 @@ export function assemble(model, systems, processed, config, nc) {
     definitions[sid] = Object.fromEntries(
       Object.entries(model.definitions[sid] ?? {})
         .filter(([k]) => used.has(k))
-        .sort(([a], [b]) => (a < b ? -1 : 1)),
+        .sort(([a], [b]) => (a < b ? -1 : 1))
+        .map(([k, d]) => [k, { ...d }]),
     );
   }
+  // reviewed: true only where definition-reviews.json has a review of exactly this text
+  issues.reviews = applyReviews(definitions, reviewsFile);
 
   // languages that actually occur in published names
   const langs = new Set();
@@ -300,6 +295,7 @@ export function attributionMarkdown({
   readme,
   ncStructures,
   sideSwaps,
+  nameFixes = [],
   settings,
   processSettings,
   ta2Present,
@@ -372,6 +368,12 @@ export function attributionMarkdown({
   if (sideSwaps.length) {
     L.push('- left/right naming errors corrected after human review (`pipeline/config/overrides.json`):');
     for (const s of sideSwaps) L.push(`  - \`${s.source}\` → ${s.side} (named ${s.suffixSide} upstream)`);
+  }
+  if (nameFixes.length) {
+    L.push(
+      '- spelling errors in names corrected after review (`pipeline/config/overrides.json` `nameFixes`):',
+    );
+    for (const f of nameFixes) L.push(`  - ${f.en} (${f.lang}): "${f.from}" → "${f.to}"`);
   }
   L.push('');
   L.push('## Definitions');
@@ -484,13 +486,9 @@ export function reportMarkdown({
       `${pct(tot.before - tot.after, tot.before)} | ${fmtBytes(tot.bytes)} | ${assembled.manifestBase.languages.join(', ')} | ${pct(tot.def, tot.s)} | ${tot.nc} |`,
   );
   L.push('');
-  const startup =
-    statSize(join(PATHS.models, 'manifest.json')) +
-    statSize(join(PATHS.models, 'search-index.json')) +
-    (processed.skeletal ? processed.skeletal.chunks.reduce((a, c) => a + c.bytes, 0) : 0);
   L.push(
-    `Startup download (manifest + search index + skeletal GLB, uncompressed by HTTP): **${fmtBytes(startup)}** ` +
-      `(budget 5 MB${startup <= 5 * 1024 * 1024 ? ', met' : ', **missed**'}). Largest file: ${largestFile(processed, systems)}.`,
+    `Largest file: ${largestFile(processed, systems)}. The startup download is checked by the validator (section ` +
+      '"Validation" below).',
   );
   L.push('');
   if (timings) {
@@ -559,6 +557,16 @@ export function reportMarkdown({
     for (const s of swaps)
       L.push(`- \`${s.source}\` → ${s.side} (\`${model.structByName.get(s.source).id}\`)`);
   else L.push('- none in this build');
+  L.push('');
+  L.push('## Name fixes');
+  L.push('');
+  if (model.report.nameFixes.length)
+    for (const f of model.report.nameFixes)
+      L.push(
+        `- ${f.applied ? 'applied' : '**not applied** (upstream text no longer matches; remove or update the entry)'}: ` +
+          `${f.en} (${f.lang}) "${f.from}" → "${f.to}"`,
+      );
+  else L.push('- none');
   L.push('');
   if (review) {
     L.push(
@@ -639,6 +647,17 @@ export function reportMarkdown({
     assembled.issues.nameSidesDropped,
     (d) => `\`${d.id}\` named ${d.side}, vertex centroid x = ${d.x} m`,
   );
+  const rv = assembled.issues.reviews;
+  L.push(
+    `Definition reviews (\`pipeline/config/definition-reviews.json\`): **${rv.applied.length}** published as reviewed.`,
+  );
+  L.push('');
+  list(
+    'Stale definition reviews (text changed since the review; published as not reviewed — review again)',
+    rv.stale,
+    (r) => `\`${r.key}\` (reviewed by ${r.reviewer}, ${r.date})`,
+  );
+  list('Definition reviews without a definition (key renamed or removed upstream)', rv.orphan);
   list(
     'References to unpublished nodes',
     assembled.issues.danglingRefs,
@@ -812,14 +831,6 @@ export async function reviewAnalysis(io, model, overrides, processedAll) {
   return out;
 }
 
-function statSize(p) {
-  try {
-    return statSync(p).size;
-  } catch {
-    return 0;
-  }
-}
-
 function largestFile(processed, systems) {
   let best = ['–', 0];
   for (const sid of systems)
@@ -842,7 +853,7 @@ function previousHeaderLines() {
 async function main() {
   const t0 = Date.now();
   const argv = process.argv.slice(2);
-  const { config, nc, overrides } = loadConfigs();
+  const { config, nc, overrides, reviews: definitionReviews } = loadConfigs();
   const ids = config.systems.map((s) => s.id);
   const requested = parseSystemsArg(argv, ids);
   const available = ids.filter((id) => existsSync(join(PATHS.processed, `${id}.json`)));
@@ -868,7 +879,7 @@ async function main() {
     }
   }
 
-  const assembled = assemble(model, systems, processed, config, nc);
+  const assembled = assemble(model, systems, processed, config, nc, definitionReviews);
   const staging = join(ROOT, 'public', `.models-staging-${process.pid}`);
   rmSync(staging, { recursive: true, force: true });
   // clean up leftovers of interrupted runs
@@ -925,6 +936,7 @@ async function main() {
       sideSwaps: model.report.sideSwaps.filter((s) =>
         systems.includes(model.structByName.get(s.source)?.system),
       ),
+      nameFixes: model.report.nameFixes.filter((f) => f.applied),
       settings: scene.settings,
       processSettings: {
         ...processed[systems[0]].settings,
@@ -986,6 +998,7 @@ async function main() {
         dropped: assembled.issues.dropped,
         danglingRefs: assembled.issues.danglingRefs,
         nameSidesDropped: assembled.issues.nameSidesDropped,
+        definitionReviews: assembled.issues.reviews,
       },
     },
     true,

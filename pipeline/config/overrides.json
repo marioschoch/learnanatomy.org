@@ -1,5 +1,5 @@
 {
-  "$comment": "Human-reviewed corrections of upstream data errors. Only entries listed here may be corrected by the pipeline; anything else that fails validation fails the build. sideSwaps status: 'proposed' (not applied, structure is reported) | 'approved' (applied). toReview status: 'open' (undecided) | 'accepted' (known upstream issue, published as named); both are validator warnings.",
+  "$comment": "Human-reviewed corrections of upstream data errors. Only entries listed here may be corrected by the pipeline; anything else that fails validation fails the build. sideSwaps status: 'proposed' (not applied, structure is reported) | 'approved' (applied). toReview status: 'open' (undecided) | 'accepted' (known upstream issue, published as named); both are validator warnings. nameFixes: spelling corrections of single names, applied only while the upstream text equals `from` (status 'approved' | 'proposed').",
   "sideSwaps": [
     {
       "source": ["Eyelashes.l", "Eyelashes.r"],
@@ -240,6 +240,32 @@
       "reason": "bbox centre at x = +0.020 (patient's left). The right vagus has branches crossing the midline; check the vertex centroid before deciding.",
       "status": "accepted",
       "decision": "Owner, 2026-10-29: publish as named (the cervical part is the right vagus); the thoracic part lies on the patient's left (64 % of vertices, y < 1.30 m) — upstream modelling issue, to be reported to Z-Anatomy. Reported as a warning, not an error."
+    }
+  ],
+  "nameFixes": [
+    {
+      "en": "First metacarpal bone",
+      "lang": "la",
+      "from": "Os primum metarcapi",
+      "to": "Os primum metacarpi",
+      "reason": "Letter swap (QA M4). The same file spells the siblings 'Os secundum … Os quintum metacarpi'.",
+      "status": "approved"
+    },
+    {
+      "en": "Lamina of thyroid cartilage",
+      "lang": "la",
+      "from": "Lamina cartilaginis thryeoideae",
+      "to": "Lamina cartilaginis thyreoideae",
+      "reason": "Letter swap (QA M4). The same file spells 'Cornu superius / inferius cartilaginis thyreoideae' and 'Linea obliqua cartilaginis thyreoideae'.",
+      "status": "approved"
+    },
+    {
+      "en": "Articular capsules of metacarpophalangeal joints",
+      "lang": "la",
+      "from": "Capsulae articulariae articulationes metacarpophalnageae",
+      "to": "Capsulae articulariae articulationes metacarpophalangeae",
+      "reason": "Letter swap (found next to QA M4). The same file spells the group 'Articulationes metacarpophalangeae'.",
+      "status": "approved"
     }
   ]
 }

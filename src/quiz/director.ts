@@ -73,7 +73,8 @@ export function presentFeedback(q: Question, answer: QuizAnswer): void {
   if (q.type === 'name') highlights[q.targetId] = ok ? 'quiz-correct' : 'quiz-wrong';
   else {
     highlights[q.targetId] = 'quiz-correct';
-    if (!ok && given) highlights[given] = 'quiz-wrong';
+    // A correct pick on a same-named structure (Locate) is highlighted as correct, too.
+    if (given) highlights[given] = ok ? 'quiz-correct' : 'quiz-wrong';
   }
   if (q.type === 'identify' && given) s.setIsolate('context', [q.targetId, given]);
   s.setHighlights(highlights);

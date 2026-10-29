@@ -66,17 +66,21 @@ export function expandRegions(regions: readonly RegionInfo[], selected: readonly
   return out;
 }
 
-/** Structures that match the scope (systems, regions incl. descendants, side). */
+/**
+ * Structures that match the scope (systems, regions incl. descendants, side). `exclude` = ids never asked: the
+ * manifest's default-hidden structures (fasciae, liver segments), which stay hidden during the quiz.
+ */
 export function buildPool(
   structures: Iterable<Structure>,
   scope: Pick<QuizScope, 'systems' | 'regions' | 'side'>,
   regionInfo: readonly RegionInfo[],
+  exclude: ReadonlySet<string> = new Set(),
 ): Structure[] {
   const systems = new Set(scope.systems);
   const regions = scope.regions.length ? expandRegions(regionInfo, scope.regions) : null;
   const out: Structure[] = [];
   for (const st of structures) {
-    if (!systems.has(st.system)) continue;
+    if (!systems.has(st.system) || exclude.has(st.id)) continue;
     if (regions && !st.regions.some((r) => regions.has(r))) continue;
     if (scope.side === 'left' && st.side === 'right') continue;
     if (scope.side === 'right' && st.side === 'left') continue;
@@ -93,6 +97,23 @@ const kindKey = (st: Structure) => {
 const labelKey = (st: Structure, lang: NameLang) =>
   displayName(st.names, lang).trim().toLowerCase() + kindKey(st);
 const enKey = (st: Structure) => st.names.en.trim().toLowerCase() + kindKey(st);
+
+/**
+ * Locate verdict for a 3D pick. Structures with the same displayed name (incl. patch kind) cannot be told apart by
+ * the question (e.g. the numbered diaphragm origin patches), so any of them counts: same side → correct,
+ * other side → wrong side.
+ */
+export function locateVerdict(
+  target: Structure,
+  picked: Structure | undefined,
+  nameLang: NameLang,
+): 'correct' | 'wrong-side' | 'wrong' {
+  if (!picked) return 'wrong';
+  if (picked.id === target.id) return 'correct';
+  if (picked.id === target.pairId) return 'wrong-side';
+  if (labelKey(picked, nameLang) !== labelKey(target, nameLang)) return 'wrong';
+  return picked.side === target.side ? 'correct' : 'wrong-side';
+}
 
 /**
  * Up to `n` distractors for an Identify question, all with a name different from the target and from each

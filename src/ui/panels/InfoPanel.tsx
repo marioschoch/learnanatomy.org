@@ -297,8 +297,15 @@ function InfoContent({
 
           {attribution ? (
             <p className={cx('mt-3 text-[11px] leading-snug', mutedText)}>
-              {t('info.modelLicense')}: {attribution.text} ·{' '}
-              <ExternalLink href={attribution.licenseUrl}>{licenseLabel(attribution.license)}</ExternalLink>
+              {t('info.modelLicense')}: {attribution.text}
+              {attribution.license && attribution.licenseUrl ? (
+                <>
+                  {' · '}
+                  <ExternalLink href={attribution.licenseUrl}>
+                    {licenseLabel(attribution.license)}
+                  </ExternalLink>
+                </>
+              ) : null}
             </p>
           ) : null}
 
@@ -336,6 +343,8 @@ function NamesBlock({ names, side }: { names: Names; side?: Side | undefined }) 
         <span lang={latin ? 'la' : 'en'} className="min-w-0">
           {title}
         </span>
+        {/* Keeps the heading text "Os femoris L"; whitespace between flex items is not rendered. */}
+        {side ? ' ' : null}
         {side ? (
           <span className="mt-1">
             <SideBadge side={side} label={t(side === 'left' ? 'side.left' : 'side.right')} />

@@ -32,6 +32,18 @@ describe('search engine', () => {
     expect(hits[0]!.entry.side).toBe('left');
   });
 
+  it('ranks a muscle before its origin/insertion patches of the same name', () => {
+    const names = { en: 'Biceps brachii muscle', la: 'Musculus biceps brachii' };
+    const entries: SearchEntry[] = [
+      { id: 'p-ins-l', type: 'structure', system: 'insertions', names, side: 'left', kind: 'insertion' },
+      { id: 'p-ins-r', type: 'structure', system: 'insertions', names, side: 'right', kind: 'insertion' },
+      { id: 'g-muscle', type: 'group', system: 'muscular', names },
+    ];
+    const engine2 = createSearchEngine(entries);
+    expect(ids(engine2.search('Musculus biceps brachii'))[0]).toBe('g-muscle');
+    expect(ids(engine2.search('biceps brachii'))[0]).toBe('g-muscle');
+  });
+
   it('tolerates typos', () => {
     expect(ids(engine.search('humerys'))).toContain('humerus-l');
     expect(ids(engine.search('gastrocnemus'))).toContain('gastrocnemius-l');

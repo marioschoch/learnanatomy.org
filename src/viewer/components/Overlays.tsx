@@ -14,6 +14,7 @@ export function LoadingProgress() {
   const strings = useViewerStrings();
   const manifest = useAtlasStore((s) => s.manifest);
   const systemLoad = useAtlasStore((s) => s.systemLoad);
+  const coveredBottom = useAtlasStore((s) => s.viewInsets.bottom);
   const rows = (manifest?.systems ?? []).filter((sys) => {
     const g = systemLoad[sys.id]?.geometry;
     return g === 'loading' || g === 'error';
@@ -26,7 +27,11 @@ export function LoadingProgress() {
   return (
     <div
       className="pointer-events-none absolute left-1/2 flex -translate-x-1/2 flex-col items-center gap-1.5"
-      style={{ bottom: 'var(--atlas-progress-bottom, 152px)' }}
+      style={{
+        bottom: coveredBottom
+          ? `max(var(--atlas-progress-bottom, 152px), ${coveredBottom + 16}px)`
+          : 'var(--atlas-progress-bottom, 152px)',
+      }}
       role="status"
       aria-live="polite"
       data-testid="viewer-loading"

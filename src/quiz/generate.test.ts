@@ -5,6 +5,7 @@ import {
   buildPool,
   expandRegions,
   generateQuiz,
+  locateVerdict,
   pickDistractors,
   seededRng,
   type QuizScope,
@@ -49,6 +50,12 @@ describe('quiz pool', () => {
     expect(left.some((s) => s.side === 'right')).toBe(false);
     expect(left.some((s) => s.side === 'left')).toBe(true);
     expect(left.some((s) => s.id === 'heart')).toBe(true);
+  });
+
+  it('never asks excluded (default-hidden) structures', () => {
+    const pool = buildPool(all, scope(), manifest.regions, new Set(['liver']));
+    expect(pool.map((s) => s.id)).not.toContain('liver');
+    expect(pool.map((s) => s.id)).toContain('heart');
   });
 });
 
@@ -176,5 +183,26 @@ describe('muscle attachment patches', () => {
   it('offers the origin and the insertion of the same muscle as different options', () => {
     const d = pickDistractors(pool[0]!, pool, 'la', seededRng(3));
     expect(d.map((s) => s.id).sort()).toEqual(['biceps-brachii-insertion-l', 'deltoid-origin-l']);
+  });
+});
+
+describe('locate verdict', () => {
+  const femurL = all.find((s) => s.id === 'femur-l')!;
+  const femurR = all.find((s) => s.id === 'femur-r')!;
+  const heart = all.find((s) => s.id === 'heart')!;
+  const twin = (id: string, side: Structure['side']): Structure => ({ ...femurL, id, nodeName: id, side });
+
+  it('grades the target, its counterpart and other structures', () => {
+    expect(locateVerdict(femurL, femurL, 'la')).toBe('correct');
+    expect(locateVerdict(femurL, femurR, 'la')).toBe('wrong-side');
+    expect(locateVerdict(femurL, heart, 'la')).toBe('wrong');
+    expect(locateVerdict(femurL, undefined, 'la')).toBe('wrong');
+  });
+
+  it('accepts a same-named structure on the same side (numbered patches)', () => {
+    expect(locateVerdict(femurL, twin('femur-2-l', 'left'), 'la')).toBe('correct');
+    expect(locateVerdict(femurL, twin('femur-2-r', 'right'), 'la')).toBe('wrong-side');
+    const origin = { ...twin('femur-origin-l', 'left'), kind: 'origin' as const };
+    expect(locateVerdict(femurL, origin, 'la')).toBe('wrong');
   });
 });

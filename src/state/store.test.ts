@@ -89,6 +89,15 @@ describe('atlas store', () => {
     expect(s().explode).toBe(0);
     expect(s().clipping.coronal.position).toBe(1);
   });
+
+  it('keeps the view insets object when the reported insets do not change', () => {
+    const insets = { top: 100, right: 0, bottom: 455, left: 0 };
+    s().setViewInsets(insets);
+    const first = s().viewInsets;
+    expect(first).toEqual(insets);
+    s().setViewInsets({ ...insets });
+    expect(s().viewInsets).toBe(first);
+  });
 });
 
 describe('default-hidden nodes', () => {

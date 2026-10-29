@@ -94,6 +94,7 @@ export function WideLayout({ tablet }: { tablet: boolean }) {
 
       {quizOpen ? (
         <aside
+          data-right-panel="quiz"
           className={cx(
             panelClass,
             'absolute right-3 z-10 flex w-96 max-w-[calc(100vw-1.5rem)] flex-col',
@@ -113,6 +114,7 @@ export function WideLayout({ tablet }: { tablet: boolean }) {
         </aside>
       ) : showInfo ? (
         <aside
+          data-right-panel="info"
           className={cx(
             panelClass,
             'absolute right-3 z-10 flex w-80 flex-col',

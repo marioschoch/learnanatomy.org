@@ -5,7 +5,8 @@
  * comes first:
  *   0 exact name · 1 name starts with the query · 2 a word starts with the query ·
  *   3 the name contains the query (or all query words) · 4 fuzzy only
- * Within a tier: structures before groups before landmarks, then Fuse score, then shorter names.
+ * Within a tier: structures before groups before landmarks before origin/insertion patches (they carry their
+ * muscle's name, so "biceps brachii" must find the muscle first), then Fuse score, then shorter names.
  */
 import Fuse, { type IFuseOptions } from 'fuse.js';
 import type { SearchEntry } from '@/contract';
@@ -36,6 +37,8 @@ interface Doc {
 const FUZZY_BELOW = 8;
 
 const TYPE_RANK: Record<SearchEntry['type'], number> = { structure: 0, group: 1, landmark: 2 };
+const PATCH_RANK = 3;
+const rankOf = (e: SearchEntry) => (e.kind ? PATCH_RANK : TYPE_RANK[e.type]);
 const WORD_START = /[\s(/[,-]/;
 
 function textsOf(e: SearchEntry): string[] {
@@ -170,7 +173,7 @@ export function createSearchEngine(entries: readonly SearchEntry[]): SearchEngin
       hits.sort(
         (a, b) =>
           a.tier - b.tier ||
-          TYPE_RANK[a.entry.type] - TYPE_RANK[b.entry.type] ||
+          rankOf(a.entry) - rankOf(b.entry) ||
           (a.tier === 4 ? a.score - b.score : 0) ||
           a.matched.length - b.matched.length ||
           a.matched.localeCompare(b.matched) ||

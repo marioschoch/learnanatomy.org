@@ -77,8 +77,10 @@ export function CameraRig({ scene, bus }: { scene: AtlasScene; bus: ViewerBus })
       (b.min[1] + b.max[1]) / 2,
       (b.min[2] + b.max[2]) / 2,
     ];
-    // Room for the UI bars above and below the body.
-    const dist = c.getDistanceToFitBox(size[0], size[1], size[2]) * 1.22;
+    // Room for the UI bars above and below the body; reported insets already keep the body clear of them.
+    const { top, right, bottom, left } = useAtlasStore.getState().viewInsets;
+    const margin = top + right + bottom + left > 0 ? 1.06 : 1.22;
+    const dist = c.getDistanceToFitBox(size[0], size[1], size[2]) * margin;
     const pos = viewPosition('anterior', target, dist);
     await settle(c.setLookAt(...pos, ...target, animate));
   }, []);

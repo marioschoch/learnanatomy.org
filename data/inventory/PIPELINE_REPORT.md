@@ -3,7 +3,7 @@ full delivered: 2026-10-29T05:53:10Z (8 systems published, insertions held pendi
 
 # Pipeline report
 
-_Generated 2026-10-29T06:35:14.730Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
+_Generated 2026-10-29T11:30:52.972Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
 
 Source: `Startup.blend`, Blender 4.5.0, export 2026-10-29T05:45:38Z. Export settings: {"subsurfCap":1,"curveResolutionCap":6,"bevelResolutionCap":2}. Body height (all systems) 1.7437 m; normalization offset (Y-up) [0,-0.000382,-0.001348].
 
@@ -11,20 +11,20 @@ Source: `Startup.blend`, Blender 4.5.0, export 2026-10-29T05:45:38Z. Export sett
 
 | system | structures | groups | landmarks | triangles (inventory, original settings) | triangles exported | triangles published | reduction | bytes per file | languages | with definition | NC |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| skeletal | 277 | 63 | 882 | 702,465 | 702,015 | 448,730 | 36.1 % | skeletal.glb: 2.05 MiB | la, en, fr, es, pt | 90.6 % | 0 |
+| skeletal | 277 | 63 | 882 | 702,465 | 702,015 | 448,730 | 36.1 % | skeletal.glb: 2.06 MiB | la, en, fr, es, pt | 90.6 % | 0 |
 | insertions | 705 | 0 | 0 | 931,484 | 916,812 | 289,986 | 68.4 % | insertions.glb: 1.98 MiB | la, en, fr, es, pt | 95.2 % | 0 |
 | joints | 413 | 113 | 0 | 358,326 | 340,431 | 259,199 | 23.9 % | joints.glb: 1.67 MiB | la, en, fr, es, pt | 75.8 % | 0 |
 | visceral | 119 | 37 | 133 | 715,043 | 439,119 | 326,419 | 25.7 % | visceral.glb: 1.40 MiB | la, en, fr, es, pt | 95.0 % | 4 |
 | cardiovascular | 675 | 30 | 0 | 3,843,768 | 1,343,832 | 811,402 | 39.6 % | cardiovascular.glb: 3.81 MiB | la, en, fr, es, pt | 69.5 % | 4 |
-| lymphoid | 163 | 45 | 11 | 128,353 | 127,682 | 106,120 | 16.9 % | lymphoid.glb: 586.5 KiB | la, en, fr, es, pt | 65.6 % | 0 |
+| lymphoid | 163 | 45 | 11 | 128,353 | 127,682 | 106,120 | 16.9 % | lymphoid.glb: 586.7 KiB | la, en, fr, es, pt | 65.6 % | 0 |
 | nervous | 582 | 92 | 36 | 2,408,368 | 1,528,394 | 853,509 | 44.2 % | nervous.glb: 3.99 MiB | la, en, fr, es, pt | 82.8 % | 4 |
 | muscular | 683 | 105 | 0 | 2,324,365 | 2,275,395 | 2,059,543 | 9.5 % | muscular.glb: 9.56 MiB | la, en, fr, es, pt | 80.7 % | 0 |
-| regions | 256 | 34 | 9 | 136,121 | 132,660 | 124,302 | 6.3 % | regions.glb: 895.6 KiB | la, en, fr, es, pt | 57.0 % | 0 |
+| regions | 256 | 34 | 9 | 136,121 | 132,660 | 124,302 | 6.3 % | regions.glb: 895.8 KiB | la, en, fr, es, pt | 57.0 % | 0 |
 | **total** | 3873 | 519 | 1071 | 11,548,293 | 7,806,340 | 5,279,210 | 32.4 % | 25.92 MiB | la, en, fr, es, pt | 80.1 % | 12 |
 
-Startup download (manifest + search index + skeletal GLB, uncompressed by HTTP): **2.93 MiB** (budget 5 MB, met). Largest file: muscular.glb (9.56 MiB).
+Largest file: muscular.glb (9.56 MiB). The startup download is checked by the validator (section "Validation" below).
 
-Timings (s): manifest 7.4, process skeletal 1.7, process insertions 1.9, process joints 1.0, process visceral 1.1, process cardiovascular 3.0, process lymphoid 0.4, process nervous 3.5, process muscular 6.4, process regions 0.6.
+Timings (s): manifest 10.0, process skeletal 2.3, process insertions 2.7, process joints 1.9, process visceral 2.0, process cardiovascular 4.1, process lymphoid 0.7, process nervous 4.9, process muscular 9.8, process regions 1.0.
 
 ## Simplification
 
@@ -130,6 +130,12 @@ Applied side swaps (approved in `pipeline/config/overrides.json`):
 - `Short head of biceps brachii.ol` → right (`short-head-of-biceps-brachii-origin-r`)
 - `Short head of biceps femoris.el` → right (`short-head-of-biceps-femoris-insertion-r`)
 
+## Name fixes
+
+- applied: First metacarpal bone (la) "Os primum metarcapi" → "Os primum metacarpi"
+- applied: Lamina of thyroid cartilage (la) "Lamina cartilaginis thryeoideae" → "Lamina cartilaginis thyreoideae"
+- applied: Articular capsules of metacarpophalangeal joints (la) "Capsulae articulariae articulationes metacarpophalnageae" → "Capsulae articulariae articulationes metacarpophalangeae"
+
 Suffix sides that disagree with the geometry (vertex centroid beyond ±0.002 m), all processed systems: **1** — 0 pairs where both members are swapped, 1 single objects. Nothing is changed; proposed `sideSwaps` entries for the owner are in `data/inventory/side-review.json`.
 
 | object | system | named | centroid x | parent | parent side |
@@ -158,6 +164,16 @@ _none_
 ### Sides from the name dropped (geometry crosses the midline / lies on the other side) (11)
 
 `anterior-papillary-muscle-of-right-ventricle` named right, vertex centroid x = 0.0301 m, `inferior-papillary-muscle-of-right-ventricle` named right, vertex centroid x = 0.0218 m, `left-medial-segment-of-liver-iv` named left, vertex centroid x = -0.0192 m, `right-coronary-artery` named right, vertex centroid x = 0.0139 m, `right-coronary-leaflet` named right, vertex centroid x = 0.0135 m, `right-inferolateral-branch-of-right-coronary-artery` named right, vertex centroid x = 0.0554 m, `right-lobe-of-thymus` named right, vertex centroid x = 0.0042 m, `right-semilunar-leaflet-of-pulmonary-valve` named right, vertex centroid x = 0.0184 m, `right-ventricle` named right, vertex centroid x = 0.0205 m, `septal-leaflet-of-right-atrioventricular-valve` named right, vertex centroid x = 0.0068 m, `septal-papillary-muscle-of-right-ventricle` named right, vertex centroid x = 0.0222 m
+
+Definition reviews (`pipeline/config/definition-reviews.json`): **0** published as reviewed.
+
+### Stale definition reviews (text changed since the review; published as not reviewed — review again) (0)
+
+_none_
+
+### Definition reviews without a definition (key renamed or removed upstream) (0)
+
+_none_
 
 ### References to unpublished nodes (0)
 
@@ -214,3 +230,62 @@ Colour method per system: skeletal {"none":6,"node":67,"node-any-bsdf":204}; ins
 _none_
 
 <!-- validation -->
+
+## Validation
+
+_`node pipeline/validate.mjs` at 2026-10-29T11:31:00.730Z — systems: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions — **passed** (0 errors, 11 warnings)._
+
+| orientation / side check | result | detail |
+|---|---|---|
+| Liver centroid on the patient's right (x < 0) [liver] | ok | x = -0.0227 |
+| Stomach centroid on the patient's left (x > 0) [stomach] | ok | x = 0.0435 |
+| Spleen centroid on the patient's left (x > 0) [spleen] | ok | x = 0.0863 |
+| Left ventricle centroid on the patient's left (x > 0) [left-ventricle] | ok | x = 0.0471 |
+| head above feet (frontal bone y > calcaneus y + 1 m) | ok | frontal y = 1.634, calcaneus y = 0.044 |
+| face towards +Z (nasal bone z > occipital bone z) | ok | nasal z = 0.089, occipital z = -0.053 |
+| feet near y = 0 (calcaneus bbox min y < 0.05) | ok | min y = 0.0118 |
+| side of 3540 sided structures (vertex centroid, tolerance 0.002 m; strict for every published side, only open review items are warnings) | ok | 0 failures; 1 reported as warnings (vagus-nerve-x-r) |
+| left/right pairs mirror (|x_l + x_r| ≤ 0.01 m; review items excluded) | ok | worst posterior-intercostal-arteries-l/posterior-intercostal-arteries-r: 0.0099 m |
+| triangle winding agrees with normals (≥ 50 % of surface per structure) | ok | min 95.0 %, mean 100.0 %, 0 below 80 % |
+
+| system | structures | triangles | bytes |
+|---|---|---|---|
+| skeletal | 277 | 448,730 | 2.06 MiB |
+| insertions | 705 | 289,986 | 1.98 MiB |
+| joints | 413 | 259,199 | 1.67 MiB |
+| visceral | 119 | 326,419 | 1.40 MiB |
+| cardiovascular | 675 | 811,402 | 3.81 MiB |
+| lymphoid | 163 | 106,120 | 586.7 KiB |
+| nervous | 582 | 853,509 | 3.99 MiB |
+| muscular | 683 | 2,059,543 | 9.56 MiB |
+| regions | 256 | 124,302 | 895.8 KiB |
+
+Startup download (manifest, search index, default systems skeletal + visceral; JSON gzip, GLB as is, without JS): 3.62 MiB (budget 5 MB: met); public/models total 38.07 MiB in 29 files.
+
+- skeletal.glb: 277 nodes, 448,730 triangles, 2.06 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- insertions.glb: 705 nodes, 289,986 triangles, 1.98 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- joints.glb: 413 nodes, 259,199 triangles, 1.67 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- visceral.glb: 119 nodes, 326,419 triangles, 1.40 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- cardiovascular.glb: 675 nodes, 811,402 triangles, 3.81 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- lymphoid.glb: 163 nodes, 106,120 triangles, 586.7 KiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- nervous.glb: 582 nodes, 853,509 triangles, 3.99 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- muscular.glb: 683 nodes, 2,059,543 triangles, 9.56 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- regions.glb: 256 nodes, 124,302 triangles, 895.8 KiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- open review item vagus-nerve-x-l: vertex centroid x = 0.0161 (patient's left)
+- open review item vagus-nerve-x-r: vertex centroid x = 0.0194 (patient's left)
+
+### Warnings
+
+- pair kidney-l / kidney-r: |x_l + x_r| = 0.0047 m
+- pair renal-pelvis-l / renal-pelvis-r: |x_l + x_r| = 0.0058 m
+- pair suprarenal-gland-l / suprarenal-gland-r: |x_l + x_r| = 0.0059 m
+- pair common-iliac-artery-l / common-iliac-artery-r: |x_l + x_r| = 0.0045 m
+- pair common-iliac-vein-l / common-iliac-vein-r: |x_l + x_r| = 0.0094 m
+- pair first-posterior-intercostal-artery-l / first-posterior-intercostal-artery-r: |x_l + x_r| = 0.0034 m
+- pair lumbar-arteries-l / lumbar-arteries-r: |x_l + x_r| = 0.0050 m
+- pair posterior-branch-of-renal-artery-l / posterior-branch-of-renal-artery-r: |x_l + x_r| = 0.0074 m
+- pair posterior-intercostal-arteries-l / posterior-intercostal-arteries-r: |x_l + x_r| = 0.0099 m
+- REVIEW pair vagus-nerve-x-l / vagus-nerve-x-r: |x_l + x_r| = 0.0355 m (open review item)
+- side: vagus-nerve-x-r is 'right' but its vertex centroid is at x = 0.0194 — open review item (overrides.json)
+
+

@@ -273,7 +273,11 @@ export const de: Messages = {
       'Beschreibungen: Wikipedia (CC BY-SA 3.0), mit Quelllink pro Text. Sie sind als „ungeprüft“ markiert, bis eine Person sie geprüft hat.',
     taLicense: 'Terminologia Anatomica, 2. Aufl. (TA2), FIPAT, über Z-Anatomy.',
     nonCommercial: 'nicht-kommerziell',
-    fullAttribution: 'Die vollständigen Quellenangaben stehen in ATTRIBUTION.md im Projekt-Repository.',
+    fullAttribution: 'Vollständige Quellenangaben (ATTRIBUTION.md)',
+    noLicense: 'keine Lizenz angegeben',
+    codeLicenseFile: 'Code-Lizenz (MIT)',
+    assetLicenseFile: 'Lizenz der Modelle (CC BY-SA 4.0)',
+    repository: 'Quellcode',
     privacyTitle: 'Datenschutz',
     privacy:
       'Diese Seite speichert nur deine Anzeige-Einstellungen und deinen Quiz-Fortschritt in deinem Browser (localStorage). Es wird nichts übertragen.',

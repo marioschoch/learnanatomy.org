@@ -58,3 +58,14 @@ export interface ViewerStats {
   geometries: number;
   textures: number;
 }
+
+/**
+ * CSS pixels along each canvas edge that the UI covers (phone header, bottom bar and sheets). The viewer centres
+ * and fits views in the uncovered rest of the canvas; all zero = the whole canvas.
+ */
+export interface ViewInsets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}

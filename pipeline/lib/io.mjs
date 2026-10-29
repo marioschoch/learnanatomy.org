@@ -12,6 +12,7 @@ export const PATHS = {
   config: join(ROOT, 'pipeline', 'config', 'systems.json'),
   nc: join(ROOT, 'pipeline', 'config', 'non-commercial.json'),
   overrides: join(ROOT, 'pipeline', 'config', 'overrides.json'),
+  definitionReviews: join(ROOT, 'pipeline', 'config', 'definition-reviews.json'),
   exportDir: join(ROOT, 'data', 'export'),
   scene: join(ROOT, 'data', 'export', 'scene.json'),
   texts: join(ROOT, 'data', 'export', 'texts.json'),
@@ -45,6 +46,7 @@ export function loadConfigs() {
     config: readJson(PATHS.config),
     nc: readJson(PATHS.nc),
     overrides: readJson(PATHS.overrides),
+    reviews: existsSync(PATHS.definitionReviews) ? readJson(PATHS.definitionReviews) : { reviews: {} },
   };
 }
 

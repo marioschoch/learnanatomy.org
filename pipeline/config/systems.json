@@ -28,7 +28,8 @@
       "collection": "8: Visceral systems",
       "layerOrder": 3,
       "defaultVisible": true,
-      "defaultOpacity": 1
+      "defaultOpacity": 1,
+      "defaultHiddenChildrenOf": ["Liver"]
     },
     {
       "id": "cardiovascular",

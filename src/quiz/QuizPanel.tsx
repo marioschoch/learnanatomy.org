@@ -25,6 +25,7 @@ import { checkTypedAnswer } from './fuzzy';
 import {
   buildPool,
   generateQuiz,
+  locateVerdict,
   QUESTION_TYPES,
   type Question,
   type QuestionType,
@@ -151,9 +152,10 @@ function QuizSetup() {
   const loading = scope.systems.some(
     (id) => systemLoad[id]?.meta === 'loading' || systemLoad[id]?.meta === 'idle',
   );
+  const neverAsked = useMemo(() => new Set(manifest?.defaultHiddenIds ?? []), [manifest]);
   const pool = useMemo(
-    () => buildPool(Object.values(structures), scope, regions),
-    [structures, scope, regions],
+    () => buildPool(Object.values(structures), scope, regions, neverAsked),
+    [structures, scope, regions, neverAsked],
   );
   const weak = useMemo(() => weakIds(deck), [deck]);
   const setScope = useQuizStore.getState().setScope;
@@ -181,6 +183,7 @@ function QuizSetup() {
         allLoadedStructures(),
         { systems: sysIds, regions: [], side: 'both' },
         regions,
+        neverAsked,
       );
       const types = scope.types.length ? scope.types : [...QUESTION_TYPES];
       const chosen = targets.slice(0, Math.max(scope.count, 1));
@@ -409,9 +412,9 @@ function QuizRunning() {
       (s) => s.quizPick,
       (pick) => {
         if (!pick.id || useQuizStore.getState().answers[question.id]) return;
-        const st = useAtlasStore.getState().structures[question.targetId];
-        const verdict =
-          pick.id === question.targetId ? 'correct' : st?.pairId === pick.id ? 'wrong-side' : 'wrong';
+        const s = useAtlasStore.getState();
+        const target = s.structures[question.targetId];
+        const verdict = target ? locateVerdict(target, s.structures[pick.id], s.nameLang) : 'wrong';
         submit(question, { verdict, givenId: pick.id });
       },
     );

@@ -19,6 +19,7 @@ import { LoadingProgress, StatsOverlay } from './Overlays';
 import { AdaptiveResolution, StatsProbe } from './Performance';
 import { Picking } from './Picking';
 import { SceneSync } from './SceneSync';
+import { ViewInsets } from './ViewInsets';
 import { useViewerStrings } from './strings';
 
 // Module constants: R3F re-applies Canvas config whose identity changes.
@@ -96,6 +97,7 @@ export default function ViewerCanvas() {
           onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
           data-testid="viewer-canvas"
         >
+          <ViewInsets />
           <Lighting />
           <SceneSync scene={scene} />
           <CameraRig scene={scene} bus={bus} />

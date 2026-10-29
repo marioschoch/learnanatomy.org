@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-29T06:35:14.741Z",
+  "generatedAt": "2026-10-29T11:30:52.987Z",
   "systems": [
     "skeletal",
     "insertions",
@@ -11,7 +11,7 @@
     "muscular",
     "regions"
   ],
-  "appDataVersion": "66053c3741eab06c",
+  "appDataVersion": "cb764ce2594c8a23",
   "report": {
     "collisions": [
       {
@@ -8553,6 +8553,35 @@
     ],
     "duplicatesAcrossSystems": [],
     "translationConflicts": [],
+    "nameFixes": [
+      {
+        "en": "First metacarpal bone",
+        "lang": "la",
+        "from": "Os primum metarcapi",
+        "to": "Os primum metacarpi",
+        "reason": "Letter swap (QA M4). The same file spells the siblings 'Os secundum … Os quintum metacarpi'.",
+        "status": "approved",
+        "applied": true
+      },
+      {
+        "en": "Lamina of thyroid cartilage",
+        "lang": "la",
+        "from": "Lamina cartilaginis thryeoideae",
+        "to": "Lamina cartilaginis thyreoideae",
+        "reason": "Letter swap (QA M4). The same file spells 'Cornu superius / inferius cartilaginis thyreoideae' and 'Linea obliqua cartilaginis thyreoideae'.",
+        "status": "approved",
+        "applied": true
+      },
+      {
+        "en": "Articular capsules of metacarpophalangeal joints",
+        "lang": "la",
+        "from": "Capsulae articulariae articulationes metacarpophalnageae",
+        "to": "Capsulae articulariae articulationes metacarpophalangeae",
+        "reason": "Letter swap (found next to QA M4). The same file spells the group 'Articulationes metacarpophalangeae'.",
+        "status": "approved",
+        "applied": true
+      }
+    ],
     "dropped": [],
     "danglingRefs": [],
     "nameSidesDropped": [
@@ -8611,6 +8640,11 @@
         "side": "right",
         "x": 0.0222
       }
-    ]
+    ],
+    "definitionReviews": {
+      "applied": [],
+      "stale": [],
+      "orphan": []
+    }
   }
 }

@@ -98,6 +98,7 @@ export function initialState(): AtlasState {
     viewerReady: false,
     viewerQueue: [],
     viewerStats: null,
+    viewInsets: { top: 0, right: 0, bottom: 0, left: 0 },
 
     mode: 'explore',
     quizPick: { id: null, seq: 0 },
@@ -422,6 +423,17 @@ export const useAtlasStore = create<AtlasStore>()(
 
     setViewerStats(stats) {
       set({ viewerStats: stats });
+    },
+    setViewInsets(insets) {
+      const p = get().viewInsets;
+      if (
+        p.top === insets.top &&
+        p.right === insets.right &&
+        p.bottom === insets.bottom &&
+        p.left === insets.left
+      )
+        return;
+      set({ viewInsets: { ...insets } });
     },
 
     // ------------------------------------------------------------------ app / ui

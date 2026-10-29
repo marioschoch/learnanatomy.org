@@ -29,6 +29,7 @@ import type {
   ViewerCommand,
   ViewerCommandResult,
   ViewerStats,
+  ViewInsets,
 } from './viewerApi';
 
 export type LoadStatus = 'idle' | 'loading' | 'loaded' | 'error';
@@ -148,6 +149,8 @@ export interface AtlasState {
   viewerReady: boolean;
   viewerQueue: QueuedViewerCommand[];
   viewerStats: ViewerStats | null;
+  /** Canvas area covered by the UI; set by the layout, read by the viewer. */
+  viewInsets: ViewInsets;
 
   // ---------------------------------------------------------------- app / ui
   mode: AppMode;
@@ -217,6 +220,8 @@ export interface AtlasActions {
   /** Viewer only: camera came to rest. */
   setCamera(pose: CameraPose): void;
   setViewerStats(stats: ViewerStats | null): void;
+  /** Layout only: report the covered canvas edges (ignored when unchanged). */
+  setViewInsets(insets: ViewInsets): void;
 
   // ---------------------------------------------------------------- app / ui
   setMode(mode: AppMode): void;

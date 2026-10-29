@@ -127,8 +127,9 @@ export interface RegionInfo {
 export interface AttributionInfo {
   /** Human-readable attribution line exactly as required upstream. */
   text: string;
-  license: string; // SPDX-like, e.g. 'CC-BY-SA-4.0', 'CC-BY-NC-SA-4.0'
-  licenseUrl: string;
+  /** SPDX-like, e.g. 'CC-BY-SA-4.0', 'CC-BY-NC-SA-4.0'. Absent when upstream states no licence. */
+  license?: string;
+  licenseUrl?: string;
   url?: string;
   nonCommercial?: boolean;
 }

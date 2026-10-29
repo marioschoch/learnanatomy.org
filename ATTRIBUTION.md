@@ -113,6 +113,10 @@ The Z-Anatomy Blender file (`Startup.blend`) was converted by the Open Anatomy A
   - `Serratus posterior superior muscle.el` → right (named left upstream)
   - `Short head of biceps brachii.ol` → right (named left upstream)
   - `Short head of biceps femoris.el` → right (named left upstream)
+- spelling errors in names corrected after review (`pipeline/config/overrides.json` `nameFixes`):
+  - First metacarpal bone (la): "Os primum metarcapi" → "Os primum metacarpi"
+  - Lamina of thyroid cartilage (la): "Lamina cartilaginis thryeoideae" → "Lamina cartilaginis thyreoideae"
+  - Articular capsules of metacarpophalangeal joints (la): "Capsulae articulariae articulationes metacarpophalnageae" → "Capsulae articulariae articulationes metacarpophalangeae"
 
 ## Definitions
 

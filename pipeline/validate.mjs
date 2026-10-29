@@ -8,7 +8,9 @@
 // orientation (liver right; spleen, stomach, left ventricle left; head up; face +Z) and every left/right side.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import { det3, nodeStats, windingAgreement } from './lib/geometry.mjs';
+import { definitionHash } from './lib/reviews.mjs';
 import {
   fmtBytes,
   fmtInt,
@@ -24,7 +26,8 @@ import {
 import { baseId, isValidId, parseName } from './lib/names.mjs';
 
 export const MAX_FILE_BYTES = 20 * 1024 * 1024; // src/contract/constants.ts
-export const STARTUP_BUDGET = 5 * 1024 * 1024;
+/** PROMPT §9: startup download ≤ 5 MB (decimal). */
+export const STARTUP_BUDGET = 5_000_000;
 /** Side check tolerance on the vertex centroid x (metres). */
 export const SIDE_TOLERANCE = 0.002;
 /** Left/right pair mirror tolerance |x_l + x_r| (metres). */
@@ -77,6 +80,7 @@ function layoutKey(prim) {
 
 export async function validate({ systems: requested, dir = PATHS.models } = {}) {
   const c = new Checker();
+  const reviews = loadConfigs().reviews.reviews ?? {};
   const manifestPath = join(dir, 'manifest.json');
   if (!existsSync(manifestPath)) {
     c.error(`missing ${relative(PATHS.models, manifestPath)}`);
@@ -237,6 +241,14 @@ export async function validate({ systems: requested, dir = PATHS.models } = {}) 
       if (s && m.side && s.side !== m.side) c.error(`${m.id}: side ${m.side} ≠ structure side ${s.side}`);
     }
     for (const [k, d] of Object.entries(defs?.definitions ?? {})) {
+      const review = reviews[`${sys.id}/${k}`];
+      const reviewOk = Boolean(review) && review.sha256 === definitionHash(d);
+      if (d.reviewed === true && !reviewOk)
+        c.error(
+          `${sys.id}: definition ${k} is marked reviewed without a review of this text (definition-reviews.json)`,
+        );
+      else if (review && !reviewOk)
+        c.warn(`stale review: ${sys.id}/${k} (text changed since ${review.date}; shown as not reviewed)`);
       if (
         typeof d.reviewed !== 'boolean' ||
         !d.source ||
@@ -525,13 +537,24 @@ export async function validate({ systems: requested, dir = PATHS.models } = {}) 
     );
   }
 
-  // startup budget
-  const skeletal = manifest.systems.find((s) => s.id === 'skeletal');
+  // startup budget: manifest, search index, metadata and geometry of the default-visible systems, as served
+  // (JSON gzip-compressed by the host, GLB as is). The app's JS is not included (checked on the build).
+  const startupSystems = manifest.systems.filter((s) => s.defaultVisible);
+  const gzSize = (p) => (existsSync(p) ? gzipSync(readFileSync(p)).length : 0);
   const startup =
-    statSync(manifestPath).size +
-    (existsSync(sip) ? statSync(sip).size : 0) +
-    (skeletal ? skeletal.chunks.reduce((a, ch) => a + ch.bytes, 0) : 0);
-  c.budget = { startupBytes: startup, ok: startup <= STARTUP_BUDGET, totalBytes, files: files.length };
+    gzSize(manifestPath) +
+    gzSize(sip) +
+    startupSystems.reduce(
+      (a, s) => a + gzSize(join(dir, s.structuresFile)) + s.chunks.reduce((b, ch) => b + ch.bytes, 0),
+      0,
+    );
+  c.budget = {
+    startupBytes: startup,
+    startupSystems: startupSystems.map((s) => s.id),
+    ok: startup <= STARTUP_BUDGET,
+    totalBytes,
+    files: files.length,
+  };
   if (!c.budget.ok) c.warn(`startup download ${fmtBytes(startup)} exceeds the 5 MB budget`);
   c.sysStats = sysStats;
   c.systems = systems;
@@ -560,7 +583,9 @@ function writeReportSection(c) {
     L.push(`| ${k} | ${v.structures} | ${fmtInt(v.triangles)} | ${fmtBytes(v.bytes)} |`);
   L.push('');
   L.push(
-    `Startup download (manifest + search index + skeletal): ${fmtBytes(c.budget.startupBytes)} (budget 5 MB: ${c.budget.ok ? 'met' : '**missed**'}); ` +
+    `Startup download (manifest, search index, default systems ${c.budget.startupSystems.join(' + ')}; JSON gzip, ` +
+      'GLB as is, without JS): ' +
+      `${fmtBytes(c.budget.startupBytes)} (budget 5 MB: ${c.budget.ok ? 'met' : '**missed**'}); ` +
       `public/models total ${fmtBytes(c.budget.totalBytes)} in ${c.budget.files} files.`,
   );
   L.push('');

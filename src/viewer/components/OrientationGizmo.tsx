@@ -73,6 +73,8 @@ export function OrientationGizmo({ bus }: { bus: ViewerBus }) {
     return bus.camera.on(update);
   }, [bus]);
 
+  // Stay above whatever covers the bottom of the canvas (phone sheets, store `viewInsets`).
+  const coveredBottom = useAtlasStore((s) => s.viewInsets.bottom);
   const label = (view: StandardView) => t(`views.${view}`);
   const go = (view: StandardView) =>
     void useAtlasStore.getState().requestViewer({ type: 'setView', view, animate: true });
@@ -82,7 +84,9 @@ export function OrientationGizmo({ bus }: { bus: ViewerBus }) {
       className="pointer-events-none absolute"
       style={{
         right: 'var(--atlas-gizmo-right, 16px)',
-        bottom: 'var(--atlas-gizmo-bottom, 96px)',
+        bottom: coveredBottom
+          ? `max(var(--atlas-gizmo-bottom, 96px), ${coveredBottom + 12}px)`
+          : 'var(--atlas-gizmo-bottom, 96px)',
         width: SIZE,
         height: SIZE,
       }}

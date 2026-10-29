@@ -23,6 +23,17 @@ export const ATTRIBUTIONS = {
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
     url: 'https://en.wikipedia.org/',
   },
+  // Credited upstream as "used as reference/included and adapted"; which structures derive from them is not
+  // recorded, so they are credited as a whole (ATTRIBUTION.md, "Provenance not recorded per structure").
+  'dundee-cranial-nerves': {
+    text: 'Cranial Nerves and Foramina - by University of Dundee, CAHID - CC-BY 4.0',
+    license: 'CC-BY-4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/4.0/',
+  },
+  'uw-brainder-white-matter': {
+    // No licence stated upstream.
+    text: '"Brainder" and "White matter" from the University of Washington',
+  },
 };
 
 const DEFAULT_COLOR = '#cccccc';
@@ -71,6 +82,7 @@ export function buildModel({ scene, texts, config, nc, overrides, ta2 }) {
     otherTexts: [],
     duplicatesAcrossSystems: scene.duplicatesAcrossSystems ?? [],
     translationConflicts: [],
+    nameFixes: [],
   };
 
   const systemOrder = new Map(config.systems.map((s, i) => [s.id, i]));
@@ -100,10 +112,19 @@ export function buildModel({ scene, texts, config, nc, overrides, ta2 }) {
   };
   const usedTextNames = new Set();
 
+  // Reviewed spelling corrections (overrides.json nameFixes), applied only while the upstream text still equals `from`.
+  const nameFixes = (overrides.nameFixes ?? []).filter((f) => f.status === 'approved');
+  const nameFixesUsed = new Set();
   const namesFor = (en) => {
     const names = { en };
     const t = tr.get(en);
     if (t) Object.assign(names, t);
+    for (const f of nameFixes) {
+      if (f.en === en && names[f.lang] === f.from) {
+        names[f.lang] = f.to;
+        nameFixesUsed.add(f);
+      }
+    }
     return names;
   };
 
@@ -149,10 +170,12 @@ export function buildModel({ scene, texts, config, nc, overrides, ta2 }) {
       material: o.material,
       parentName: o.parent,
       regionCollections: o.regionCollections ?? [],
-      // Hidden until the user shows them (systems.json defaultHiddenCollections, e.g. the fasciae over the muscles)
-      defaultHidden: (sysConfig.get(o.system)?.defaultHiddenCollections ?? []).some((c) =>
-        (o.collections ?? []).includes(c),
-      ),
+      // Hidden until the user shows them (systems.json): defaultHiddenCollections, e.g. the fasciae over the
+      // muscles; defaultHiddenChildrenOf, e.g. the liver segments, which repeat the liver's volume.
+      defaultHidden:
+        (sysConfig.get(o.system)?.defaultHiddenCollections ?? []).some((c) =>
+          (o.collections ?? []).includes(c),
+        ) || (sysConfig.get(o.system)?.defaultHiddenChildrenOf ?? []).includes(o.parent),
       stem: baseId(kind, p.base, { side, sideFromSuffix: sideSource === 'suffix', patch: p.patch }),
     };
     structures.push(s);
@@ -456,6 +479,8 @@ export function buildModel({ scene, texts, config, nc, overrides, ta2 }) {
     if (r.parentId) info.parentId = r.parentId;
     return info;
   });
+
+  report.nameFixes = nameFixes.map((f) => ({ ...f, applied: nameFixesUsed.has(f) }));
 
   const presentLangs = new Set(['en']);
   for (const n of [...structures, ...groups, ...landmarks])

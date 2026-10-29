@@ -1,11 +1,43 @@
 /// <reference types="vitest/config" />
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
+
+/**
+ * The attribution and licence texts live in the repo root (outside public/). Ship them with the site as plain
+ * text, so the credits page can link them and the downloadable models keep their licence next to them.
+ */
+const LICENSE_FILES: Record<string, string> = {
+  'licenses/ATTRIBUTION.txt': 'ATTRIBUTION.md',
+  'licenses/LICENSE.txt': 'LICENSE',
+  'licenses/assets-LICENSE.txt': 'assets.LICENSE',
+};
+const readRootFile = (name: string) => readFileSync(fileURLToPath(new URL(`./${name}`, import.meta.url)));
+
+function licenseFiles(): Plugin {
+  return {
+    name: 'atlas-license-files',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const base = server.config.base;
+        const url = req.url?.split('?')[0] ?? '';
+        const src = url.startsWith(base) ? LICENSE_FILES[url.slice(base.length)] : undefined;
+        if (!src) return next();
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        res.end(readRootFile(src));
+      });
+    },
+    generateBundle() {
+      for (const [fileName, src] of Object.entries(LICENSE_FILES))
+        this.emitFile({ type: 'asset', fileName, source: readRootFile(src) });
+    },
+  };
+}
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), licenseFiles()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },

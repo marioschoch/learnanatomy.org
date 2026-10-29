@@ -3,7 +3,7 @@
  * Tools / Info, and bottom sheets capped at ~58 % of the height so the 3D view stays usable above them.
  * A selection shows a small peek card; the full info opens as a sheet.
  */
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { displayName, patchKindOf, useAtlasStore } from '@/state';
 import { useQuizLauncher } from '@/quiz/launcher';
@@ -11,6 +11,7 @@ import { cx, mutedText, panelClass } from '../components/classes';
 import { Icon, type IconName } from '../components/Icon';
 import { Button, SideBadge, Spinner, SystemChip } from '../components/ui';
 import { FirstVisitHint } from '../dialogs/FirstVisitHint';
+import { useReportViewInsets } from '../hooks/useViewInsets';
 import { copyShareLink, focusSelection, takeScreenshot, toggleIsolate, zoom } from '../lib/actions';
 import { findSystem, systemLabel } from '../lib/labels';
 import { InfoPanel } from '../panels/InfoPanel';
@@ -32,6 +33,9 @@ export function PhoneLayout() {
   const quizMode = useAtlasStore((s) => s.mode === 'quiz');
   const hasSelection = useAtlasStore((s) => Boolean(s.selectedId));
   const close = () => useUiStore.getState().setSheet(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  useReportViewInsets(headerRef, bottomRef);
   const effectiveSheet: PhoneSheet = quizMode && (sheet === 'tree' || sheet === 'info') ? null : sheet;
 
   let bottom: React.ReactNode;
@@ -78,7 +82,10 @@ export function PhoneLayout() {
 
   return (
     <>
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex flex-col gap-2 p-2 pt-[max(0.5rem,env(safe-area-inset-top))]">
+      <header
+        ref={headerRef}
+        className="pointer-events-none absolute inset-x-0 top-0 z-20 flex flex-col gap-2 p-2 pt-[max(0.5rem,env(safe-area-inset-top))]"
+      >
         <div className="flex items-center gap-2">
           <div className={cx(panelClass, 'flex h-10 min-w-0 flex-1 items-center rounded-xl px-2.5')}>
             <Brand compact />
@@ -93,7 +100,10 @@ export function PhoneLayout() {
         {quizMode ? null : <SearchBox />}
       </header>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div
+        ref={bottomRef}
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+      >
         {bottom}
         <PhoneBar active={effectiveSheet} quizMode={quizMode} hasSelection={hasSelection} />
       </div>
@@ -125,6 +135,7 @@ function PhoneBar({
   );
   return (
     <nav
+      data-view-cover
       aria-label={t('toolbar.label')}
       className={cx(panelClass, 'flex items-stretch justify-between gap-0.5 rounded-xl p-1')}
     >

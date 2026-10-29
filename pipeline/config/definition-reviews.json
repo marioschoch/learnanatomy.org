@@ -1,0 +1,4 @@
+{
+  "$comment": "Human reviews of definitions (CONTRIBUTING.md). Key: <system>/<definitionKey>. sha256 = hash of the text the reviewer checked (pipeline/lib/reviews.mjs definitionHash); a definition is published as reviewed only while its text still has this hash. Add entries with `npm run review:definition -- <system>/<key> --reviewer \"Name\"`.",
+  "reviews": {}
+}

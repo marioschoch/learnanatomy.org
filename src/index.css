@@ -27,6 +27,15 @@ body {
 :root {
   --atlas-stats-left: 344px; /* right of the desktop sidebar */
 }
+/* Desktop/tablet: the info (w-80) or quiz (w-96) panel floats at the right edge; keep the gizmo left of it. */
+@media (min-width: 640px) {
+  :root:has([data-right-panel='info']) {
+    --atlas-gizmo-right: calc(20rem + 1.75rem);
+  }
+  :root:has([data-right-panel='quiz']) {
+    --atlas-gizmo-right: calc(24rem + 1.75rem);
+  }
+}
 @media (max-width: 639px) {
   :root {
     --atlas-gizmo-bottom: 84px; /* above the phone bottom bar */

@@ -31,6 +31,7 @@ export function Sheet({
   return (
     <div
       ref={ref}
+      data-view-cover
       role="dialog"
       aria-modal="false"
       aria-labelledby={title ? titleId : undefined}
