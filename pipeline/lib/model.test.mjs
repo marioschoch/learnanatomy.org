@@ -307,3 +307,61 @@ describe('buildModel', () => {
     expect(crossing.sideSource).toBeUndefined();
   });
 });
+
+describe('muscle boneIds', () => {
+  const G = (name, parent) => ({ name, system: 'muscular', kind: 'group', type: 'FONT', parent });
+  const bones = ['Scapula', 'Radius', 'Humerus'].flatMap((b) => [
+    S(`${b}.l`, 'skeletal'),
+    S(`${b}.r`, 'skeletal'),
+  ]);
+  const m = buildModel({
+    scene: {
+      systems: scene.systems,
+      objects: [
+        ...bones,
+        S('Mandible', 'skeletal'),
+        G('Biceps brachii muscle.g'),
+        ...['l', 'r'].flatMap((x) => [
+          S(`Long head of biceps brachii.${x}`, 'muscular', { parent: 'Biceps brachii muscle.g' }),
+          S(`Short head of biceps brachii.${x}`, 'muscular', { parent: 'Biceps brachii muscle.g' }),
+          S(`Masseter.${x}`, 'muscular'),
+        ]),
+        S('Deep head of pronator teres.l', 'muscular'),
+        S('Popliteus muscle.l', 'muscular'),
+        S('Long head of biceps brachii.ol', 'insertions', { parent: 'Scapula.l' }),
+        S('Long head of biceps brachii.or', 'insertions', { parent: 'Scapula.r' }),
+        // only on the right in the source
+        S('Short head of biceps brachii.or', 'insertions', { parent: 'Scapula.r' }),
+        // named after the whole muscle (a group)
+        S('Biceps brachii muscle.el', 'insertions', { parent: 'Radius.l' }),
+        S('Biceps brachii muscle.er', 'insertions', { parent: 'Radius.r' }),
+        // named after the muscle whose heads are structures
+        S('Pronator teres.ol', 'insertions', { parent: 'Humerus.l' }),
+        // parented to the bone of the other side
+        S('Popliteus muscle.ol', 'insertions', { parent: 'Humerus.r' }),
+        S('Masseter.el', 'insertions', { parent: 'Mandible' }),
+      ],
+    },
+    texts,
+    config,
+    nc,
+    overrides,
+  });
+  const byName = (n) => m.structByName.get(n);
+
+  it('collects the bones of the patches of a muscle, its group and "… of <muscle>"', () => {
+    expect(byName('Long head of biceps brachii.l').boneIds).toEqual(['radius-l', 'scapula-l']);
+    expect(byName('Deep head of pronator teres.l').boneIds).toEqual(['humerus-l']);
+  });
+
+  it('mirrors the bones of the other side and skips bones of the other side', () => {
+    expect(byName('Short head of biceps brachii.l').boneIds).toEqual(['radius-l', 'scapula-l']);
+    expect(byName('Masseter.r').boneIds).toEqual(['mandible']);
+    expect(byName('Popliteus muscle.l').boneIds).toBeUndefined();
+  });
+
+  it('publishes boneIds on the structure', () => {
+    const s = byName('Short head of biceps brachii.r');
+    expect(toStructure(s, geoStub([0, 0, 0])).boneIds).toEqual(['radius-r', 'scapula-r']);
+  });
+});

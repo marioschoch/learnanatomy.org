@@ -98,6 +98,17 @@ export function assemble(model, systems, processed, config, nc, reviewsFile = { 
       issues.danglingRefs.push({ id: s.id, key, ref, reason: 'target has no geometry → removed' });
       delete s[key];
     }
+    if (s.boneIds) {
+      s.boneIds = s.boneIds.filter((ref) => {
+        if (present.has(ref)) return true;
+        const target = modelById.get(ref);
+        const kept = !!target && !included.has(target.system);
+        const reason = kept ? `system ${target.system} not built` : 'target has no geometry → removed';
+        issues.danglingRefs.push({ id: s.id, key: 'boneIds', ref, reason });
+        return kept;
+      });
+      if (s.boneIds.length === 0) delete s.boneIds;
+    }
   }
   for (const g of groups) {
     if (g.parentId && !groupIds.has(g.parentId) && !present.has(g.parentId)) delete g.parentId;

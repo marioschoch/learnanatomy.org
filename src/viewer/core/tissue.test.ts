@@ -3,7 +3,15 @@ import { Color, ShaderLib, SRGBColorSpace } from 'three';
 import type { HSL, Material, WebGLProgramParametersWithUniforms, WebGLRenderer } from 'three';
 import { CELLS, createDetailNoise, NOISE_SIZE } from './detailNoise';
 import { AtlasMaterials, createFibreEnds } from './materials';
-import { look, MUSCLE_VARIATION, resetLook, structureColor, surfaceKind, tissueLookEnabled } from './tissue';
+import {
+  BONE,
+  look,
+  MUSCLE_VARIATION,
+  resetLook,
+  structureColor,
+  surfaceKind,
+  tissueLookEnabled,
+} from './tissue';
 import type { Look } from './tissue';
 
 const MUSCLE = '#e76e57';
@@ -63,15 +71,25 @@ describe('tissue look', () => {
     }
   });
 
-  it('leaves other systems alone and is off with ?look=plain', () => {
+  it('draws bones in the bone colour, leaves other colours alone and is off with ?look=plain', () => {
     withLook('/?look=3');
+    const femur = { id: 'femur-l', system: 'skeletal', color: BONE.source, names: { en: 'Femur' } };
+    expect(structureColor(femur)).toBe(BONE.color);
+    const canine = {
+      id: 'lower-canine-l',
+      system: 'skeletal',
+      color: '#d4ccb6',
+      names: { en: 'Lower canine' },
+    };
+    expect(structureColor(canine)).toBe('#d4ccb6');
     expect(
-      structureColor({ id: 'femur-l', system: 'skeletal', color: '#e7c397', names: { en: 'Femur' } }),
-    ).toBe('#e7c397');
+      structureColor({ id: 'liver', system: 'visceral', color: BONE.source, names: { en: 'Liver' } }),
+    ).toBe(BONE.source);
     expect(tissueLookEnabled()).toBe(true);
     withLook('/?look=plain');
     expect(tissueLookEnabled()).toBe(false);
     expect(structureColor(muscle('biceps-brachii-l', 'Biceps brachii'))).toBe(MUSCLE);
+    expect(structureColor(femur)).toBe(BONE.source);
   });
 
   it('picks the stage from ?look= and leaves the textures out on weak devices', () => {

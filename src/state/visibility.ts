@@ -5,8 +5,8 @@
  *
  * Rules (ARCHITECTURE.md §Visibility):
  *  1. A structure is drawn when its system layer is visible and neither it nor an ancestor is in hiddenIds.
- *  2. Isolate: only the isolated set (ids + descendants; landmark → its structure) is drawn, opaque,
- *     regardless of layer visibility or hiddenIds.
+ *  2. Isolate: only the isolated set (ids + descendants; landmark → its structure; plus the bones isolated muscles
+ *     are attached to, Structure.boneIds) is drawn, opaque, regardless of layer visibility or hiddenIds.
  *  3. Isolate with context: the isolated set is drawn opaque; everything that would be drawn under rule 1
  *     is drawn as a ghost (GHOST_OPACITY, desaturated, not pickable).
  *  4. X-ray: every visible system except the innermost visible one (lowest layerOrder) is capped at XRAY_OPACITY.
@@ -14,7 +14,7 @@
  */
 import { GHOST_OPACITY, PICK_MIN_OPACITY, XRAY_OPACITY } from '@/contract';
 import type { AtlasState, BySystem, Structure, SystemId } from '@/contract';
-import { structureIdsOfNode } from './selectors';
+import { structureIdsOfNode, systemOfNode } from './selectors';
 
 export type RenderMode = 'hidden' | 'normal' | 'ghost';
 
@@ -43,6 +43,7 @@ type VisState = Pick<
   | 'groups'
   | 'landmarks'
   | 'childrenOf'
+  | 'searchIndex'
 >;
 
 export interface VisibilityContext {
@@ -78,8 +79,16 @@ export function buildVisibilityContext(s: VisState): VisibilityContext {
     for (const id of s.isolate.ids) {
       for (const sid of structureIdsOfNode(s, id)) isolated.add(sid);
     }
+    if (s.isolate.mode === 'isolate') for (const b of attachedBones(s, isolated)) isolated.add(b);
   }
   return { systems, hidden, isolated, isolateMode: s.isolate.mode };
+}
+
+/** Bones the given structures (muscles) are attached to. */
+function attachedBones(s: Pick<AtlasState, 'structures'>, ids: Iterable<string>): string[] {
+  const out: string[] = [];
+  for (const id of ids) out.push(...(s.structures[id]?.boneIds ?? []));
+  return out;
 }
 
 const HIDDEN: StructureRender = { mode: 'hidden', opacity: 0, pickable: false };
@@ -104,16 +113,25 @@ export function structureRender(
 
 /**
  * Systems whose geometry the viewer must have loaded: visible layers, plus systems that contain
- * isolated structures (isolate shows them even when their layer is hidden).
+ * isolated structures or their attached bones (isolate shows them even when their layer is hidden).
  */
 export function systemsNeedingGeometry(s: VisState): SystemId[] {
   const out = new Set<SystemId>();
   for (const sys of s.manifest?.systems ?? []) if (s.layers[sys.id]?.visible) out.add(sys.id);
   if (s.isolate.mode === 'none') return [...out];
+  const isolated: string[] = [];
   for (const id of s.isolate.ids) {
     for (const sid of structureIdsOfNode(s, id)) {
       const st = s.structures[sid];
       if (st) out.add(st.system);
+      isolated.push(sid);
+    }
+  }
+  if (s.isolate.mode === 'isolate') {
+    // The bones' metadata may not be loaded yet (skeletal layer hidden): the search index knows their system.
+    for (const b of new Set(attachedBones(s, isolated))) {
+      const system = systemOfNode(s, b);
+      if (system) out.add(system);
     }
   }
   return [...out];

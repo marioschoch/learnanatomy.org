@@ -67,4 +67,15 @@ describe('label items', () => {
     expect(t.get('tibia-r')).toBe('quiz-wrong');
     expect(t.has('cranium')).toBe(false);
   });
+
+  it('tints: an isolated selection keeps its colours; other selections and context isolate do not', () => {
+    s().select('femur-l');
+    s().setIsolate('isolate');
+    expect(computeTints(s()).has('femur-l')).toBe(false);
+    s().select('tibia-l');
+    expect(computeTints(s()).get('tibia-l')).toBe('selected');
+    s().select('femur-l');
+    s().setIsolate('context');
+    expect(computeTints(s()).get('femur-l')).toBe('selected');
+  });
 });

@@ -38,6 +38,8 @@ export interface MockStructureSpec {
   color: string;
   nonCommercial?: boolean;
   definition?: boolean;
+  /** Muscles: ids of the bones they attach to, without the side suffix (it follows the muscle's side). */
+  bones?: string[];
 }
 
 const BONE = '#e6dccb';
@@ -149,6 +151,7 @@ export const MOCK_STRUCTURES: MockStructureSpec[] = [
     center: [0.2, 1.4, 0],
     shape: { kind: 'sphere', radius: 0.05, scale: [1, 1.2, 1] },
     color: MUSCLE,
+    bones: ['humerus'],
   }),
   ...pair({
     id: 'biceps-brachii',
@@ -404,6 +407,8 @@ function toStructure(spec: MockStructureSpec): Structure {
   if (spec.parentId) st.parentId = spec.parentId;
   if (spec.nonCommercial) st.nonCommercial = true;
   if (spec.definition) st.definitionKey = spec.id.replace(/-(l|r)$/, '');
+  if (spec.bones)
+    st.boneIds = spec.bones.map((b) => (spec.side ? `${b}-${spec.side === 'left' ? 'l' : 'r'}` : b));
   return st;
 }
 

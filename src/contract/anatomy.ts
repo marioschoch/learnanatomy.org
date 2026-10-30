@@ -181,6 +181,8 @@ export interface Structure {
   /** For origin/insertion patches: the muscle and the bone they connect. */
   muscleId?: string;
   boneId?: string;
+  /** For muscles: the bones their origin/insertion patches sit on (isolating the muscle keeps them visible). */
+  boneIds?: string[];
   /** sRGB hex base colour from the source material. */
   color: string;
   centroid: Vec3;

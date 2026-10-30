@@ -444,6 +444,7 @@ export function buildModel({ scene, texts, config, nc, overrides, ta2 }) {
     const dk = attachDefinition(g.system, g.base);
     if (dk) g.definitionKey = dk;
   }
+  attachBones(structures, groups);
   for (const m of landmarks) {
     fillNames(m, 'landmark');
     m.structureId = m.structure.id;
@@ -500,6 +501,69 @@ export function buildModel({ scene, texts, config, nc, overrides, ta2 }) {
   };
 }
 
+/**
+ * `boneIds` of the muscles: the bones their origin and insertion patches sit on (isolating a muscle keeps them
+ * visible). A patch named after a whole muscle that the source splits into parts reaches every part on its side:
+ * the group of that name ("Biceps brachii muscle") or the structures named "… of <muscle>" ("Deep head of pronator
+ * teres" for "Pronator teres"). The source misses some patches on one side and parents a few to the bone of the
+ * other side, so a bone on the other side than the muscle is skipped and left and right muscles get the same
+ * (mirrored) bones. Muscles without patches on either side get none.
+ */
+function attachBones(structures, groups) {
+  const muscles = structures.filter((s) => s.system === 'muscular' && s.kind === 'structure');
+  const byId = new Map(muscles.map((s) => [s.id, s]));
+  const boneById = new Map(structures.filter((s) => s.system === 'skeletal').map((s) => [s.id, s]));
+  const children = new Map();
+  for (const n of [...groups, ...muscles]) {
+    if (n.system !== 'muscular' || !n.parentId) continue;
+    if (!children.has(n.parentId)) children.set(n.parentId, []);
+    children.get(n.parentId).push(n.id);
+  }
+  const musclesUnder = (id) => {
+    const out = [];
+    const stack = [id];
+    while (stack.length) {
+      const cur = stack.pop();
+      if (byId.has(cur)) out.push(byId.get(cur));
+      stack.push(...(children.get(cur) ?? []));
+    }
+    return out;
+  };
+  const groupByBase = new Map(groups.filter((g) => g.system === 'muscular').map((g) => [g.base, g]));
+  const bare = (base) =>
+    base
+      .replace(/^\((.*)\)$/, '$1')
+      .toLowerCase()
+      .replace(/ muscle$/, '');
+
+  for (const p of structures) {
+    if ((p.kind !== 'origin' && p.kind !== 'insertion') || !p.boneId) continue;
+    let targets;
+    if (p.muscleId) targets = [byId.get(p.muscleId)];
+    else if (groupByBase.has(p.base)) targets = musclesUnder(groupByBase.get(p.base).id);
+    else {
+      const tail = ` of ${bare(p.base)}`;
+      targets = muscles.filter((m) => bare(m.base).endsWith(tail));
+    }
+    const boneSide = boneById.get(p.boneId)?.side;
+    for (const m of targets) {
+      if (!m || (m.side && p.side && m.side !== p.side) || (m.side && boneSide && m.side !== boneSide))
+        continue;
+      (m.boneIds ??= new Set()).add(p.boneId);
+    }
+  }
+  const own = new Map(muscles.map((m) => [m, [...(m.boneIds ?? [])]]));
+  for (const m of muscles) {
+    const pair = m.pairId && byId.get(m.pairId);
+    for (const b of (pair && own.get(pair)) ?? []) {
+      const bone = boneById.get(b);
+      const mirrored = bone?.side ? bone.pairId : b;
+      if (mirrored) (m.boneIds ??= new Set()).add(mirrored);
+    }
+  }
+  for (const m of muscles) if (m.boneIds) m.boneIds = [...m.boneIds].sort();
+}
+
 function labelRank(o) {
   return o.name.endsWith('.t') ? 0 : 1;
 }
@@ -529,6 +593,7 @@ export function toStructure(s, geo) {
   if (s.definitionKey) out.definitionKey = s.definitionKey;
   if (s.muscleId) out.muscleId = s.muscleId;
   if (s.boneId) out.boneId = s.boneId;
+  if (s.boneIds) out.boneIds = s.boneIds;
   out.color = s.color;
   out.centroid = geo.centroid;
   out.bbox = geo.bbox;

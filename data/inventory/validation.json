@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-30T05:11:26.162Z",
+  "at": "2026-10-30T06:29:15.279Z",
   "systems": [
     "skeletal",
     "insertions",
@@ -92,13 +92,13 @@
     "open review item vagus-nerve-x-r: vertex centroid x = 0.0194 (patient's left)"
   ],
   "budget": {
-    "startupBytes": 4034199,
+    "startupBytes": 4034200,
     "startupSystems": [
       "skeletal",
       "visceral"
     ],
     "ok": true,
-    "totalBytes": 41104117,
+    "totalBytes": 41122744,
     "files": 29
   },
   "stats": {

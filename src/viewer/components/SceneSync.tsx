@@ -30,6 +30,7 @@ const tintsChanged = (a: AtlasState, b: AtlasState) =>
   a.selectedId !== b.selectedId ||
   a.hoveredId !== b.hoveredId ||
   a.highlights !== b.highlights ||
+  a.isolate !== b.isolate ||
   a.structures !== b.structures ||
   a.childrenOf !== b.childrenOf;
 

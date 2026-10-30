@@ -199,6 +199,13 @@ export async function validate({ systems: requested, dir = PATHS.models } = {}) 
         } else if (key === 'muscleId' && t.system !== 'muscular')
           c.error(`${s.id}: muscleId ${ref} is not a muscle`);
       }
+      for (const ref of s.boneIds ?? []) {
+        const t = structById.get(ref);
+        if (!t) {
+          if (inManifest.includes('skeletal')) c.error(`${s.id}: boneIds ${ref} does not resolve`);
+          else c.warn(`${s.id}: boneIds ${ref} (system skeletal not built yet)`);
+        } else if (t.system !== 'skeletal') c.error(`${s.id}: boneIds ${ref} is not a bone`);
+      }
       if (s.definitionKey && !defKeys.has(s.definitionKey))
         c.error(`${s.id}: definitionKey ${s.definitionKey} missing in ${sys.definitionsFile}`);
       if (!manifest.attributions[s.attribution]) c.error(`${s.id}: attribution ${s.attribution} unknown`);

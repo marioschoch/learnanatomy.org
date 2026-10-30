@@ -12,7 +12,7 @@ export type Tint = 'none' | 'hover' | 'selected' | HighlightKind;
 /** Highlight colours (sRGB hex) and how strongly they replace the base colour. */
 export const TINTS: Record<Exclude<Tint, 'none'>, { color: string; amount: number }> = {
   hover: { color: '#7cc7ff', amount: 0.32 },
-  selected: { color: '#1f8fff', amount: 0.62 },
+  selected: { color: '#1f8fff', amount: 0.5 },
   'quiz-target': { color: '#f5a524', amount: 0.75 },
   'quiz-correct': { color: '#1fbf5f', amount: 0.8 },
   'quiz-wrong': { color: '#e5484d', amount: 0.8 },

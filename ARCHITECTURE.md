@@ -127,6 +127,8 @@ Every exported structure must belong to exactly one numbered collection (validat
   (e.g. `Acetabular fossa.s` on `Hip bone.l`). `anchor` = end of its evaluated leader line (`.j`/`.i`, HOOK modifier).
 - **labelAnchor** of a structure = end of the leader line of its own `.t` label when present.
 - **origin/insertion**: `kind`, `muscleId` (same base name, same side, in `muscular`) and `boneId` (Blender parent).
+  Muscles get `boneIds`, the bones of their patches; a patch named after a muscle that the source splits into parts
+  reaches the parts on its side (the group of that name, or structures named `… of <muscle>`).
 
 ### 4.3 Ids, names, sides, regions, definitions
 
@@ -211,7 +213,7 @@ root) is generated from the upstream README attributions + modification note + N
 ### 4.6 Validation (`validate.mjs`, exit ≠ 0 on any error)
 
 1:1 structures ↔ GLB nodes; unique URL-safe ids across structures/groups/landmarks; every reference resolves
-(`parentId` same system, `pairId` reciprocal, `muscleId`, `boneId`, `structureId`, `definitionKey`, search index ids);
+(`parentId` same system, `pairId` reciprocal, `muscleId`, `boneId`, `boneIds`, `structureId`, `definitionKey`, search index ids);
 `names.en` present; files < 20 MB; attribute layouts identical per chunk; no negative-determinant transforms.
 **Orientation (critical):** liver centroid x < 0; spleen, stomach, left ventricle x > 0; head above feet; nasal
 bone z > occipital z (faces +Z); every `side: 'left'` structure has centroid x > 0 and `'right'` x < 0
@@ -259,7 +261,8 @@ segments, which repeat the liver's volume). The quiz never asks them.
 - **Visibility/opacity** come only from `buildVisibilityContext` / `structureRender` (`src/state/visibility.ts`):
   - layer visible and not hidden (hiddenIds incl. descendants) → drawn at the layer opacity
   - X-ray: every visible layer except the innermost is capped at `XRAY_OPACITY` (0.25)
-  - isolate: only the isolated set, opaque, even from hidden layers
+  - isolate: only the isolated set, opaque, even from hidden layers; isolated muscles bring the bones they are
+    attached to (`boneIds`), and the isolated selection is drawn in its own colours (no selection tint)
   - isolate with context: isolated set opaque; the rest of what was visible drawn as **ghost**
     (`GHOST_OPACITY` 0.08, desaturated, not pickable)
   - rendered opacity < `PICK_MIN_OPACITY` (0.05) → not pickable

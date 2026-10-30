@@ -48,6 +48,20 @@ describe('visibility rules', () => {
     expect(render('biceps-brachii-l').mode).toBe('hidden');
   });
 
+  it('isolate keeps the bones an isolated muscle is attached to, even from a hidden layer', () => {
+    s().setLayerVisible('skeletal', false);
+    s().setIsolate('isolate', ['deltoid-muscle-l']);
+    expect(render('deltoid-muscle-l')).toEqual({ mode: 'normal', opacity: 1, pickable: true });
+    expect(render('humerus-l')).toEqual({ mode: 'normal', opacity: 1, pickable: true });
+    expect(render('humerus-r').mode).toBe('hidden');
+    expect(render('femur-l').mode).toBe('hidden');
+    expect(systemsNeedingGeometry(s())).toContain('skeletal');
+    // isolate with context: the bones stay context (ghosts)
+    s().setLayerVisible('skeletal', true);
+    s().setIsolate('context', ['deltoid-muscle-l']);
+    expect(render('humerus-l').mode).toBe('ghost');
+  });
+
   it('isolating a landmark isolates its structure', () => {
     s().setIsolate('isolate', ['lm-greater-trochanter-l']);
     expect(render('femur-l').mode).toBe('normal');

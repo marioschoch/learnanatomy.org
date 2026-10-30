@@ -156,6 +156,13 @@ export const FIBRES = {
 };
 
 /**
+ * Bone colour. The source paints bones a saturated tan; the viewer draws them in a paler ivory, closer to real bone
+ * and to other anatomy atlases. Only structures with exactly the source bone colour change: teeth and cartilage of
+ * the skeletal system keep their own colours.
+ */
+export const BONE = { system: 'skeletal', source: '#e7c397', color: '#ead9bb' };
+
+/**
  * Per-structure colour offset in the muscular system, seeded by the English name (= the Blender object name without
  * its .l/.r suffix, so left and right match): hue ± hueDegrees, sRGB brightness × (1 ± brightness). Brightness
  * scales the RGB values rather than the HSL lightness, which would saturate pale structures (e.g. the near-white
@@ -198,7 +205,9 @@ export function variedColor(
 
 /** Base colour the viewer draws for a structure (sRGB hex). */
 export function structureColor(st: Pick<Structure, 'color' | 'system' | 'names' | 'id'>): string {
-  if (!tissueLookEnabled() || st.system !== MUSCLE_VARIATION.system || !st.color) return st.color;
+  if (!tissueLookEnabled() || !st.color) return st.color;
+  if (st.system === BONE.system && st.color === BONE.source) return BONE.color;
+  if (st.system !== MUSCLE_VARIATION.system) return st.color;
   return variedColor(st.color, st.names?.en ?? st.id);
 }
 
