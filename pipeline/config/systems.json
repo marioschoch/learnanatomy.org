@@ -1,5 +1,5 @@
 {
-  "$comment": "System table (ARCHITECTURE.md §4.1). Read by pipeline/blender/export.py and the Node steps. layerOrder: 0 = innermost. Defaults (skeletal + visceral visible) confirmed by the owner after Phase 0.",
+  "$comment": "System table (ARCHITECTURE.md §4.1). Read by pipeline/blender/export.py and the Node steps. layerOrder: 0 = innermost. Default: only skeletal visible (owner, 2026-10-30; skeletal + visceral after Phase 0).",
   "systems": [
     {
       "id": "skeletal",
@@ -27,7 +27,7 @@
       "id": "visceral",
       "collection": "8: Visceral systems",
       "layerOrder": 3,
-      "defaultVisible": true,
+      "defaultVisible": false,
       "defaultOpacity": 1,
       "defaultHiddenChildrenOf": ["Liver"]
     },

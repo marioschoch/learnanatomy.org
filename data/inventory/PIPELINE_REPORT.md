@@ -3,7 +3,7 @@ full delivered: 2026-10-29T05:53:10Z (8 systems published, insertions held pendi
 
 # Pipeline report
 
-_Generated 2026-10-30T06:29:00.699Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
+_Generated 2026-10-30T06:41:54.391Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
 
 Source: `Startup.blend`, Blender 4.5.0, export 2026-10-30T05:09:51Z. Export settings: {"subsurfCap":1,"curveResolutionCap":6,"bevelResolutionCap":2,"tissue":{"tendon":{"materials":["Tendon"],"systems":["muscular"]},"cartilage":{"materials":["Cartilage"],"systems":["skeletal"]},"occlusion":{"systems":["muscular","skeletal"],"voxel":0.002,"distance":{"muscular":0.015,"skeletal":0.02},"rays":16,"span":[0.1,0.75]},"fibres":{"systems":["muscular"],"plain":"orbicularis|diaphragm|gloss|sphincter|constrictor|levator ani|pubo|coccyg|bucinator|intercostal|transversus thoracis|multifidus|rotatores|interspinales|intertransversarii|levatores|arytenoid|cricothyroid|tarsus|trochlea|fascia\\b|septum|aponeurosis|sheath|retinaculum|ligament|linea alba|bursa|bursae|tendinous ring|tendinous arch|iliopectineal arch|iliotibial tract"}}}. Body height (all systems) 1.7437 m; normalization offset (Y-up) [0,-0.000382,-0.001348].
 
@@ -24,7 +24,7 @@ Source: `Startup.blend`, Blender 4.5.0, export 2026-10-30T05:09:51Z. Export sett
 
 Largest file: muscular.glb (10.46 MiB). The startup download is checked by the validator (section "Validation" below).
 
-Timings (s): manifest 18.7, process skeletal 4.0, process insertions 3.2, process joints 1.9, process visceral 2.2, process cardiovascular 5.8, process lymphoid 0.9, process nervous 6.5, process muscular 14.7, process regions 1.2.
+Timings (s): manifest 8.8, process skeletal 4.0, process insertions 3.2, process joints 1.9, process visceral 2.2, process cardiovascular 5.8, process lymphoid 0.9, process nervous 6.5, process muscular 14.7, process regions 1.2.
 
 ## Simplification
 
@@ -233,7 +233,7 @@ _none_
 
 ## Validation
 
-_`node pipeline/validate.mjs` at 2026-10-30T06:29:15.275Z — systems: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions — **passed** (0 errors, 11 warnings)._
+_`node pipeline/validate.mjs` at 2026-10-30T06:42:08.741Z — systems: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions — **passed** (0 errors, 11 warnings)._
 
 | orientation / side check | result | detail |
 |---|---|---|
@@ -260,7 +260,7 @@ _`node pipeline/validate.mjs` at 2026-10-30T06:29:15.275Z — systems: skeletal,
 | muscular | 683 | 2,059,543 | 10.46 MiB |
 | regions | 256 | 124,302 | 895.8 KiB |
 
-Startup download (manifest, search index, default systems skeletal + visceral; JSON gzip, GLB as is, without JS): 3.85 MiB (budget 5 MB: met); public/models total 39.22 MiB in 29 files.
+Startup download (manifest, search index, default systems skeletal; JSON gzip, GLB as is, without JS): 2.43 MiB (budget 5 MB: met); public/models total 39.22 MiB in 29 files.
 
 - skeletal.glb: 277 nodes, 448,730 triangles, 2.28 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n,_TISSUE:VEC4:5121:n|mode=4|indexed=1
 - insertions.glb: 705 nodes, 289,986 triangles, 1.98 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1

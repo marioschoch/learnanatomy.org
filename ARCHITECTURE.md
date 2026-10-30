@@ -104,14 +104,14 @@ URL switches: `?data=mock`, `&mockLatency=300`, `?testHooks=1`.
 | `skeletal` | 1: Skeletal system | 0 | visible | bones, cartilages, teeth |
 | `insertions` | 2: Muscular insertions | 1 | hidden | muscle origin/insertion patches on bones (appendicular skeleton) |
 | `joints` | 3: Joints | 2 | hidden | ligaments, capsules, discs |
-| `visceral` | 8: Visceral systems | 3 | visible | digestive, respiratory, urinary, genital, endocrine |
+| `visceral` | 8: Visceral systems | 3 | hidden | digestive, respiratory, urinary, genital, endocrine |
 | `cardiovascular` | 5: Cardiovascular system | 4 | hidden | heart, arteries, veins (curves) |
 | `lymphoid` | 6: Lymphoid organs | 5 | hidden | |
 | `nervous` | 7: Nervous system & Sense organs | 6 | hidden | brain, nerves (curves), sense organs |
 | `muscular` | 4: Muscular system | 7 | hidden | muscles, fasciae, tendon sheaths, bursae |
 | `regions` | 9: Regions of human body | 8 | hidden | skin, split into regional surface patches; hair, nails |
 
-Defaults (skeletal + visceral visible) confirmed by the owner after Phase 0. Excluded: `Reference lines, reference planes, movements`,
+Default: only skeletal visible (owner, 2026-10-30; skeletal + visceral after Phase 0). Excluded: `Reference lines, reference planes, movements`,
 `Cross section planes`, objects only in `Bonus collection`, camera/lights.
 Every exported structure must belong to exactly one numbered collection (validator).
 
