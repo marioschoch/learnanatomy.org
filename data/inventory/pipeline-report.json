@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-29T11:30:52.987Z",
+  "generatedAt": "2026-10-30T05:11:07.575Z",
   "systems": [
     "skeletal",
     "insertions",
@@ -11,7 +11,7 @@
     "muscular",
     "regions"
   ],
-  "appDataVersion": "cb764ce2594c8a23",
+  "appDataVersion": "6094eb724bedfe39",
   "report": {
     "collisions": [
       {
@@ -8517,8 +8517,8 @@
         "node-any-bsdf": 300
       },
       "muscular": {
-        "node-any-bsdf": 426,
-        "node": 257
+        "node-any-bsdf": 462,
+        "node": 221
       },
       "insertions": {
         "node-any-bsdf": 705
@@ -8544,8 +8544,8 @@
       },
       "skeletal": {
         "none": 6,
-        "node": 67,
-        "node-any-bsdf": 204
+        "node": 59,
+        "node-any-bsdf": 212
       }
     },
     "otherTexts": [

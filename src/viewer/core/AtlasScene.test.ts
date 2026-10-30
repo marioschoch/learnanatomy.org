@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Ray, Vector3, Vector4 } from 'three';
+import { BufferAttribute, Ray, Vector3, Vector4 } from 'three';
 import type { AtlasDataSource, Structure, Vec3 } from '@/contract';
 import { createMockDataSource } from '@/mocks';
 import { buildVisibilityContext, resetAtlasStore, useAtlasStore } from '@/state';
 import { AtlasScene } from './AtlasScene';
 import { layerRenderOrder } from './ChunkBatch';
 import { clipPlaneSpecs } from './clipping';
+import { resetLook } from './tissue';
 
 const s = () => useAtlasStore.getState();
 
@@ -133,6 +134,43 @@ describe('AtlasScene on mock data', () => {
     expect(c.w).toBeCloseTo(0.2);
     expect(scene.materials.transparent.depthWrite).toBe(false);
     expect(scene.materials.depthPrepass.colorWrite).toBe(false);
+  });
+
+  it('draws chunks with a tissue attribute with the materials of their surface kind', async () => {
+    window.history.replaceState(null, '', '/?look=3');
+    resetLook();
+    const sys = s().manifest!.systems.find((x) => x.id === 'muscular')!;
+    const loaded = await (s().dataSource as AtlasDataSource).loadChunk(sys, sys.chunks[0]!);
+    for (const { geometry } of loaded.nodes) {
+      const count = geometry.getAttribute('position').count;
+      geometry.setAttribute('tissue', new BufferAttribute(new Uint8Array(count * 4), 4, true));
+    }
+    loaded.nodes[0]!.geometry.userData.fibre = [0, 1, 0, 0, 1.2, 0];
+    const other = new AtlasScene();
+    const batch = other.addChunk(
+      sys,
+      { ...loaded, file: 'tissue.glb' },
+      s().structures,
+      [],
+      s().manifest!.regions,
+    );
+    other.applyVisibility(buildVisibilityContext(s()), s().structures);
+    expect(batch.tissue).toBe(true);
+    expect(batch.kind).toBe('muscle');
+    expect(batch.main.material).toBe(batch.surfaces.opaque);
+    expect(batch.ghost.material).toBe(batch.surfaces.transparent);
+    expect(batch.surfaces.opaque.name).toBe('atlas-opaque-muscle');
+    expect(other.materials.all).toContain(batch.surfaces.opaque);
+    expect(batch.main.geometry.getAttribute('tissue').normalized).toBe(true);
+    // chunks without the attribute keep the plain materials
+    expect(scene.allBatches.every((b) => !b.tissue && b.ghost.material === scene.materials.transparent)).toBe(
+      true,
+    );
+    // the chunk's own materials go with it
+    other.dispose();
+    expect(other.materials.all).not.toContain(batch.surfaces.opaque);
+    window.history.replaceState(null, '', '/');
+    resetLook();
   });
 
   it('raycasts hit exploded positions', () => {

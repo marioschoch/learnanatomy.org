@@ -129,6 +129,24 @@
     "$comment": "Geometry reduction applied at export time on the in-memory file (never saved). Curves: resolution_u and round-bevel resolution are capped; SUBSURF viewport levels are capped.",
     "subsurfCap": 1,
     "curveResolutionCap": 6,
-    "bevelResolutionCap": 2
+    "bevelResolutionCap": 2,
+    "tissue": {
+      "$comment": "Faces with these materials on meshes that also have other materials are kept as the _TISSUE vertex attribute (VEC4 u8: R tendon, G cartilage, B occlusion, A reserved) on every node of the listed systems. The base colour of such meshes comes from their other material. Remove this block to export exactly as before.",
+      "tendon": { "materials": ["Tendon"], "systems": ["muscular"] },
+      "cartilage": { "materials": ["Cartilage"], "systems": ["skeletal"] },
+      "occlusion": {
+        "$comment": "Ambient occlusion from the system's own surfaces, baked into _TISSUE B (pipeline/blender/shading.py): darker creases where structures meet and darker hollows. voxel and distance in metres, span = the raw occlusion range mapped to 0..1; structures in the system's defaultHiddenCollections (the fasciae over the muscles) receive it but do not cast it. Remove this block for B = 0.",
+        "systems": ["muscular", "skeletal"],
+        "voxel": 0.002,
+        "distance": { "muscular": 0.015, "skeletal": 0.02 },
+        "rays": 16,
+        "span": [0.1, 0.75]
+      },
+      "fibres": {
+        "$comment": "Fibre ends per muscle (node extras \"fibre\": [ax, ay, az, bx, by, bz], shading.fibre_ends) for the viewer's fibre texture. Names matching `plain` (ring-shaped or complex muscles, connective tissue) get none and are drawn with a plain texture. Remove this block for no fibres.",
+        "systems": ["muscular"],
+        "plain": "orbicularis|diaphragm|gloss|sphincter|constrictor|levator ani|pubo|coccyg|bucinator|intercostal|transversus thoracis|multifidus|rotatores|interspinales|intertransversarii|levatores|arytenoid|cricothyroid|tarsus|trochlea|fascia\\b|septum|aponeurosis|sheath|retinaculum|ligament|linea alba|bursa|bursae|tendinous ring|tendinous arch|iliopectineal arch|iliotibial tract"
+      }
+    }
   }
 }

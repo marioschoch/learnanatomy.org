@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-29T11:31:00.732Z",
+  "at": "2026-10-30T05:11:26.162Z",
   "systems": [
     "skeletal",
     "insertions",
@@ -79,73 +79,73 @@
     }
   ],
   "notes": [
-    "skeletal.glb: 277 nodes, 448,730 triangles, 2.06 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
+    "skeletal.glb: 277 nodes, 448,730 triangles, 2.28 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n,_TISSUE:VEC4:5121:n|mode=4|indexed=1",
     "insertions.glb: 705 nodes, 289,986 triangles, 1.98 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
     "joints.glb: 413 nodes, 259,199 triangles, 1.67 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
     "visceral.glb: 119 nodes, 326,419 triangles, 1.40 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
     "cardiovascular.glb: 675 nodes, 811,402 triangles, 3.81 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
     "lymphoid.glb: 163 nodes, 106,120 triangles, 586.7 KiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
     "nervous.glb: 582 nodes, 853,509 triangles, 3.99 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
-    "muscular.glb: 683 nodes, 2,059,543 triangles, 9.56 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
+    "muscular.glb: 683 nodes, 2,059,543 triangles, 10.46 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n,_TISSUE:VEC4:5121:n|mode=4|indexed=1",
     "regions.glb: 256 nodes, 124,302 triangles, 895.8 KiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1",
     "open review item vagus-nerve-x-l: vertex centroid x = 0.0161 (patient's left)",
     "open review item vagus-nerve-x-r: vertex centroid x = 0.0194 (patient's left)"
   ],
   "budget": {
-    "startupBytes": 3793171,
+    "startupBytes": 4034199,
     "startupSystems": [
       "skeletal",
       "visceral"
     ],
     "ok": true,
-    "totalBytes": 39922221,
+    "totalBytes": 41104117,
     "files": 29
   },
   "stats": {
     "skeletal": {
       "structures": 277,
       "triangles": 448730,
-      "bytes": 2154896
+      "bytes": 2395924
     },
     "insertions": {
       "structures": 705,
       "triangles": 289986,
-      "bytes": 2076628
+      "bytes": 2076620
     },
     "joints": {
       "structures": 413,
       "triangles": 259199,
-      "bytes": 1751628
+      "bytes": 1751624
     },
     "visceral": {
       "structures": 119,
       "triangles": 326419,
-      "bytes": 1467892
+      "bytes": 1467888
     },
     "cardiovascular": {
       "structures": 675,
       "triangles": 811402,
-      "bytes": 3996736
+      "bytes": 3996732
     },
     "lymphoid": {
       "structures": 163,
       "triangles": 106120,
-      "bytes": 600776
+      "bytes": 600768
     },
     "nervous": {
       "structures": 582,
       "triangles": 853509,
-      "bytes": 4183820
+      "bytes": 4183812
     },
     "muscular": {
       "structures": 683,
       "triangles": 2059543,
-      "bytes": 10027052
+      "bytes": 10967960
     },
     "regions": {
       "structures": 256,
       "triangles": 124302,
-      "bytes": 917300
+      "bytes": 917296
     }
   }
 }

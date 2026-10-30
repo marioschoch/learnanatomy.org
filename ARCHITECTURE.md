@@ -178,7 +178,20 @@ Every exported structure must belong to exactly one numbered collection (validat
   `POSITION` + `NORMAL`, indexed, identical attribute layout within a chunk (BatchedMesh requirement).
   `export.py` writes the raw GLB with its own small numpy writer instead of `bpy.ops.export_scene.gltf`: node names
   must be full ids (Blender object names are capped at 63 bytes), mirrored instances need exact normal transforms,
-  and it is much faster. Metadata travels in JSON, so glTF extras are not needed. Output passes `gltf-validator`.
+  and it is much faster. Metadata travels in JSON; the only glTF extras are the muscles' fibre ends (below).
+  Output passes `gltf-validator`.
+- **Tissue** (`export.tissue` in `systems.json`): Z-Anatomy marks tendons on muscles (`Tendon`) and joint
+  cartilage on bones (`Cartilage`) as a second material on some faces. Every node of the muscular and skeletal
+  systems carries `_TISSUE` (VEC4, normalized uint8; R tendon, G cartilage, B occlusion, A reserved): per vertex,
+  the share of the surrounding triangles with that material, equal for all vertices at one position so
+  weld/simplify keep the topology unchanged. A mixed mesh takes its base colour from its other material.
+  `pipeline/blender/shading.py` (numpy only) bakes two more things: **B** = ambient occlusion from the system's
+  own surfaces (rays marched through a 2 mm voxel grid; darker creases where structures meet and darker hollows;
+  0..31, open surfaces exactly 0, so it compresses well), and per muscle the two **fibre ends** as node extras
+  `{"fibre": [ax, ay, az, bx, by, bz]}` (tendon end to tendon end where the source marks tendons, else the main
+  axis; fans get a far-away second end; ring-shaped/complex muscles and connective tissue get none).
+  Viewer side: `src/viewer/core/tissue.ts` (off switches `TISSUE_LOOK`, `SURFACE_DETAIL`, `MUSCLE_FIBRES`, or
+  `?look=plain|1|2|3`).
 - `process.mjs`: dedup, weld, careful simplify, prune, quantize, compress. Simplify = meshoptimizer with an
   **absolute** error of 0.05 mm (0.025 mm for curves), borders locked, structures < 64 triangles untouched, a result
   is rejected if its bbox moves by more than 2 × error. `quantize` with **`quantizationVolume: 'scene'`** (all nodes
@@ -233,6 +246,16 @@ segments, which repeat the liver's volume). The quiz never asks them.
 - **BatchedMesh per chunk.** One geometry + one instance per structure; maps `instanceId → structureId` and
   `structureId → { mesh, instanceId }`. Visibility `setVisibleAt`, colour/highlight `setColorAt` (Vector4 allows
   per-instance alpha), explode `setMatrixAt`. Draw calls ≈ number of visible chunks (+ pre-passes).
+- **Tissue look** (`core/tissue.ts`, `core/materials.ts`): chunks with a `tissue` attribute use the materials of
+  their surface kind instead of the plain shaders. Stage 1: tendons mixed towards off-white, cartilage towards
+  bluish white, lower roughness; muscular structures get a slight hue/lightness offset seeded by `names.en`
+  (left = right). Stage 2: baked occlusion (B) darkens creases and hollows; bones get a texture from one 32³
+  tileable 3D noise texture (`core/detailNoise.ts`, sampled in body space: colour variation, grain, sparse pores
+  as bump) and spongy bone on cut faces. Stage 3: muscle fibres — the vertex shader turns the muscle's fibre ends
+  (a per-chunk float texture read by instance id, so muscle chunks own their material pair) into a coordinate
+  that is constant along circular arcs through both ends, and the fragment shader stretches the noise along it.
+  Detail fades out once its noise cells shrink below a few pixels (and its texture lookups are skipped); weak
+  devices (deviceMemory < 4 or < 4 cores) get stages 1–2 without the textures.
 - **Visibility/opacity** come only from `buildVisibilityContext` / `structureRender` (`src/state/visibility.ts`):
   - layer visible and not hidden (hiddenIds incl. descendants) → drawn at the layer opacity
   - X-ray: every visible layer except the innermost is capped at `XRAY_OPACITY` (0.25)

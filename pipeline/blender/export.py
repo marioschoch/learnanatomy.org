@@ -11,7 +11,8 @@ Writes (data/export/, gitignored):
                         collections, Main-division regions, colours, label anchors, normalization, settings
     texts.json          `Translations` rows + every other text datablock (definitions)
     raw/<system>.glb    one node per structure, node name = Blender object name (renamed to ids later),
-                        POSITION + NORMAL float32, uint32 indices, normalized body space (ARCHITECTURE.md §2)
+                        POSITION + NORMAL float32, uint32 indices, normalized body space (ARCHITECTURE.md §2);
+                        systems listed in export.tissue also get _TISSUE (see "tissue" below)
     raw/<system>.json   per-structure geometry stats of that system
 
 Geometry (ARCHITECTURE.md §4.4): the evaluated depsgraph (all modifiers, curve bevels) is read per object
@@ -20,6 +21,14 @@ transformed with the inverse transpose. Z-up -> Y-up: (x, y, z) -> (x, z, -y), t
 The GLB is written by a small numpy writer below instead of bpy.ops.export_scene.gltf: node names must be ids of
 any length (Blender object names are capped at 63 bytes), and baking/winding/normals must be exact per instance.
 The result corresponds to export_format='GLB', export_apply=True, export_yup=True.
+
+Tissue (export.tissue in systems.json): Z-Anatomy marks tendons on muscles and joint cartilage on bones with a
+second material on some faces. Instead of splitting meshes, every node of the listed systems carries a
+_TISSUE vertex attribute (VEC4, normalized uint8): per channel (R tendon, G cartilage) the share of the triangles
+around the vertex that carry that material. The base colour of such a mixed mesh comes from its other material.
+Meshes made only of the tissue material keep that material's colour and get zeros. B is the baked ambient
+occlusion from the system's own surfaces (export.tissue.occlusion, 0..31, shading.py), A is reserved. Muscles
+get their fibre ends as node extras {"fibre": [ax, ay, az, bx, by, bz]} (export.tissue.fibres, shading.py).
 
 Safety: the .blend is never saved. All changes (un-hiding, SUBSURF level cap, curve resolution cap) only affect
 the in-memory copy. TextCurve.body is never read (crashes Blender 4.5 on some labels).
@@ -36,6 +45,10 @@ import time
 
 import bpy
 import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.dont_write_bytecode = True  # no __pycache__ next to the scripts
+import shading  # noqa: E402  (numpy only, next to this script)
 
 T0 = time.time()
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -412,24 +425,67 @@ def world_vertices(me, mw):
 
 
 def polygon_stats(me):
-    """(source triangle count, most used material index) without Python loops over polygons."""
+    """(source triangle count, polygons per material index) without Python loops over polygons."""
     n = len(me.polygons)
     tot = np.empty(n, np.int32)
     me.polygons.foreach_get("loop_total", tot)
     mi = np.empty(n, np.int32)
     me.polygons.foreach_get("material_index", mi)
-    counts = np.bincount(mi.clip(0), minlength=1)
-    return int((tot - 2).sum()), int(counts.argmax())
+    return int((tot - 2).sum()), np.bincount(mi.clip(0), minlength=1)
 
 
-def extract(me, mw, offset):
-    """Triangles of an evaluated mesh in normalized body space (positions f32, normals f32, indices u32)."""
+# _TISSUE channels from materials, in order (R, G); B is the baked occlusion, A is written as 0 (reserved).
+TISSUE_KINDS = ("tendon", "cartilage")
+
+
+def tissue_materials(settings):
+    """{system id: {material name: channel}} from settings["tissue"] (empty without that block)."""
+    out = {}
+    for ch, kind in enumerate(TISSUE_KINDS):
+        spec = (settings.get("tissue") or {}).get(kind)
+        for sid in (spec or {}).get("systems", []):
+            for name in spec["materials"]:
+                out.setdefault(sid, {})[name] = ch
+    return out
+
+
+def slot_channels(obj, materials):
+    """Channel per material slot (-1 = no tissue), at least one entry. Material indices past the last slot render
+    with the last slot, so callers clip indices to len - 1."""
+    slots = [s.material.name if s.material else None for s in obj.material_slots] or [None]
+    return np.array([materials.get(name, -1) for name in slots], np.int8)
+
+
+def tissue_weights(pos, idx, tri_channel):
+    """_TISSUE (uint8 x 4) per vertex: per channel, the share of the triangles around the vertex with that tissue.
+
+    Vertices at the same position (hard edges) get the same value: process.mjs welds bitwise identical vertices and
+    simplifies by position only, so this keeps its topology exactly as without the attribute."""
+    out = np.zeros((len(pos), 4), np.uint8)
+    if not (tri_channel >= 0).any():
+        return out
+    group, _ = shading.position_groups(pos)
+    corner_group = group[idx.reshape(-1)]
+    corner_channel = np.repeat(tri_channel, 3)
+    ng = int(group.max()) + 1
+    total = np.maximum(np.bincount(corner_group, minlength=ng), 1)
+    for ch in range(len(TISSUE_KINDS)):
+        hits = np.bincount(corner_group[corner_channel == ch], minlength=ng)
+        out[:, ch] = np.round(hits[group] * 255.0 / total[group]).astype(np.uint8)
+    return out
+
+
+def extract(me, mw, offset, slot_channel=None):
+    """Triangles of an evaluated mesh in normalized body space (positions f32, normals f32, indices u32).
+    With `slot_channel` (slot_channels) the result also has "tissue" (tissue_weights)."""
     me.calc_loop_triangles()
     nt = len(me.loop_triangles)
     nl = len(me.loops)
     nv = len(me.vertices)
     if nt == 0:
         return None
+    tri_mat = np.empty(nt, np.int32)
+    me.loop_triangles.foreach_get("material_index", tri_mat)
     co = np.empty(nv * 3, np.float32)
     me.vertices.foreach_get("co", co)
     co = co.reshape(-1, 3).astype(np.float64)
@@ -471,14 +527,19 @@ def extract(me, mw, offset):
     ok = (idx[:, 0] != idx[:, 1]) & (idx[:, 1] != idx[:, 2]) & (idx[:, 0] != idx[:, 2])
     if not ok.all():
         idx = idx[ok]
+        tri_mat = tri_mat[ok]
     if len(idx) == 0:
         return None
-    return {
+    out = {
         "pos": pos.astype(np.float32),
         "nrm": nrm.astype(np.float32),
         "idx": np.ascontiguousarray(idx, dtype=np.uint32),
         "det": det,
     }
+    if slot_channel is not None:
+        tri_channel = slot_channel[np.clip(tri_mat, 0, len(slot_channel) - 1)]
+        out["tissue"] = tissue_weights(out["pos"], out["idx"], tri_channel)
+    return out
 
 
 # --------------------------------------------------------------------------------------
@@ -504,9 +565,11 @@ class GlbWriter:
         self.views.append({"buffer": 0, "byteOffset": off, "byteLength": len(data), "target": target})
         return len(self.views) - 1
 
-    def _accessor(self, arr, comp, typ, target, minmax=False):
+    def _accessor(self, arr, comp, typ, target, minmax=False, normalized=False):
         view = self._view(arr.tobytes(), target)
         acc = {"bufferView": view, "componentType": comp, "count": int(arr.shape[0]), "type": typ}
+        if normalized:
+            acc["normalized"] = True
         if minmax:
             acc["min"] = [float(x) for x in arr.min(axis=0)]
             acc["max"] = [float(x) for x in arr.max(axis=0)]
@@ -529,21 +592,28 @@ class GlbWriter:
             self.material_index[key] = len(self.materials) - 1
         return self.material_index[key]
 
-    def add(self, name, geo, rgb_linear):
+    def add(self, name, geo, rgb_linear, extras=None):
         pos = np.ascontiguousarray(geo["pos"], dtype=np.float32)
         nrm = np.ascontiguousarray(geo["nrm"], dtype=np.float32)
         idx = np.ascontiguousarray(geo["idx"].reshape(-1), dtype=np.uint32)
         a_pos = self._accessor(pos, 5126, "VEC3", 34962, minmax=True)
         a_nrm = self._accessor(nrm, 5126, "VEC3", 34962)
+        attributes = {"POSITION": a_pos, "NORMAL": a_nrm}
+        if "tissue" in geo:
+            tissue = np.ascontiguousarray(geo["tissue"], dtype=np.uint8)
+            attributes["_TISSUE"] = self._accessor(tissue, 5121, "VEC4", 34962, normalized=True)
         a_idx = self._accessor(idx, 5125, "SCALAR", 34963)
         prim = {
-            "attributes": {"POSITION": a_pos, "NORMAL": a_nrm},
+            "attributes": attributes,
             "indices": a_idx,
             "mode": 4,
             "material": self.material(rgb_linear),
         }
         self.meshes.append({"name": name, "primitives": [prim]})
-        self.nodes.append({"name": name, "mesh": len(self.meshes) - 1})
+        node = {"name": name, "mesh": len(self.meshes) - 1}
+        if extras:
+            node["extras"] = extras
+        self.nodes.append(node)
 
     def write(self, path):
         while len(self.bin) % 4:
@@ -596,7 +666,13 @@ def main():
     args = parse_args()
     with open(CONFIG, encoding="utf-8") as f:
         cfg = json.load(f)
-    settings = {k: v for k, v in cfg["export"].items() if not k.startswith("$")}
+    def strip_comments(d):
+        return {k: strip_comments(v) if isinstance(v, dict) else v for k, v in d.items() if not k.startswith("$")}
+
+    settings = strip_comments(cfg["export"])
+    tissue_of = tissue_materials(settings)
+    occlusion_cfg = (settings.get("tissue") or {}).get("occlusion")
+    fibres_cfg = (settings.get("tissue") or {}).get("fibres")
     if args.subsurf_cap is not None:
         settings["subsurfCap"] = args.subsurf_cap
     if args.curve_resolution_cap is not None:
@@ -728,8 +804,21 @@ def main():
                     body_max = np.maximum(body_max, wv.max(axis=0))
                     rec["det"] = round(float(np.linalg.det(mw[:3, :3])), 6)
                     rec["isCurve"] = o.type == "CURVE"
-                    src_tris, best = polygon_stats(me)
+                    src_tris, counts = polygon_stats(me)
+                    best = int(counts.argmax())
                     rec["evalTriangles"] = src_tris
+                    materials = tissue_of.get(sys_of[o.name])
+                    if materials:
+                        sc = slot_channels(o, materials)
+                        ch = sc[np.minimum(np.arange(len(counts)), len(sc) - 1)]
+                        if (counts[ch < 0] > 0).any() and (counts[ch >= 0] > 0).any():
+                            # mixed mesh: tissue faces go to _TISSUE, the colour comes from the other material
+                            best = int(np.where(ch < 0, counts, -1).argmax())
+                            rec["tissuePolygons"] = {
+                                TISSUE_KINDS[k]: int(counts[ch == k].sum())
+                                for k in range(len(TISSUE_KINDS))
+                                if counts[ch == k].sum() > 0
+                            }
                     slots = [s.material for s in o.material_slots]
                     mat = slots[best] if best < len(slots) else None
                     rgb, method = material_color(mat, o)
@@ -821,40 +910,98 @@ def main():
             continue
         w = GlbWriter()
         per = []
+        items = []  # (record, geo), added to the writer once the system's shading is baked
         tris_total = 0
+        materials = tissue_of.get(sid)
+        tissue_count = {}
         for r in records:
             if r["system"] != sid or r["kind"] != "structure":
                 continue
             o = bpy.data.objects[r["name"]]
             oe = o.evaluated_get(dg)
             me = oe.to_mesh()
-            geo = extract(me, mat_np(oe.matrix_world), offset)
+            # every node of a tissue system gets _TISSUE (one attribute layout per chunk); zeros unless mixed
+            slot_channel = None
+            if materials:
+                slot_channel = slot_channels(o, materials) if "tissuePolygons" in r else np.full(1, -1, np.int8)
+            geo = extract(me, mat_np(oe.matrix_world), offset, slot_channel)
             oe.to_mesh_clear()
             if geo is None:
                 r["kind"] = "empty"
                 log(f"WARNING {r['name']}: no triangles after extraction")
                 continue
-            w.add(r["name"], geo, r.get("colorLinear") or [0.8, 0.8, 0.8])
+            items.append((r, geo))
             nt = int(len(geo["idx"]))
             tris_total += nt
             pos = geo["pos"]
-            per.append(
-                {
-                    "name": r["name"],
-                    "triangles": nt,
-                    "vertices": int(len(pos)),
-                    "mirrored": geo["det"] < 0,
-                    "bboxMin": r6(pos.min(axis=0)),
-                    "bboxMax": r6(pos.max(axis=0)),
-                }
+            entry = {
+                "name": r["name"],
+                "triangles": nt,
+                "vertices": int(len(pos)),
+                "mirrored": geo["det"] < 0,
+                "bboxMin": r6(pos.min(axis=0)),
+                "bboxMax": r6(pos.max(axis=0)),
+            }
+            if "tissue" in geo:
+                marked = {k: int((geo["tissue"][:, i] > 0).sum()) for i, k in enumerate(TISSUE_KINDS)}
+                marked = {k: n for k, n in marked.items() if n}
+                if marked:
+                    entry["tissueVertices"] = marked
+                    for k in marked:
+                        tissue_count[k] = tissue_count.get(k, 0) + 1
+            per.append(entry)
+
+        # baked shading (shading.py): occlusion into _TISSUE B, fibre ends as node extras
+        extras = [None] * len(items)
+        stats_occ = fibre_count = None
+        if materials and occlusion_cfg and sid in occlusion_cfg["systems"]:
+            t_occ = time.time()
+            hidden = set(next(x for x in systems if x["id"] == sid).get("defaultHiddenCollections", []))
+            casts = [not hidden.intersection(r["collections"]) for r, _ in items]
+            occ = shading.occlusion(
+                [g for _, g in items],
+                casts,
+                occlusion_cfg["voxel"],
+                occlusion_cfg["distance"][sid],
+                occlusion_cfg["rays"],
+                tuple(occlusion_cfg["span"]),
+                log=log,
             )
+            for (_, g), o in zip(items, occ):
+                g["tissue"][:, 2] = o
+            stats_occ = {"seconds": round(time.time() - t_occ, 1), "castingStructures": int(sum(casts))}
+            log(f"{sid}: occlusion baked in {stats_occ['seconds']} s")
+        if materials and fibres_cfg and sid in fibres_cfg["systems"]:
+            plain = re.compile(fibres_cfg["plain"], re.I)
+            fibre_count = {}
+            for i, ((r, g), entry) in enumerate(zip(items, per)):
+                kind = "plain"
+                if not plain.search(re.sub(r"\.(l|r)$", "", r["name"])):
+                    ends = shading.fibre_ends(g["pos"], g["tissue"][:, 0] / 255.0)
+                    if ends is not None:
+                        a, b, kind, source = ends
+                        extras[i] = {"fibre": r6([*a, *b])}
+                        entry["fibre"] = {"kind": kind, "ends": source}
+                fibre_count[kind] = fibre_count.get(kind, 0) + 1
+            log(f"{sid}: fibres {fibre_count}")
+        for (r, g), ex in zip(items, extras):
+            w.add(r["name"], g, r.get("colorLinear") or [0.8, 0.8, 0.8], ex)
         nbytes = w.write(os.path.join(raw_dir, f"{sid}.glb"))
         write_json(
             os.path.join(raw_dir, f"{sid}.json"),
             {"system": sid, "settings": settings, "triangles": tris_total, "structures": per},
         )
         stats[sid] = {"structures": len(per), "triangles": tris_total, "bytes": nbytes}
-        log(f"{sid}: {len(per)} structures, {tris_total:,} triangles, {nbytes / 1e6:.1f} MB raw GLB")
+        if materials:
+            stats[sid]["tissueStructures"] = tissue_count
+        if stats_occ:
+            stats[sid]["occlusion"] = stats_occ
+        if fibre_count:
+            stats[sid]["fibres"] = fibre_count
+        log(
+            f"{sid}: {len(per)} structures, {tris_total:,} triangles, {nbytes / 1e6:.1f} MB raw GLB"
+            + (f", tissue {tissue_count}" if materials else "")
+        )
 
     # ------------------------------------------------------------ scene.json (always all systems)
     scene = {

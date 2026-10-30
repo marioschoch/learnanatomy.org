@@ -11,6 +11,9 @@
  *   4. flip triangle winding if that matrix mirrors (negative determinant) so front faces stay outward —
  *      the viewer's cut-face shading depends on it.
  * Every geometry ends up with the same layout (indexed, `position` + `normal`, Float32), as BatchedMesh requires.
+ * Chunks with the pipeline's `_TISSUE` attribute (muscular, skeletal) also get `tissue` (Uint8 × 4, normalized) on
+ * every node while the tissue look is on (../core/tissue.ts); otherwise it is dropped. Muscle nodes' fibre ends
+ * (node extras "fibre", six numbers in body space) go to `geometry.userData.fibre` while fibres are on.
  */
 import { BufferAttribute, BufferGeometry } from 'three';
 import type { Mesh, Object3D, Matrix4 } from 'three';
@@ -18,6 +21,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { GlbDecoder, LoadedNode } from '@/contract';
+import { look, tissueLookEnabled } from '../core/tissue';
 
 let loader: GLTFLoader | null = null;
 
@@ -40,14 +44,31 @@ function toFloat32(attr: BufferGeometry['attributes'][string]): BufferAttribute 
   return new BufferAttribute(out, itemSize);
 }
 
-/** Normalized copy of a primitive: position + normal (Float32) + index, in body space. */
-export function bakeGeometry(source: BufferGeometry, matrixWorld: Matrix4): BufferGeometry {
+/** Uint8 × 4 normalized, non-interleaved copy of a [0, 1] attribute (missing components are 0). */
+function toUnorm8x4(attr: BufferGeometry['attributes'][string]): BufferAttribute {
+  const { count } = attr;
+  const size = Math.min(4, attr.itemSize);
+  const out = new Uint8Array(count * 4);
+  for (let i = 0; i < count; i++) {
+    for (let c = 0; c < size; c++) out[i * 4 + c] = Math.round(attr.getComponent(i, c) * 255);
+  }
+  return new BufferAttribute(out, 4, true);
+}
+
+/** Normalized copy of a primitive: position + normal (Float32) [+ tissue] + index, in body space. */
+export function bakeGeometry(
+  source: BufferGeometry,
+  matrixWorld: Matrix4,
+  keepTissue = tissueLookEnabled(),
+): BufferGeometry {
   const g = new BufferGeometry();
   const pos = source.getAttribute('position');
   if (!pos) throw new Error('primitive without POSITION');
   g.setAttribute('position', toFloat32(pos));
   const normal = source.getAttribute('normal');
   if (normal) g.setAttribute('normal', toFloat32(normal));
+  const tissue = keepTissue ? source.getAttribute('_tissue') : undefined;
+  if (tissue) g.setAttribute('tissue', toUnorm8x4(tissue));
 
   let index: Uint32Array | Uint16Array;
   if (source.index) {
@@ -103,6 +124,8 @@ export const decodeGlbImpl: GlbDecoder = async (buffer, file) => {
 
   // Collect primitives per node name (a node with several primitives becomes a Group of Meshes in three).
   const perNode = new Map<string, BufferGeometry[]>();
+  const fibreOf = new Map<string, number[]>();
+  const keepFibres = look().fibres;
   const order: string[] = [];
   gltf.scene.traverse((obj) => {
     const mesh = obj as Mesh;
@@ -113,6 +136,8 @@ export const decodeGlbImpl: GlbDecoder = async (buffer, file) => {
       return;
     }
     const baked = bakeGeometry(mesh.geometry, mesh.matrixWorld);
+    const fibre: unknown = owner.object.userData.fibre;
+    if (keepFibres && Array.isArray(fibre) && fibre.length === 6) fibreOf.set(owner.name, fibre as number[]);
     let list = perNode.get(owner.name);
     if (!list) {
       list = [];
@@ -122,6 +147,17 @@ export const decodeGlbImpl: GlbDecoder = async (buffer, file) => {
     list.push(baked);
     mesh.geometry.dispose();
   });
+
+  // One layout per chunk: if any primitive has `tissue`, give the others zeros (validate.mjs makes this rare).
+  const all = [...perNode.values()].flat();
+  if (all.some((g) => g.hasAttribute('tissue'))) {
+    for (const g of all) {
+      if (!g.hasAttribute('tissue')) {
+        const count = g.getAttribute('position').count;
+        g.setAttribute('tissue', new BufferAttribute(new Uint8Array(count * 4), 4, true));
+      }
+    }
+  }
 
   const nodes: LoadedNode[] = [];
   for (const name of order) {
@@ -135,6 +171,8 @@ export const decodeGlbImpl: GlbDecoder = async (buffer, file) => {
       merged.computeBoundingSphere();
       geometry = merged;
     }
+    const fibre = fibreOf.get(name);
+    if (fibre) geometry.userData.fibre = fibre;
     nodes.push({ nodeName: name, geometry });
   }
   return nodes;

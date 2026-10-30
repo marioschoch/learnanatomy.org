@@ -17,14 +17,17 @@
  * offset instead of inverting a matrix, and distances are identical in instance and world space.
  */
 import { BatchedMesh, BufferGeometry, Color, Matrix4, Ray, Sphere, Vector3, Vector4 } from 'three';
-import type { Material, Side } from 'three';
+import type { DataTexture, Material, Side } from 'three';
 import { MeshBVH } from 'three-mesh-bvh';
 import type { BBox, LoadedChunk, Structure, SystemId, Vec3 } from '@/contract';
 import type { StructureRender } from '@/state';
 import { FALLBACK_COLOR, tintedColor } from './colors';
 import type { Tint } from './colors';
 import { EXPLODE_LOCAL, explodeVector } from './explode';
-import type { AtlasMaterials } from './materials';
+import { createFibreEnds } from './materials';
+import type { AtlasMaterials, SurfacePair } from './materials';
+import { structureColor, surfaceKind } from './tissue';
+import type { SurfaceKind } from './tissue';
 
 /**
  * renderOrder of a layer's passes.
@@ -84,6 +87,14 @@ export class ChunkBatch {
   /** Structures that have metadata (others are drawn but never pickable). */
   readonly known: Uint8Array;
   readonly triangleCount: number;
+  /** Geometry has the `tissue` attribute (tendons/cartilage) → tissue materials (materials.ts). */
+  readonly tissue: boolean;
+  /** Surface shader of this chunk (tissue.ts surfaceKind). */
+  readonly kind: SurfaceKind;
+  /** Colour-pass materials (opaque/transparent) of `kind`; muscle chunks with fibres own theirs. */
+  readonly surfaces: SurfacePair;
+  /** Per-instance fibre ends (node extras "fibre" via decodeGlb) for the fibre shader, or null. */
+  private readonly fibreEnds: DataTexture | null;
 
   private readonly baseColor: string[];
   private readonly geometryIdOf: Int32Array;
@@ -133,12 +144,19 @@ export class ChunkBatch {
       indexCount += g.index ? g.index.count : pos.count;
     }
     this.triangleCount = Math.round(indexCount / 3);
+    // decodeGlb gives every node of a chunk the same attributes (BatchedMesh requires it).
+    this.tissue = n > 0 && nodes[0]!.geometry.hasAttribute('tissue');
+    this.kind = surfaceKind(opts.system, this.tissue);
+    this.fibreEnds = opts.materials.needsFibreEnds(this.kind)
+      ? createFibreEnds(nodes.map((node) => node.geometry.userData.fibre as number[] | undefined))
+      : null;
+    this.surfaces = opts.materials.surfaces(this.kind, this.fibreEnds ?? undefined);
 
     this.main = new BatchedMesh(
       Math.max(1, n),
       Math.max(1, vertexCount),
       Math.max(1, indexCount),
-      opts.materials.opaque,
+      this.surfaces.opaque,
     );
     this.main.name = `atlas:${chunk.file}`;
     this.ids = new Array<string>(n);
@@ -166,7 +184,7 @@ export class ChunkBatch {
       this.instanceOf.set(id, i);
       const st = structures[id];
       this.known[i] = st ? 1 : 0;
-      this.baseColor[i] = st?.color ?? opts.systemColor ?? FALLBACK_COLOR;
+      this.baseColor[i] = (st ? structureColor(st) : undefined) ?? opts.systemColor ?? FALLBACK_COLOR;
       const centroid: Vec3 = st?.centroid ?? [
         g.boundingSphere!.center.x,
         g.boundingSphere!.center.y,
@@ -189,7 +207,7 @@ export class ChunkBatch {
     this.prepass.setCustomSort(function (list) {
       list.sort((a, b) => a.z - b.z);
     });
-    this.ghost = createView(this.main, opts.materials.transparent);
+    this.ghost = createView(this.main, this.surfaces.transparent);
     this.ghost.name = `atlas:${chunk.file}:ghost`;
 
     for (const mesh of this.meshes) {
@@ -240,7 +258,7 @@ export class ChunkBatch {
     // layerOrder makes inner layers draw before outer ones (back-to-front for nested layers).
     const order = layerRenderOrder(this.layerOrder);
     this.main.visible = anyNormal;
-    this.main.material = this.transparent ? this.materials.transparent : this.materials.opaque;
+    this.main.material = this.transparent ? this.surfaces.transparent : this.surfaces.opaque;
     this.main.renderOrder = this.transparent ? order.color : order.opaque;
     this.prepass.visible = this.transparent;
     this.prepass.renderOrder = order.prepass;
@@ -415,6 +433,8 @@ export class ChunkBatch {
     }
     this.main.dispose();
     this.main.removeFromParent();
+    this.materials.release(this.surfaces);
+    this.fibreEnds?.dispose();
     this.bvh.fill(null);
   }
 }

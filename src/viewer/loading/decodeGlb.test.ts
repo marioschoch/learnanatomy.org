@@ -3,9 +3,10 @@ import { Document, NodeIO } from '@gltf-transform/core';
 import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import { quantize, reorder } from '@gltf-transform/functions';
 import { MeshoptEncoder } from 'meshoptimizer';
-import { BoxGeometry, Matrix4, Triangle, Vector3 } from 'three';
+import { BoxGeometry, BufferAttribute, Matrix4, Triangle, Vector3 } from 'three';
 import type { BufferGeometry } from 'three';
 import type { Manifest, SystemStructuresFile } from '@/contract';
+import { resetLook } from '../core/tissue';
 import { bakeGeometry, decodeGlbImpl } from './decodeGlbImpl';
 
 // tsconfig.app has no Node types; the test runs in Node (vitest), so load fs untyped.
@@ -17,8 +18,19 @@ interface MinimalFs {
 const fs = (await import(/* @vite-ignore */ 'node:fs' as string)) as MinimalFs;
 const cwd = (globalThis as unknown as { process: { cwd(): string } }).process.cwd;
 
-/** Builds a GLB the way the pipeline does: quantized with one shared (scene) volume + meshopt compression. */
-async function buildGlb(boxes: { name: string; center: [number, number, number]; size: number }[]) {
+/**
+ * Builds a GLB the way the pipeline does: quantized with one shared (scene) volume + meshopt compression.
+ * `tissue` = constant _TISSUE value (uint8 × 4) of every vertex of that box; `extras` = node extras.
+ */
+async function buildGlb(
+  boxes: {
+    name: string;
+    center: [number, number, number];
+    size: number;
+    tissue?: [number, number, number, number];
+    extras?: Record<string, unknown>;
+  }[],
+) {
   const doc = new Document();
   const buffer = doc.createBuffer();
   const scene = doc.createScene();
@@ -44,8 +56,19 @@ async function buildGlb(boxes: { name: string; center: [number, number, number];
       .setAttribute('POSITION', pos)
       .setAttribute('NORMAL', nor)
       .setIndices(idx);
+    if (b.tissue) {
+      const count = g.getAttribute('position').count;
+      const t = new Uint8Array(count * 4);
+      for (let i = 0; i < count; i++) t.set(b.tissue, i * 4);
+      prim.setAttribute(
+        '_TISSUE',
+        doc.createAccessor().setType('VEC4').setArray(t).setNormalized(true).setBuffer(buffer),
+      );
+    }
     const mesh = doc.createMesh(b.name).addPrimitive(prim);
-    scene.addChild(doc.createNode(b.name).setMesh(mesh));
+    const node = doc.createNode(b.name).setMesh(mesh);
+    if (b.extras) node.setExtras(b.extras);
+    scene.addChild(node);
   }
   await MeshoptEncoder.ready;
   await doc.transform(reorder({ encoder: MeshoptEncoder }), quantize({ quantizationVolume: 'scene' }));
@@ -81,6 +104,11 @@ function outwardFraction(g: BufferGeometry): number {
   return out / tris;
 }
 
+function withLook(query: string) {
+  window.history.replaceState(null, '', query);
+  resetLook();
+}
+
 describe('decodeGlb', () => {
   it('decodes quantized + meshopt GLBs into body-space Float32 geometry, one per node', async () => {
     const { glb, json } = await buildGlb([
@@ -112,6 +140,52 @@ describe('decodeGlb', () => {
     expect(r!.min.z).toBeCloseTo(-0.075, 3);
   });
 
+  it('keeps _TISSUE as normalized Uint8 × 4 `tissue`, the same layout on every node of the chunk', async () => {
+    const { glb } = await buildGlb([
+      { name: 'muscle', center: [0.2, 1.2, 0.05], size: 0.1, tissue: [255, 0, 0, 0] },
+      { name: 'bone', center: [-0.2, 1.2, 0.05], size: 0.1, tissue: [0, 128, 0, 0] },
+      { name: 'plain', center: [0, 0.4, 0], size: 0.05 },
+    ]);
+    const nodes = await decodeGlbImpl(glb, 'test.glb');
+    const [muscle, bone, plain] = nodes.map((n) => n.geometry.getAttribute('tissue'));
+    for (const t of [muscle, bone, plain]) {
+      expect(t!.array).toBeInstanceOf(Uint8Array);
+      expect(t!.itemSize).toBe(4);
+      expect(t!.normalized).toBe(true);
+    }
+    expect(muscle!.getX(0)).toBeCloseTo(1);
+    expect(muscle!.getY(0)).toBe(0);
+    expect(bone!.getX(0)).toBe(0);
+    expect(bone!.getY(0)).toBeCloseTo(128 / 255);
+    expect(plain!.getX(0) + plain!.getY(0)).toBe(0); // filled with zeros
+
+    // Off switch (tissue look disabled): dropped.
+    const g = new BoxGeometry(1, 1, 1);
+    g.setAttribute(
+      '_tissue',
+      new BufferAttribute(new Uint8Array(g.getAttribute('position').count * 4), 4, true),
+    );
+    expect(bakeGeometry(g, new Matrix4(), false).hasAttribute('tissue')).toBe(false);
+    expect(bakeGeometry(g, new Matrix4(), true).hasAttribute('tissue')).toBe(true);
+  });
+
+  it('passes muscle fibre ends (node extras) on as geometry.userData.fibre while fibres are on', async () => {
+    const fibre = [0.1, 1.0, 0.0, 0.12, 1.3, 0.02];
+    const { glb } = await buildGlb([
+      { name: 'muscle', center: [0.2, 1.2, 0.05], size: 0.1, tissue: [0, 0, 0, 0], extras: { fibre } },
+      { name: 'ring', center: [-0.2, 1.2, 0.05], size: 0.1, tissue: [0, 0, 0, 0] },
+    ]);
+    withLook('/?look=3');
+    const [muscle, ring] = await decodeGlbImpl(glb, 'test.glb');
+    // Body space as written by the pipeline (the node's dequantization transform does not apply to extras).
+    expect(muscle!.geometry.userData.fibre).toEqual(fibre);
+    expect(ring!.geometry.userData.fibre).toBeUndefined();
+    withLook('/?look=2');
+    const [plain] = await decodeGlbImpl(glb, 'test.glb');
+    expect(plain!.geometry.userData.fibre).toBeUndefined();
+    withLook('/');
+  });
+
   it('keeps outward winding when a node transform mirrors (negative determinant)', () => {
     const g = new BoxGeometry(1, 1, 1).translate(2, 0, 0);
     g.computeBoundingSphere();
@@ -140,6 +214,14 @@ describe('decodeGlb', () => {
         ) as SystemStructuresFile;
         const byId = new Map(meta.structures.map((s) => [s.id, s]));
         let decoded = 0;
+        // structures with marked tendon (x) / cartilage (y) vertices
+        const marked = [0, 0];
+        let withTissue = 0;
+        // occluded vertices (_TISSUE B > 0) and the largest B, structures with fibre ends
+        let occluded = 0;
+        let maxOcclusion = 0;
+        let withFibres = 0;
+        withLook('/?look=3');
         for (const chunk of sys.chunks) {
           const file = fs.readFileSync(`${models}/${chunk.file}`) as Uint8Array;
           // Copy into an ArrayBuffer of this realm (Node Buffers fail GLTFLoader's instanceof check under jsdom).
@@ -158,11 +240,51 @@ describe('decodeGlb', () => {
             }
             if (sys.id === 'skeletal' && st!.side === 'left') expect(c.x).toBeGreaterThan(0);
             if (sys.id === 'skeletal' && st!.side === 'right') expect(c.x).toBeLessThan(0);
+            const fibre = geometry.userData.fibre as number[] | undefined;
+            if (fibre) {
+              withFibres++;
+              expect(fibre).toHaveLength(6);
+              // both ends lie near the structure (fan-shaped muscles push one end ≈ 3× further out)
+              for (const end of [fibre.slice(0, 3), fibre.slice(3)]) {
+                expect(Math.hypot(...end.map((v, a) => v - c.getComponent(a))), nodeName).toBeLessThan(1);
+              }
+            }
+            const t = geometry.getAttribute('tissue');
+            if (t) {
+              withTissue++;
+              for (let i = 0; i < t.count; i++) {
+                const b = Math.round(t.getComponent(i, 2) * 255);
+                if (b > 0) occluded++;
+                maxOcclusion = Math.max(maxOcclusion, b);
+              }
+              for (let ch = 0; ch < 2; ch++) {
+                for (let i = 0; i < t.count; i++) {
+                  if (t.getComponent(i, ch) > 0) {
+                    marked[ch]!++;
+                    break;
+                  }
+                }
+              }
+            }
             geometry.dispose();
             decoded++;
           }
         }
         expect(decoded).toBe(sys.structureCount);
+        // Tendons only on muscles, cartilage only on bones (pipeline/config/systems.json export.tissue).
+        const tissueSystem = sys.id === 'muscular' || sys.id === 'skeletal';
+        expect(withTissue).toBe(tissueSystem ? sys.structureCount : 0);
+        if (sys.id === 'muscular') expect(marked).toEqual([expect.any(Number), 0]);
+        if (sys.id === 'muscular') expect(marked[0]).toBeGreaterThan(200);
+        if (sys.id === 'skeletal') expect(marked).toEqual([0, expect.any(Number)]);
+        if (sys.id === 'skeletal') expect(marked[1]).toBeGreaterThan(150);
+        // Baked occlusion in B: 0..31 (pipeline/blender/shading.py OCCLUSION_STEPS), on many vertices.
+        if (tissueSystem) expect(maxOcclusion).toBe(31);
+        if (tissueSystem) expect(occluded).toBeGreaterThan(10_000);
+        // Fibre ends on the muscles that are not ring-shaped, complex or connective tissue.
+        if (sys.id === 'muscular') expect(withFibres).toBeGreaterThan(300);
+        else expect(withFibres).toBe(0);
+        withLook('/');
       },
       180_000,
     );

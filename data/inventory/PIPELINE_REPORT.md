@@ -3,28 +3,28 @@ full delivered: 2026-10-29T05:53:10Z (8 systems published, insertions held pendi
 
 # Pipeline report
 
-_Generated 2026-10-29T11:30:52.972Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
+_Generated 2026-10-30T05:11:07.039Z by `pipeline/manifest.mjs`. Systems in this build: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions._
 
-Source: `Startup.blend`, Blender 4.5.0, export 2026-10-29T05:45:38Z. Export settings: {"subsurfCap":1,"curveResolutionCap":6,"bevelResolutionCap":2}. Body height (all systems) 1.7437 m; normalization offset (Y-up) [0,-0.000382,-0.001348].
+Source: `Startup.blend`, Blender 4.5.0, export 2026-10-30T05:09:51Z. Export settings: {"subsurfCap":1,"curveResolutionCap":6,"bevelResolutionCap":2,"tissue":{"tendon":{"materials":["Tendon"],"systems":["muscular"]},"cartilage":{"materials":["Cartilage"],"systems":["skeletal"]},"occlusion":{"systems":["muscular","skeletal"],"voxel":0.002,"distance":{"muscular":0.015,"skeletal":0.02},"rays":16,"span":[0.1,0.75]},"fibres":{"systems":["muscular"],"plain":"orbicularis|diaphragm|gloss|sphincter|constrictor|levator ani|pubo|coccyg|bucinator|intercostal|transversus thoracis|multifidus|rotatores|interspinales|intertransversarii|levatores|arytenoid|cricothyroid|tarsus|trochlea|fascia\\b|septum|aponeurosis|sheath|retinaculum|ligament|linea alba|bursa|bursae|tendinous ring|tendinous arch|iliopectineal arch|iliotibial tract"}}}. Body height (all systems) 1.7437 m; normalization offset (Y-up) [0,-0.000382,-0.001348].
 
 ## Stats
 
 | system | structures | groups | landmarks | triangles (inventory, original settings) | triangles exported | triangles published | reduction | bytes per file | languages | with definition | NC |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| skeletal | 277 | 63 | 882 | 702,465 | 702,015 | 448,730 | 36.1 % | skeletal.glb: 2.06 MiB | la, en, fr, es, pt | 90.6 % | 0 |
+| skeletal | 277 | 63 | 882 | 702,465 | 702,015 | 448,730 | 36.1 % | skeletal.glb: 2.28 MiB | la, en, fr, es, pt | 90.6 % | 0 |
 | insertions | 705 | 0 | 0 | 931,484 | 916,812 | 289,986 | 68.4 % | insertions.glb: 1.98 MiB | la, en, fr, es, pt | 95.2 % | 0 |
 | joints | 413 | 113 | 0 | 358,326 | 340,431 | 259,199 | 23.9 % | joints.glb: 1.67 MiB | la, en, fr, es, pt | 75.8 % | 0 |
 | visceral | 119 | 37 | 133 | 715,043 | 439,119 | 326,419 | 25.7 % | visceral.glb: 1.40 MiB | la, en, fr, es, pt | 95.0 % | 4 |
 | cardiovascular | 675 | 30 | 0 | 3,843,768 | 1,343,832 | 811,402 | 39.6 % | cardiovascular.glb: 3.81 MiB | la, en, fr, es, pt | 69.5 % | 4 |
 | lymphoid | 163 | 45 | 11 | 128,353 | 127,682 | 106,120 | 16.9 % | lymphoid.glb: 586.7 KiB | la, en, fr, es, pt | 65.6 % | 0 |
 | nervous | 582 | 92 | 36 | 2,408,368 | 1,528,394 | 853,509 | 44.2 % | nervous.glb: 3.99 MiB | la, en, fr, es, pt | 82.8 % | 4 |
-| muscular | 683 | 105 | 0 | 2,324,365 | 2,275,395 | 2,059,543 | 9.5 % | muscular.glb: 9.56 MiB | la, en, fr, es, pt | 80.7 % | 0 |
+| muscular | 683 | 105 | 0 | 2,324,365 | 2,275,395 | 2,059,543 | 9.5 % | muscular.glb: 10.46 MiB | la, en, fr, es, pt | 80.7 % | 0 |
 | regions | 256 | 34 | 9 | 136,121 | 132,660 | 124,302 | 6.3 % | regions.glb: 895.8 KiB | la, en, fr, es, pt | 57.0 % | 0 |
-| **total** | 3873 | 519 | 1071 | 11,548,293 | 7,806,340 | 5,279,210 | 32.4 % | 25.92 MiB | la, en, fr, es, pt | 80.1 % | 12 |
+| **total** | 3873 | 519 | 1071 | 11,548,293 | 7,806,340 | 5,279,210 | 32.4 % | 27.04 MiB | la, en, fr, es, pt | 80.1 % | 12 |
 
-Largest file: muscular.glb (9.56 MiB). The startup download is checked by the validator (section "Validation" below).
+Largest file: muscular.glb (10.46 MiB). The startup download is checked by the validator (section "Validation" below).
 
-Timings (s): manifest 10.0, process skeletal 2.3, process insertions 2.7, process joints 1.9, process visceral 2.0, process cardiovascular 4.1, process lymphoid 0.7, process nervous 4.9, process muscular 9.8, process regions 1.0.
+Timings (s): manifest 16.0, process skeletal 4.0, process insertions 3.2, process joints 1.9, process visceral 2.2, process cardiovascular 5.8, process lymphoid 0.9, process nervous 6.5, process muscular 14.7, process regions 1.2.
 
 ## Simplification
 
@@ -215,7 +215,7 @@ _none_
 
 skeletal: Anterior cells of ethmoid bone.l, skeletal: Anterior cells of ethmoid bone.r, skeletal: Middle cells of ethmoid bone.l, skeletal: Middle cells of ethmoid bone.r, skeletal: Posterior cells of ethmoid bone.l, skeletal: Posterior cells of ethmoid bone.r, visceral: Mucosa of stomach
 
-Colour method per system: skeletal {"none":6,"node":67,"node-any-bsdf":204}; insertions {"node-any-bsdf":705}; joints {"node":413}; visceral {"node":72,"node-any-bsdf":46,"none":1}; cardiovascular {"node":667,"node-any-bsdf":8}; lymphoid {"node-any-bsdf":161,"node":2}; nervous {"node":282,"node-any-bsdf":300}; muscular {"node-any-bsdf":426,"node":257}; regions {"node":256}
+Colour method per system: skeletal {"none":6,"node":59,"node-any-bsdf":212}; insertions {"node-any-bsdf":705}; joints {"node":413}; visceral {"node":72,"node-any-bsdf":46,"none":1}; cardiovascular {"node":667,"node-any-bsdf":8}; lymphoid {"node-any-bsdf":161,"node":2}; nervous {"node":282,"node-any-bsdf":300}; muscular {"node-any-bsdf":462,"node":221}; regions {"node":256}
 
 ### Objects without a usable name (not published) (1)
 
@@ -233,7 +233,7 @@ _none_
 
 ## Validation
 
-_`node pipeline/validate.mjs` at 2026-10-29T11:31:00.730Z — systems: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions — **passed** (0 errors, 11 warnings)._
+_`node pipeline/validate.mjs` at 2026-10-30T05:11:26.159Z — systems: skeletal, insertions, joints, visceral, cardiovascular, lymphoid, nervous, muscular, regions — **passed** (0 errors, 11 warnings)._
 
 | orientation / side check | result | detail |
 |---|---|---|
@@ -250,26 +250,26 @@ _`node pipeline/validate.mjs` at 2026-10-29T11:31:00.730Z — systems: skeletal,
 
 | system | structures | triangles | bytes |
 |---|---|---|---|
-| skeletal | 277 | 448,730 | 2.06 MiB |
+| skeletal | 277 | 448,730 | 2.28 MiB |
 | insertions | 705 | 289,986 | 1.98 MiB |
 | joints | 413 | 259,199 | 1.67 MiB |
 | visceral | 119 | 326,419 | 1.40 MiB |
 | cardiovascular | 675 | 811,402 | 3.81 MiB |
 | lymphoid | 163 | 106,120 | 586.7 KiB |
 | nervous | 582 | 853,509 | 3.99 MiB |
-| muscular | 683 | 2,059,543 | 9.56 MiB |
+| muscular | 683 | 2,059,543 | 10.46 MiB |
 | regions | 256 | 124,302 | 895.8 KiB |
 
-Startup download (manifest, search index, default systems skeletal + visceral; JSON gzip, GLB as is, without JS): 3.62 MiB (budget 5 MB: met); public/models total 38.07 MiB in 29 files.
+Startup download (manifest, search index, default systems skeletal + visceral; JSON gzip, GLB as is, without JS): 3.85 MiB (budget 5 MB: met); public/models total 39.20 MiB in 29 files.
 
-- skeletal.glb: 277 nodes, 448,730 triangles, 2.06 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- skeletal.glb: 277 nodes, 448,730 triangles, 2.28 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n,_TISSUE:VEC4:5121:n|mode=4|indexed=1
 - insertions.glb: 705 nodes, 289,986 triangles, 1.98 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
 - joints.glb: 413 nodes, 259,199 triangles, 1.67 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
 - visceral.glb: 119 nodes, 326,419 triangles, 1.40 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
 - cardiovascular.glb: 675 nodes, 811,402 triangles, 3.81 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
 - lymphoid.glb: 163 nodes, 106,120 triangles, 586.7 KiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
 - nervous.glb: 582 nodes, 853,509 triangles, 3.99 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
-- muscular.glb: 683 nodes, 2,059,543 triangles, 9.56 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
+- muscular.glb: 683 nodes, 2,059,543 triangles, 10.46 MiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n,_TISSUE:VEC4:5121:n|mode=4|indexed=1
 - regions.glb: 256 nodes, 124,302 triangles, 895.8 KiB, layout NORMAL:VEC3:5120:n,POSITION:VEC3:5122:n|mode=4|indexed=1
 - open review item vagus-nerve-x-l: vertex centroid x = 0.0161 (patient's left)
 - open review item vagus-nerve-x-r: vertex centroid x = 0.0194 (patient's left)
