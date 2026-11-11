@@ -13,14 +13,18 @@ export const ANALYTICS_TOKEN = 'b11153fed29347e196acca969572dfe1';
 /** Hostnames the beacon reports from. */
 export const ANALYTICS_HOSTS = /(^|\.)learnanatomy\.org$/;
 
+export const ANALYTICS_BEACON_URL = 'https://static.cloudflareinsights.com/beacon.min.js';
+
 /**
- * Beacon URL. The settings go in the query string (Cloudflare's form for scripts added by other scripts, e.g. a tag
- * manager); `spa=false` turns off counting history.pushState/replaceState and soft navigations as page views.
+ * Beacon settings, as Cloudflare's snippet passes them: `spa: false` stops counting history.pushState/replaceState
+ * and soft navigations as page views. They must sit in the tag's data-cf-beacon attribute: the beacon finds its tag
+ * with `document.currentScript`, which is null for module scripts, or else `querySelector('script[data-cf-beacon]')`.
+ * Without the attribute it finds no token and silently reports nothing (also when the token is in the query string).
  */
-export const ANALYTICS_BEACON_URL = `https://static.cloudflareinsights.com/beacon.min.js?token=${ANALYTICS_TOKEN}&spa=false`;
+export const ANALYTICS_CONFIG = JSON.stringify({ token: ANALYTICS_TOKEN, spa: false });
 
 /** Inline script (without the <script> tag) that adds the beacon on the hostnames above. */
 export const ANALYTICS_LOADER =
   `if(${ANALYTICS_HOSTS}.test(location.hostname)){` +
   `var s=document.createElement('script');s.type='module';s.src=${JSON.stringify(ANALYTICS_BEACON_URL)};` +
-  `document.head.appendChild(s)}`;
+  `s.setAttribute('data-cf-beacon',${JSON.stringify(ANALYTICS_CONFIG)});document.head.appendChild(s)}`;
