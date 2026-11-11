@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
 import { seoPages } from './seo/plugin.ts';
+import { ANALYTICS_LOADER } from './src/analytics.ts';
 
 /**
  * The attribution and licence texts live in the repo root (outside public/). Ship them with the site as plain
@@ -37,8 +38,17 @@ function licenseFiles(): Plugin {
   };
 }
 
+/** Adds the Cloudflare Web Analytics loader to the atlas page (src/analytics.ts; the static pages add it in seo/). */
+function analytics(): Plugin {
+  return {
+    name: 'atlas-analytics',
+    apply: 'build',
+    transformIndexHtml: () => [{ tag: 'script', children: ANALYTICS_LOADER, injectTo: 'head' }],
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss(), licenseFiles(), seoPages()],
+  plugins: [react(), tailwindcss(), licenseFiles(), seoPages(), analytics()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },

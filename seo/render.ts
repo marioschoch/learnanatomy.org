@@ -1,5 +1,6 @@
 // HTML for the static pages: one per structure page and language, the per-system indexes, the language index,
 // the 404 page and the sitemap. Plain strings, no framework; the CSS is inlined (pages are small and stand alone).
+import { ANALYTICS_LOADER } from '../src/analytics.ts';
 import { APP_NAME } from '../src/appName.ts';
 import type { Definition, Names, SystemId } from '../src/contract/anatomy.ts';
 import { DONATION_URL, supportPath, THANKS_PATH } from '../src/donation.ts';
@@ -392,6 +393,7 @@ function layout(head: Head, body: string, ctx: { site?: Site | undefined }): str
           `<script type="application/ld+json">${JSON.stringify(head.jsonLd).replace(/</g, '\\u003c')}</script>`,
         ]
       : []),
+    `<script>${ANALYTICS_LOADER}</script>`,
   ];
   const t = UI[lang];
   const attributions = ctx.site?.data.manifest.attributions;

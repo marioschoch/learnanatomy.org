@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
+import { ANALYTICS_LOADER } from '../src/analytics';
 import { DONATION_URL } from '../src/donation';
 import { buildSite } from './model';
 import {
@@ -96,6 +97,19 @@ describe('sitemap and 404', () => {
   });
   it('keeps the 404 page out of the index', () => {
     expect(renderNotFound(ctx())).toContain('<meta name="robots" content="noindex">');
+  });
+});
+
+describe('analytics', () => {
+  it('loads the analytics beacon on every static page, once', () => {
+    const pages = [
+      renderPage(femur, 'en', ctx()),
+      renderPage(femur, 'de', ctx()),
+      renderSupport('en', { site }),
+      renderThanks({ site }),
+      renderNotFound(ctx()),
+    ];
+    for (const html of pages) expect(html.split(`<script>${ANALYTICS_LOADER}</script>`)).toHaveLength(2);
   });
 });
 
