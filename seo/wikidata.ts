@@ -11,7 +11,8 @@
 // Pages are matched to Wikidata items by TA2 ID (P7173, exact) and else by the English Wikipedia article of their
 // description (see seo/model.ts, wikidataOf). Needs the assets (npm run assets:build) and network access; takes
 // about two minutes. Rerun it after the assets change or to pick up Wikidata and Wikipedia edits.
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { enwikiTitle, loadSiteData, RELATION_PROPS, type RelationKind, type WikidataFile } from './model.ts';
@@ -23,6 +24,11 @@ const WIKIDATA_API = 'https://www.wikidata.org/w/api.php';
 const SPARQL = 'https://query.wikidata.org/sparql';
 const ENWIKI_API = 'https://en.wikipedia.org/w/api.php';
 const DEWIKI_API = 'https://de.wikipedia.org/w/api.php';
+/** Answers are kept for a day, so a run cut short by rate limits resumes where it stopped. */
+const CACHE = join(ROOT, 'node_modules', '.cache', 'atlas-wikidata');
+const CACHE_MS = 24 * 60 * 60 * 1000;
+/** Rate-limited requests are retried this often (each waits as long as the server asks, ~1 min). */
+const MAX_ATTEMPTS = 30;
 /** Shorter German introductions are stubs ("Der X ist ein Muskel.") that say less than the facts box. */
 const MIN_TEXT = 80;
 
@@ -30,9 +36,22 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** JSON from a Wikimedia endpoint; retries on errors, timeouts and "maxlag" (servers busy), honouring Retry-After. */
 async function getJson(url: string, init: RequestInit = {}): Promise<unknown> {
+  const key = createHash('sha1')
+    .update(`${url}\n${String(init.body ?? '')}`)
+    .digest('hex');
+  const cached = join(CACHE, `${key}.json`);
+  if (existsSync(cached) && Date.now() - statSync(cached).mtimeMs < CACHE_MS)
+    return JSON.parse(readFileSync(cached, 'utf8'));
+  const body = await fetchJson(url, init);
+  mkdirSync(CACHE, { recursive: true });
+  writeFileSync(cached, JSON.stringify(body));
+  return body;
+}
+
+async function fetchJson(url: string, init: RequestInit): Promise<unknown> {
   for (let attempt = 0; ; attempt++) {
     let problem: string;
-    let wait = 2 ** attempt;
+    let wait = Math.min(2 ** attempt, 60);
     try {
       const res = await fetch(url, {
         ...init,
@@ -53,7 +72,7 @@ async function getJson(url: string, init: RequestInit = {}): Promise<unknown> {
         throw e;
       problem = e.message;
     }
-    if (attempt >= 6) throw new Error(`${problem} for ${url.slice(0, 120)}`);
+    if (attempt >= MAX_ATTEMPTS) throw new Error(`${problem} for ${url.slice(0, 120)}`);
     console.log(`  ${problem}, retrying in ${wait}s`);
     await sleep(wait * 1000);
   }
