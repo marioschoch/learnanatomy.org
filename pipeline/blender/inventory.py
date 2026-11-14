@@ -178,7 +178,7 @@ def main():
     report = {
         "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "blender": bpy.app.version_string,
-        "file": bpy.data.filepath,
+        "file": os.path.basename(bpy.data.filepath),  # no local paths in the committed report
         "fileBytes": os.path.getsize(bpy.data.filepath) if bpy.data.filepath else None,
     }
 
