@@ -32,6 +32,37 @@ export const cardPath = (slug: string) => `${THUMBS_DIR}/og/${slug}.jpg`;
 export const THUMB_SIZE = 800;
 export const CARD_SIZE = { width: 1200, height: 630 };
 
+/** Supply and function shown on the pages, with the Wikidata property each comes from (seo/wikidata.ts). */
+export const RELATION_PROPS = {
+  innervation: 'P3189',
+  arterialSupply: 'P2286',
+  venousDrainage: 'P2289',
+  lymphaticDrainage: 'P2288',
+  action: 'P3310',
+} as const;
+export type RelationKind = keyof typeof RELATION_PROPS;
+export const RELATION_KINDS = Object.keys(RELATION_PROPS) as RelationKind[];
+
+/** data/wikidata/wikidata.json, written by seo/wikidata.ts. */
+export interface WikidataFile {
+  schemaVersion: 1;
+  fetchedAt: string;
+  /** TA2 ID → item (only IDs that exactly one item carries). */
+  byTa2: Record<string, string>;
+  /** English Wikipedia title (as in a description's source URL, spaces for underscores) → item. */
+  byEnwiki: Record<string, string>;
+  items: Record<string, { dewiki?: string; relations?: Partial<Record<RelationKind, string[]>> }>;
+  labels: Record<string, { en?: string; de?: string }>;
+  /** German Wikipedia title → introduction (paragraphs separated by a blank line) and article URL. */
+  dewiki: Record<string, { text: string; url: string }>;
+}
+
+/** A nerve, vessel or action: a link when it has a page of its own, else its Wikidata label. */
+export interface RelationRef {
+  slug?: string;
+  label: { en?: string; de?: string };
+}
+
 export interface SiteData {
   manifest: Manifest;
   structures: Structure[];
@@ -39,6 +70,7 @@ export interface SiteData {
   landmarks: Landmark[];
   /** Key: `${system}:${definitionKey}`. */
   definitions: Record<string, Definition>;
+  wikidata?: WikidataFile;
 }
 
 export type PageType = 'structure' | 'group' | 'landmark';
@@ -75,6 +107,12 @@ export interface Page {
   sides: Side[];
   regions: string[];
   definition?: Definition;
+  /** German Wikipedia introduction for the German page (the English page shows `definition`). */
+  definitionDe?: Definition;
+  /** Wikidata item of the page (by TA2 ID, else by the English article of its description). */
+  qid?: string;
+  /** Supply and function from Wikidata. */
+  relations?: Partial<Record<RelationKind, RelationRef[]>>;
   /** Node selected by "Open in 3D" (/?s=…). */
   openId: string;
   /** Root first; the last entry is the direct parent. */
@@ -97,11 +135,15 @@ export interface Site {
   slugOfId: Map<string, string>;
 }
 
-export function loadSiteData(modelsDir: string): SiteData | null {
+/** `wikidataFile` (data/wikidata/wikidata.json) is optional: without it the pages have no supply/function box and
+ * German pages show the English description. */
+export function loadSiteData(modelsDir: string, wikidataFile?: string): SiteData | null {
   const read = <T>(file: string): T => JSON.parse(readFileSync(join(modelsDir, file), 'utf8')) as T;
   if (!existsSync(join(modelsDir, 'manifest.json'))) return null;
   const manifest = read<Manifest>('manifest.json');
   const data: SiteData = { manifest, structures: [], groups: [], landmarks: [], definitions: {} };
+  if (wikidataFile && existsSync(wikidataFile))
+    data.wikidata = JSON.parse(readFileSync(wikidataFile, 'utf8')) as WikidataFile;
   for (const sys of manifest.systems) {
     const f = read<SystemStructuresFile>(sys.structuresFile);
     data.structures.push(...f.structures);
@@ -385,6 +427,81 @@ export function buildSite(data: SiteData): Site {
     }
     if (p.render === undefined) delete p.render;
   }
+  if (data.wikidata) addWikidata(data, data.wikidata, pages, slugOfId);
   pages.sort((a, b) => a.slug.localeCompare(b.slug));
   return { data, pages, bySlug, slugOfId };
+}
+
+/** "https://en.wikipedia.org/wiki/Pectoralis_major" → "Pectoralis major" (the key of WikidataFile.byEnwiki). */
+export function enwikiTitle(url: string | undefined): string | undefined {
+  const m = url ? /^https?:\/\/en\.wikipedia\.org\/wiki\/([^#?]+)/.exec(url) : null;
+  if (!m) return undefined;
+  try {
+    return decodeURIComponent(m[1]!).replace(/_/g, ' ');
+  } catch {
+    return m[1]!.replace(/_/g, ' ');
+  }
+}
+
+/**
+ * Wikidata item, German description and supply/function of each page. The item is matched by TA2 ID (exact),
+ * else by the English article of the page's description. The German text is the German version of that same
+ * article, so both language pages say the same; supply and function come from the page's own item only, never
+ * from a broader article (a muscle part's page does not inherit the whole muscle's nerves).
+ */
+function addWikidata(data: SiteData, wd: WikidataFile, pages: Page[], slugOfId: Map<string, string>) {
+  const structById = new Map(data.structures.map((s) => [s.id, s]));
+  const slugOfTa2 = new Map<string, string>();
+  for (const s of data.structures) {
+    const slug = s.taId ? slugOfId.get(s.id) : undefined;
+    if (slug && !slugOfTa2.has(s.taId!)) slugOfTa2.set(s.taId!, slug);
+  }
+  const slugOfQid = new Map<string, string>();
+  for (const [ta2, qid] of Object.entries(wd.byTa2)) {
+    const slug = slugOfTa2.get(ta2);
+    if (slug && !slugOfQid.has(qid)) slugOfQid.set(qid, slug);
+  }
+
+  for (const page of pages) {
+    const taQid = [...page.ids, ...page.mergedIds]
+      .map((id) => structById.get(id)?.taId)
+      .map((ta2) => (ta2 ? wd.byTa2[ta2] : undefined))
+      .find(Boolean);
+    const title = enwikiTitle(page.definition?.sourceUrl);
+    const articleQid = title ? wd.byEnwiki[title] : undefined;
+    const qid = taQid ?? articleQid;
+    if (!qid) continue;
+    page.qid = qid;
+
+    for (const q of [articleQid, taQid]) {
+      const deTitle = q ? wd.items[q]?.dewiki : undefined;
+      const de = deTitle ? wd.dewiki[deTitle] : undefined;
+      if (de) {
+        page.definitionDe = {
+          text: { de: de.text },
+          source: 'Wikipedia',
+          sourceUrl: de.url,
+          license: 'CC-BY-SA-4.0',
+          reviewed: false,
+        };
+        break;
+      }
+    }
+
+    const relations: Partial<Record<RelationKind, RelationRef[]>> = {};
+    for (const kind of RELATION_KINDS) {
+      const refs: RelationRef[] = [];
+      const seen = new Set<string>();
+      for (const target of wd.items[qid]?.relations?.[kind] ?? []) {
+        const slug = slugOfQid.get(target);
+        const label = wd.labels[target] ?? {};
+        const key = slug ?? target;
+        if (slug === page.slug || seen.has(key) || (!slug && !label.en && !label.de)) continue;
+        seen.add(key);
+        refs.push(slug ? { slug, label } : { label });
+      }
+      if (refs.length) relations[kind] = refs;
+    }
+    if (Object.keys(relations).length) page.relations = relations;
+  }
 }

@@ -111,6 +111,13 @@ index per system, `sitemap.xml` and `404.html` (details: [ARCHITECTURE.md §14](
 `seo:thumbs` and the pages are built without images. `npm run seo:thumbs -- --only femur,heart --force`
 re-renders single pages.
 
+`npm run seo:wikidata` refreshes `data/wikidata/wikidata.json` (committed): nerve and blood supply and muscle actions
+from Wikidata, and the German Wikipedia introductions for the German pages. It needs the assets and network access
+and takes a few minutes (Wikimedia rate-limits it); the build itself stays offline.
+
+The deploy must stay under Cloudflare Pages' 20 000 files per site (free plan): about 11 000 today (2 × ~2 970
+pages, ~5 060 page images, models, app). Another page language would add ~2 970 pages.
+
 One-time setup in the Cloudflare and Google dashboards (not in the code):
 
 1. **www**: Workers & Pages → `open-anatomy-atlas` → Custom domains → add `www.learnanatomy.org`. Then
@@ -134,6 +141,8 @@ src/i18n/          DE / EN UI strings
 src/mocks/         mock data for development and tests
 tests/             unit setup, Playwright specs
 data/inventory/    inventory of the .blend and pipeline reports (committed); data/raw/ is not
+data/wikidata/     supply/function and German texts for the structure pages (seo/wikidata.ts, committed)
+seo/               static structure pages, sitemap, page images, Wikidata fetch
 ARCHITECTURE.md    design, data model, decisions and deviations
 ```
 

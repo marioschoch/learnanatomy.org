@@ -1,6 +1,6 @@
 // Small synthetic data set for the seo/ unit tests (no pipeline output needed).
 import type { BBox, Structure, SystemInfo } from '../src/contract/anatomy.ts';
-import type { SiteData } from './model.ts';
+import type { SiteData, WikidataFile } from './model.ts';
 
 const box = (x0: number, x1: number, y0 = 0.5, y1 = 0.9, z0 = -0.05, z1 = 0.05): BBox => ({
   min: [x0, y0, z0],
@@ -84,6 +84,12 @@ export function testData(): SiteData {
       structure('trapezius', 'muscular', 'Trapezius', box(-0.2, 0.2, 1.1, 1.5, -0.12, -0.02)),
       structure('long-head-of-biceps-l', 'muscular', 'Long head of biceps', box(0.18, 0.22), {
         parentId: 'g-biceps',
+        taId: '2471',
+        definitionKey: 'biceps',
+      }),
+      structure('musculocutaneous-nerve-l', 'nervous', 'Musculocutaneous nerve', box(0.15, 0.2), {
+        names: { en: 'Musculocutaneous nerve', la: 'Nervus musculocutaneus' },
+        taId: '6421',
       }),
       structure('midbrain-l', 'nervous', 'Midbrain', box(0, 0.02, 1.5, 1.55), { parentId: 'g-midbrain' }),
       structure('midbrain-r', 'nervous', 'Midbrain', box(-0.02, 0, 1.5, 1.55), { parentId: 'g-midbrain' }),
@@ -101,7 +107,12 @@ export function testData(): SiteData {
     ],
     groups: [
       { id: 'g-bones-of-lower-limb', system: 'skeletal', names: { en: 'Bones of lower limb' } },
-      { id: 'g-biceps', system: 'muscular', names: { en: 'Biceps', la: 'Musculus biceps' } },
+      {
+        id: 'g-biceps',
+        system: 'muscular',
+        names: { en: 'Biceps', la: 'Musculus biceps' },
+        definitionKey: 'biceps',
+      },
       { id: 'g-midbrain', system: 'nervous', names: { en: 'Midbrain' } },
       { id: 'g-empty', system: 'skeletal', names: { en: 'Empty group' } },
     ],
@@ -143,11 +154,56 @@ export function testData(): SiteData {
         license: 'CC-BY-SA-3.0',
         reviewed: false,
       },
+      'muscular:biceps': {
+        text: {
+          en: 'The biceps is a large muscle that lies on the front of the upper arm between the shoulder and the elbow.',
+        },
+        source: 'Wikipedia',
+        sourceUrl: 'https://en.wikipedia.org/wiki/Biceps',
+        license: 'CC-BY-SA-3.0',
+        reviewed: false,
+      },
       'skeletal:greater-trochanter': {
         text: { en: 'A large projection of the femur.\n-Gluteus medius\n-Gluteus minimus' },
         source: 'Z-Anatomy',
         license: 'CC-BY-SA-4.0',
         reviewed: true,
+      },
+    },
+  };
+}
+
+/**
+ * Wikidata for testData(): the femur by its English article; the biceps (a group) by its article, with nerve
+ * supply (one target with a page, one without) and action; its long head by TA2 ID, an item without statements.
+ */
+export function testWikidata(): WikidataFile {
+  return {
+    schemaVersion: 1,
+    fetchedAt: '2026-11-14T10:00:00.000Z',
+    byTa2: { '2471': 'Q20', '6421': 'Q30' },
+    byEnwiki: { Femur: 'Q1', Biceps: 'Q10' },
+    items: {
+      Q1: { dewiki: 'Oberschenkelknochen' },
+      Q10: {
+        dewiki: 'Musculus biceps brachii',
+        relations: { innervation: ['Q30', 'Q31'], action: ['Q40'], arterialSupply: ['Q99'] },
+      },
+      Q20: {},
+    },
+    labels: {
+      Q30: { en: 'musculocutaneous nerve', de: 'Nervus musculocutaneus' },
+      Q31: { en: 'radial nerve' },
+      Q40: { en: 'elbow flexion', de: 'Beugung im Ellenbogengelenk' },
+    },
+    dewiki: {
+      Oberschenkelknochen: {
+        text: 'Der Oberschenkelknochen (lateinisch Os femoris) ist der längste Knochen des menschlichen Körpers.\n\nEr verbindet Hüfte und Knie.',
+        url: 'https://de.wikipedia.org/wiki/Oberschenkelknochen',
+      },
+      'Musculus biceps brachii': {
+        text: 'Der Musculus biceps brachii ist ein zweiköpfiger Skelettmuskel des Oberarms, der vor allem den Ellenbogen beugt.',
+        url: 'https://de.wikipedia.org/wiki/Musculus_biceps_brachii',
       },
     },
   };

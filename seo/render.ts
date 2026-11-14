@@ -11,6 +11,7 @@ import {
   CARD_SIZE,
   cardPath,
   PAGE_LANGS,
+  RELATION_KINDS,
   SITE_URL,
   SYSTEMS_SEGMENT,
   THUMB_SIZE,
@@ -18,6 +19,7 @@ import {
   type Page,
   type PageLang,
   type Ref,
+  type RelationRef,
   type Site,
 } from './model.ts';
 
@@ -40,6 +42,14 @@ const STRINGS = {
     originOf: 'Muscles that arise here',
     insertionOf: 'Muscles that insert here',
     synonyms: 'Synonyms',
+    supply: 'Supply and function',
+    innervation: 'Nerve supply',
+    arterialSupply: 'Arterial supply',
+    venousDrainage: 'Venous drainage',
+    lymphaticDrainage: 'Lymphatic drainage',
+    action: 'Action',
+    supplySource: 'Source: {{source}} (public domain), not yet reviewed',
+    englishOnly: 'This description is available in English only.',
     readMore: 'Continue reading on {{source}}',
     figureAlt: '{{name}} highlighted in a 3D model of the human body',
     landmarkFigure: '{{name}}, the structure this landmark is on',
@@ -94,6 +104,14 @@ const STRINGS = {
     originOf: 'Hier entspringende Muskeln',
     insertionOf: 'Hier ansetzende Muskeln',
     synonyms: 'Synonyme',
+    supply: 'Versorgung und Funktion',
+    innervation: 'Innervation',
+    arterialSupply: 'Arterielle Versorgung',
+    venousDrainage: 'Venöser Abfluss',
+    lymphaticDrainage: 'Lymphabfluss',
+    action: 'Funktion',
+    supplySource: 'Quelle: {{source}} (gemeinfrei), noch nicht geprüft',
+    englishOnly: 'Diese Beschreibung gibt es nur auf Englisch.',
     readMore: 'Weiterlesen bei {{source}}',
     figureAlt: '{{name}} hervorgehoben in einem 3D-Modell des menschlichen Körpers',
     landmarkFigure: '{{name}}, die Struktur, an der diese Landmarke liegt',
@@ -454,17 +472,55 @@ function refList(ctx: RenderContext, lang: PageLang, refs: Ref[]): string {
   return `<ul class="links">${items.join('')}</ul>`;
 }
 
-function describe(page: Page, lang: PageLang): string {
-  const lead = lang === 'en' ? firstParagraph(page.definition) : undefined;
+/** The description shown on a page in `lang`: German pages show the German article when there is one. */
+const definitionFor = (page: Page, lang: PageLang) =>
+  lang === 'de' ? (page.definitionDe ?? page.definition) : page.definition;
+
+/** Text of a supply/function entry: its page's name, else its Wikidata label. */
+function relationName(ctx: RenderContext, lang: PageLang, r: RelationRef): { text: string; lang: string } {
+  const p = r.slug ? ctx.site.bySlug.get(r.slug) : undefined;
+  if (p) return { text: primaryName(p.names, lang), lang: nameLang(p.names, lang) };
+  const own = r.label[lang];
+  const text = own ?? r.label.en ?? r.label.de ?? '';
+  return { text: cap(text), lang: own ? lang : r.label.en ? 'en' : 'de' };
+}
+
+function describe(ctx: RenderContext, page: Page, lang: PageLang): string {
+  const def = definitionFor(page, lang);
+  const lead = def && (lang === 'en' || !def.text.en) ? firstParagraph(def) : undefined;
   if (lead) return truncate(lead, 158);
   const name = secondaryName(page.names, lang)
     ? `${primaryName(page.names, lang)} (${secondaryName(page.names, lang)})`
     : primaryName(page.names, lang);
+  const rel = page.relations;
+  if (rel) {
+    const parts = RELATION_KINDS.filter((k) => rel[k]?.length).map(
+      (k) => `${s(lang, k)}: ${rel[k]!.map((r) => relationName(ctx, lang, r).text).join(', ')}`,
+    );
+    return truncate(`${name}. ${parts.join('. ')}.`, 158);
+  }
   const where = [
     systemLabel(lang, page.system),
     ...page.regions.slice(0, 2).map((r) => regionLabel(lang, r)),
   ];
   return truncate(s(lang, 'describe', { name, where: where.join(', ') }), 200);
+}
+
+function relationsSection(ctx: RenderContext, lang: PageLang, page: Page): string {
+  const rel = page.relations ?? {};
+  const rows = RELATION_KINDS.filter((k) => rel[k]?.length).map((k) => {
+    const items = rel[k]!.map((r) => ({ r, name: relationName(ctx, lang, r) }))
+      .sort((a, b) => a.name.text.localeCompare(b.name.text, lang))
+      .map(({ r, name }) =>
+        r.slug ? link(ctx, lang, r.slug) : `<span lang="${name.lang}">${esc(name.text)}</span>`,
+      );
+    return `<dt>${esc(s(lang, k))}</dt><dd>${items.join(', ')}</dd>`;
+  });
+  const source = page.qid
+    ? `<a href="https://www.wikidata.org/wiki/${esc(page.qid)}" rel="nofollow noopener">Wikidata</a>`
+    : 'Wikidata';
+  const note = esc(s(lang, 'supplySource', { source: '\u0000' })).replace('\u0000', source);
+  return `<section><h2>${esc(s(lang, 'supply'))}</h2><dl class="names">${rows.join('')}</dl><p class="note">${note}</p></section>`;
 }
 
 function definitionSection(def: Definition, lang: PageLang): string {
@@ -489,11 +545,11 @@ function definitionSection(def: Definition, lang: PageLang): string {
     : esc(licenseLabel(def.license));
   return `<section aria-labelledby="def">
 <h2 id="def">${esc(t.definition)}${def.reviewed ? '' : `<span class="badge" title="${esc(t.unreviewedHint)}">${esc(t.unreviewed)}</span>`}</h2>
-${lang !== textLang ? `<p class="note">${esc(t.definitionEnglishOnly)}</p>` : ''}
+${lang !== textLang ? `<p class="note">${esc(s(lang, 'englishOnly'))}</p>` : ''}
 <div lang="${textLang}">
 ${html}
 </div>
-${more && def.sourceUrl ? `<p><a href="${esc(def.sourceUrl)}" rel="nofollow noopener">${esc(s(lang, 'readMore', { source: def.source }))} →</a></p>` : ''}
+${(more || (def.source === 'Wikipedia' && !def.text.en)) && def.sourceUrl ? `<p><a href="${esc(def.sourceUrl)}" rel="nofollow noopener">${esc(s(lang, 'readMore', { source: def.source }))} →</a></p>` : ''}
 <p class="note">${esc(t.source)}: ${source} · ${esc(t.licenseText)}: ${license}${def.reviewed ? '' : ` · ${esc(t.unreviewedHint)}`}</p>
 </section>`;
 }
@@ -577,7 +633,9 @@ export function renderPage(page: Page, lang: PageLang, ctx: RenderContext): stri
     : '';
 
   const sections: string[] = [];
-  if (page.definition) sections.push(definitionSection(page.definition, lang));
+  if (page.relations) sections.push(relationsSection(ctx, lang, page));
+  const def = definitionFor(page, lang);
+  if (def) sections.push(definitionSection(def, lang));
   const a = page.attachments;
   if (a.origins.length || a.insertions.length || a.originOf.length || a.insertionOf.length) {
     const part = (label: string, list: string[]) =>
@@ -634,7 +692,7 @@ ${sections.join('\n')}
     {
       lang,
       title: `${fullName} – ${s(lang, 'titleSuffix')} | ${APP_NAME}`,
-      description: describe(page, lang),
+      description: describe(ctx, page, lang),
       path,
       alternates,
       ...(card

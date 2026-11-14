@@ -15,7 +15,7 @@ import {
   truncate,
   type RenderContext,
 } from './render';
-import { testData } from './testData';
+import { testData, testWikidata } from './testData';
 
 const site = buildSite(testData());
 const ctx = (images = false): RenderContext => ({
@@ -76,7 +76,7 @@ describe('renderPage', () => {
     expect(html).toContain('<html lang="de">');
     expect(html).toContain('<h1 lang="la">Os femoris</h1>');
     expect(html).toContain('In 3D öffnen');
-    expect(html).toContain('Beschreibungen gibt es nur auf Englisch.');
+    expect(html).toContain('Diese Beschreibung gibt es nur auf Englisch.');
   });
 
   it('shows a landmark with its structure', () => {
@@ -142,5 +142,52 @@ describe('support', () => {
     expect(html).not.toContain('rel="canonical"');
     expect(html).toContain('<a class="btn" href="/">Back to the 3D atlas →</a>');
     expect(html).toContain('<section lang="de"><h1>Danke!</h1>');
+  });
+});
+
+describe('pages with Wikidata', () => {
+  const wdSite = buildSite({ ...testData(), wikidata: testWikidata() });
+  const wdCtx: RenderContext = { ...ctx(), site: wdSite };
+  const render = (slug: string, lang: 'en' | 'de') => renderPage(wdSite.bySlug.get(slug)!, lang, wdCtx);
+
+  it('shows the German article on the German page and the English one on the English page', () => {
+    const de = render('femur', 'de');
+    expect(de).toContain('<div lang="de">');
+    expect(de).toContain('Der Oberschenkelknochen (lateinisch Os femoris) ist der längste Knochen');
+    expect(de).toContain('href="https://de.wikipedia.org/wiki/Oberschenkelknochen"');
+    expect(de).toContain('CC BY-SA 4.0');
+    expect(de).not.toContain('nur auf Englisch');
+    expect(de).toMatch(/<meta name="description" content="Der Oberschenkelknochen/);
+    const en = render('femur', 'en');
+    expect(en).toContain('The femur (pl. femora), or thigh bone');
+    expect(en).not.toContain('Oberschenkelknochen');
+  });
+
+  it('keeps the English text with a note on German pages without a German article', () => {
+    const html = renderPage(femur, 'de', ctx());
+    expect(html).toContain('<div lang="en">');
+    expect(html).toContain('nur auf Englisch');
+  });
+
+  it('renders supply and function with links, labels and the source', () => {
+    const en = render('biceps', 'en');
+    expect(en).toContain('<h2>Supply and function</h2>');
+    expect(en).toContain(
+      '<dt>Nerve supply</dt><dd><a href="/en/musculocutaneous-nerve" lang="en">Musculocutaneous nerve</a>, <span lang="en">Radial nerve</span></dd>',
+    );
+    expect(en).toContain('<dt>Action</dt><dd><span lang="en">Elbow flexion</span></dd>');
+    expect(en).toContain('href="https://www.wikidata.org/wiki/Q10"');
+    const de = render('biceps', 'de');
+    expect(de).toContain('<h2>Versorgung und Funktion</h2>');
+    expect(de).toContain('<a href="/de/musculocutaneous-nerve" lang="la">Nervus musculocutaneus</a>');
+    expect(de).toContain('<span lang="de">Beugung im Ellenbogengelenk</span>');
+    expect(de).toContain('<span lang="en">Radial nerve</span>');
+  });
+
+  it('describes pages without a lead paragraph by their supply and function', () => {
+    const page = { ...wdSite.bySlug.get('biceps')!, definition: undefined, definitionDe: undefined };
+    expect(renderPage(page, 'en', wdCtx)).toContain(
+      '<meta name="description" content="Biceps (Musculus biceps). Nerve supply: Musculocutaneous nerve, Radial nerve. Action: Elbow flexion.">',
+    );
   });
 });

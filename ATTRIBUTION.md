@@ -122,6 +122,12 @@ The Z-Anatomy Blender file (`Startup.blend`) was converted by the learnanatomy.o
 
 Definitions are excerpts from Wikipedia (CC BY-SA 3.0) as included in Z-Anatomy; every definition links its source page. They are shown as "not reviewed" until a human reviewer has checked them.
 
+The German structure pages (`/de/…`) show the introduction of the German Wikipedia article on the same subject instead, where one exists: text from [de.wikipedia.org](https://de.wikipedia.org/) under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), fetched by `seo/wikidata.ts` into `data/wikidata/wikidata.json`; each page links its article. Line breaks and empty brackets were tidied; the text is otherwise unchanged and also marked "not reviewed".
+
+## Supply and function (Wikidata)
+
+Nerve supply, arterial supply, venous and lymphatic drainage and muscle actions on the structure pages come from [Wikidata](https://www.wikidata.org/) (CC0 1.0, public domain), matched by TA2 ID (P7173) or by the English Wikipedia article of the description; each page links its item. They are shown as not yet reviewed.
+
 ## Non-commercial content
 
 The following structures come from upstream components under **non-commercial** licences. They are marked `nonCommercial: true` in the data; a commercial deployment must remove them (filter `!s.nonCommercial`).

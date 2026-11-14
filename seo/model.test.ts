@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import { buildSite } from './model';
-import { testData } from './testData';
+import { testData, testWikidata } from './testData';
 
 const site = buildSite(testData());
 const page = (slug: string) => {
@@ -67,5 +67,51 @@ describe('buildSite', () => {
     expect(page('stapes').render?.mode).toBe('isolate');
     expect(page('trapezius').render?.view).toBe('posterior');
     expect(page('greater-trochanter-region').render?.zoomOut).toBeGreaterThan(1);
+  });
+});
+
+describe('buildSite with Wikidata', () => {
+  const wdSite = buildSite({ ...testData(), wikidata: testWikidata() });
+  const wdPage = (slug: string) => wdSite.bySlug.get(slug)!;
+
+  it('adds the German article of the English description', () => {
+    const femur = wdPage('femur');
+    expect(femur.qid).toBe('Q1');
+    expect(femur.definitionDe).toMatchObject({
+      source: 'Wikipedia',
+      sourceUrl: 'https://de.wikipedia.org/wiki/Oberschenkelknochen',
+      license: 'CC-BY-SA-4.0',
+      reviewed: false,
+    });
+    expect(femur.definitionDe?.text.de).toMatch(/^Der Oberschenkelknochen/);
+  });
+
+  it('lists supply and function, linking targets that have a page', () => {
+    const biceps = wdPage('biceps');
+    expect(biceps.relations?.innervation).toEqual([
+      {
+        slug: 'musculocutaneous-nerve',
+        label: { en: 'musculocutaneous nerve', de: 'Nervus musculocutaneus' },
+      },
+      { label: { en: 'radial nerve' } },
+    ]);
+    expect(biceps.relations?.action).toEqual([
+      { label: { en: 'elbow flexion', de: 'Beugung im Ellenbogengelenk' } },
+    ]);
+    // targets without a page and without a label are left out
+    expect(biceps.relations?.arterialSupply).toBeUndefined();
+  });
+
+  it('takes supply and function from the page’s own item only (TA2 before the article)', () => {
+    const head = wdPage('long-head-of-biceps');
+    expect(head.qid).toBe('Q20');
+    expect(head.relations).toBeUndefined();
+    // the German text still follows the English description's article
+    expect(head.definitionDe?.sourceUrl).toBe('https://de.wikipedia.org/wiki/Musculus_biceps_brachii');
+  });
+
+  it('builds the same pages without the Wikidata file', () => {
+    expect(wdSite.pages.map((p) => p.slug)).toEqual(site.pages.map((p) => p.slug));
+    expect(site.pages.some((p) => p.qid || p.relations || p.definitionDe)).toBe(false);
   });
 });
